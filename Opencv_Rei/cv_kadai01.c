@@ -43,7 +43,7 @@ int main(int argc, char **argv)
     img = cvLoadImage("test.jpg", CV_LOAD_IMAGE_COLOR);//cvLoadImage  : 画像を読み込む関数
     //imgMask = cvLoadImage("mask.png", CV_LOAD_IMAGE_GRAYSCALE);//cvLoadImage  : 画像を読み込む関数
     imgMask = cvLoadImage("mask.png", CV_LOAD_IMAGE_COLOR);
-    imgMask1 = cvLoadImage("mask1.png", CV_LOAD_IMAGE_GRAYSCALE); //反応なし
+    imgMask1 = cvLoadImage("mask1.png", CV_LOAD_IMAGE_COLOR); //反応なし
 
     if (img == NULL) {
         fprintf(stderr, "*Error* cannot open test.jpg\n");
@@ -61,50 +61,52 @@ int main(int argc, char **argv)
     //cvCopy(imgMask1, imgMask_dst, NULL);
 
     //cvCopy(img, img2, imgMask_dst);
-    cvCopy(imgMask, img2, imgMask1);
-    cvCopy(img, img3, img2);
+    //cvCopy(imgMask, img2, imgMask1);
+    //cvCopy(img, img3, img2);
 
 
 /*imgの色を変換*/
 #ifdef CONVERT_RGB
-    for (y = 0; y < imgMask->height; y++) {
-	for (x = 0; x < imgMask->width; x++) {
+    for (y = 0; y < img2->height; y++) {
+	for (x = 0; x < img2->width; x++) {
            /*img->widthStep  : 画像横１行のバイト幅（画像を読み込んだ時点で格納済）*/
 	    p[0] = imgMask->imageData[imgMask->widthStep * y + x * 3];	        // B
 	    p[1] = imgMask->imageData[imgMask->widthStep * y + x * 3 + 1];	// G
 	    p[2] = imgMask->imageData[imgMask->widthStep * y + x * 3 + 2];	// R
 
-	    /*q[0] = imgMask1->imageData[imgMask1->widthStep * y + x * 3];	        // B
+	    q[0] = imgMask1->imageData[imgMask1->widthStep * y + x * 3];	        // B
 	    q[1] = imgMask1->imageData[imgMask1->widthStep * y + x * 3 + 1];	// G
 	    q[2] = imgMask1->imageData[imgMask1->widthStep * y + x * 3 + 2];	// R
-            */
 
 // Image Processing
            /*中身を変えないまま、値を戻す(１の場合)。０の場合は、画素値を０にして戻す*/
-            if(x > img->width/2){
-                imgMask->imageData[imgMask->widthStep * y + x * 3] =
-                    cvRound(p[0] * 0)/*+cvRound(q[0]*1)*/;
-                imgMask->imageData[imgMask->widthStep * y + x * 3 + 1] =
-                    cvRound(p[1] * 0)/*+cvRound(q[1]*1)*/;
-                imgMask->imageData[imgMask->widthStep * y + x * 3 + 2] =
-                    cvRound(p[2] * 1)/*+cvRound(q[2]*1)*/;
+            /*if(x > img2->width/2){
+                img2->imageData[img2->widthStep * y + x * 3] =
+                    cvRound(p[0] * 0 + q[0] * 1);
+                img2->imageData[img2->widthStep * y + x * 3 + 1] =
+                    cvRound(p[1] * 0 + q[1]*1);
+                img2->imageData[img2->widthStep * y + x * 3 + 2] =
+                    cvRound(p[2] * 1 + q[2]*1);
             }
-            else{
-                imgMask->imageData[imgMask->widthStep * y + x * 3] =
-                    cvRound(p[0] * 1)/*+cvRound(q[0]*1)*/;
-                imgMask->imageData[imgMask->widthStep * y + x * 3 + 1] =
-                    cvRound(p[1] * 1)/*+cvRound(q[1]*1)*/;
-                imgMask->imageData[imgMask->widthStep * y + x * 3 + 2] =
-                    cvRound(p[2] * 1)/*+cvRound(q[2]*1)*/;
-            }
+            else{*/
+                img2->imageData[img2->widthStep * y + x * 3] =
+                    cvRound(p[0] * 1 + q[0]*1);
+                img2->imageData[img2->widthStep * y + x * 3 + 1] =
+                    cvRound(p[1] * 1 + q[1]*1);
+                img2->imageData[img2->widthStep * y + x * 3 + 2] =
+                    cvRound(p[2] * 1 + q[2]*1);
+                //}
         }
     }
 #endif
 
+    //cvCopy(imgMask, img2, imgMask1);
+    cvCopy(img, img3, img2);
+
     cvNamedWindow("after", CV_WINDOW_AUTOSIZE);//ウィンドウの生成
     cvShowImage("after", img);
-    cvNamedWindow("before", CV_WINDOW_AUTOSIZE);//ウィンドウの生成
-    cvShowImage("before", img2);
+    /*cvNamedWindow("before", CV_WINDOW_AUTOSIZE);//ウィンドウの生成
+      cvShowImage("before", img2);*/
     cvNamedWindow("img3", CV_WINDOW_AUTOSIZE);
     cvShowImage("img3", img3);
     cvNamedWindow("imgMask", CV_WINDOW_AUTOSIZE);//ウィンドウの生成
@@ -117,7 +119,7 @@ int main(int argc, char **argv)
     cvWaitKey(0);//何かキーが押された時に終了させる
 
     cvDestroyWindow("after");//imageウィンドウの破棄
-    cvDestroyWindow("before");//image2ウィンドウの破棄
+    //cvDestroyWindow("before");//image2ウィンドウの破棄
     cvDestroyWindow("img3");//image2ウィンドウの破棄
     cvDestroyWindow("imgMask");//imgMaskウィンドウの破棄
     cvDestroyWindow("imgMask1");//imgMask1ウィンドウの破棄
