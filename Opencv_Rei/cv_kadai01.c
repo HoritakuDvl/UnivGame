@@ -40,7 +40,7 @@ int main(int argc, char **argv)
     IplImage *imgMask, *imgMask1; //
     IplImage *imgMask_dst;
 
-    img = cvLoadImage("test.jpg", CV_LOAD_IMAGE_COLOR);//cvLoadImage  : 画像を読み込む関数
+    img = cvLoadImage("renarena.jpg", CV_LOAD_IMAGE_COLOR);//cvLoadImage  : 画像を読み込む関数
     //imgMask = cvLoadImage("mask.png", CV_LOAD_IMAGE_GRAYSCALE);//cvLoadImage  : 画像を読み込む関数
     imgMask = cvLoadImage("mask.png", CV_LOAD_IMAGE_COLOR);
     imgMask1 = cvLoadImage("mask1.png", CV_LOAD_IMAGE_COLOR); //反応なし
