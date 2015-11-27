@@ -49,5 +49,22 @@ extern void PlayerDataLoad();
 extern void PlayerEnter(int num);
 extern void PlayerFree();
 
+/* client_EnemyData.c */
+extern void EnemyLoad();
+extern void EnemyInit();
+extern void EnemyDraw();
+extern void EnemyDataLoad();
+extern void EnemyEnter();
+extern void EnemyMove();
+extern void EnemyBulletMove(int num);
+extern void EnemyFree();
+
+/* client_EnemyPattern.c */
+extern void EnemyPattern0(int n);
+extern void EnemyPattern1(int n);
+
+/* client_EnemyShotPattern.c */
+extern void EnemyShotPattern0(int n, int num);
+extern void EnemyShotPattern1(int n, int num);
 
 #endif

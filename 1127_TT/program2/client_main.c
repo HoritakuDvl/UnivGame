@@ -38,6 +38,17 @@ int main(int argc,char *argv[])
         fprintf(stderr,"setup failed : InitWindows\n");
         return -1;
     }
+
+/*画像・データのロード*/
+    PlayerLoad();
+    PlayerDataLoad();
+    EnemyLoad();
+    EnemyDataLoad();
+
+/*各構造体の初期化*/
+    PlayerInit(num);
+    EnemyInit();
+
  
     /* メインイベントループ */
     while(endFlag){

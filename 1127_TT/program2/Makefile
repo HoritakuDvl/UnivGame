@@ -1,5 +1,5 @@
 OBJS1	=	server_main.o server_net.o server_command.o
-OBJS2	=	client_main.o client_net.o client_command.o client_win.o client_Event.o client_PlayerData.o
+OBJS2	=	client_main.o client_net.o client_command.o client_win.o client_Event.o client_PlayerData.o client_EnemyData.o client_EnemyPattern.o client_EnemyShotPattern.o
 TARGET1	=	server
 TARGET2	=	client
 CFLAGS	=	-c -DNDEBUG
@@ -26,4 +26,7 @@ client_command.o: client_command.c client_func.h common.h
 client_win.o: client_win.c client_func.h common.h
 client_Event.o : client_Event.c client_func.h common.h
 client_PlayerData.o : client_PlayerData.c client_func.h common.h
+client_EnemyData.o : client_EnemyData.c client_func.h common.h
+client_EnemyPattern.o : client_EnemyPattern.c client_func.h common.h
+client_EnemyShotPattern.o : client_EnemyShotPattern.c client_func.h common.h
 

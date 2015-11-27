@@ -52,12 +52,7 @@ int InitWindows(int clientID,int num,char name[][MAX_NAME_SIZE])
     src_rect = SrcRectInit(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     dst_rect = DstRectInit(0, 0);
     haikei = IMG_Load("sozai/背景-砂漠.png");
-    SDL_BlitSurface(haikei, &src_rect, window, &dst_rect);	// ウィンドウ（ここではSDL_GetVideoSurface関数で指定）に画像を貼り付ける
-    PlayerLoad();
-    PlayerDataLoad();
-
-    PlayerInit(num);
-    
+    SDL_BlitSurface(haikei, &src_rect, window, &dst_rect);	// ウィンドウ（ここではSDL_GetVideoSurface関数で指定）に画像を貼り付ける    
 	
     return 0;
 }
@@ -73,6 +68,7 @@ void DestroyWindow(void)
     SDL_FreeSurface(window);
     SDL_FreeSurface(haikei);
     PlayerFree();
+    EnemyFree();
 
     SDL_Quit();
 }
@@ -82,6 +78,8 @@ void DrawGameMain(int num){
     int i;
     //SDL_FillRect(window, NULL, SDL_MapRGB(window->format, 0,0,128));	// ウィンドウの色を変更
     SDL_BlitSurface(haikei, NULL, window, NULL);	// ウィンドウ（ここではSDL_GetVideoSurface関数で指定）に画像を貼り付ける
+
+    EnemyDraw();
 
     for(i = 0; i < num; i++){
         if(player[i].command > 0){
@@ -106,7 +104,11 @@ void DrawGameMain(int num){
         break;
     }
 
-    PlayEnter(num);
+    PlayerEnter(num);
+    EnemyEnter();
+
+    EnemyMove();
+    EnemyBulletMove();
 
     SDL_Flip(window);
 }
