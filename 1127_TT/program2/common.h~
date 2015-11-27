@@ -6,7 +6,6 @@
 /*
 バグ
 ・client_EnemyShotPattern.c  自機狙いができない
-・client_EnemyData.c  たまに敵が描画されない
 */
 
 #ifndef _COMMON_H_

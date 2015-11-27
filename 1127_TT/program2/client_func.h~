@@ -20,8 +20,7 @@ extern int SendRecvManager(void);
 /* client_win.c */
 extern int InitWindows(int clientID,int num,char name[][MAX_NAME_SIZE]);
 extern void DestroyWindow(void);
-extern void DrawMainEvent(int num);
-extern void DrawRectangle(int x,int y,int width,int height);
+extern void DrawGameMain(int num);
 extern void DrawUpCircle(int pos);
 extern void DrawDownCircle(int pos);
 extern void DrawLeftCircle(int pos);
@@ -37,5 +36,35 @@ extern void SendLeftCommand(int pos);
 extern void SendRightCommand(int pos);
 extern void SendSeparateCommand(int pos, int muki); //向きは送っても判断できないので、改善する
 extern void SendEndCommand(void);
+
+/* client_Event.c */
+extern void EventMainFighter(int num);
+extern void EventMainTank(int num);
+
+/* client_PlayerData.c */
+extern void PlayerLoad();
+extern void PlayerInit(int num);
+extern void PlayerDraw(int pos);
+extern void PlayerDataLoad();
+extern void PlayerEnter(int num);
+extern void PlayerFree();
+
+/* client_EnemyData.c */
+extern void EnemyLoad();
+extern void EnemyInit();
+extern void EnemyDraw();
+extern void EnemyDataLoad();
+extern void EnemyEnter();
+extern void EnemyMove();
+extern void EnemyBulletMove(int num);
+extern void EnemyFree();
+
+/* client_EnemyPattern.c */
+extern void EnemyPattern0(int n);
+extern void EnemyPattern1(int n);
+
+/* client_EnemyShotPattern.c */
+extern void EnemyShotPattern0(int n);
+extern void EnemyShotPattern1(int n);
 
 #endif
