@@ -53,6 +53,8 @@ void EventMainFighter(int myid, int sock)
                     //SendLeftCommand(1);
                     data.command = LEFT_COMMAND;
                     data.cid = myid;
+	            //data.tx = player[myid].tx;
+                    //data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("左\n");
                 }
@@ -60,6 +62,8 @@ void EventMainFighter(int myid, int sock)
                     //SendRightCommand(1);
                     data.command = RIGHT_COMMAND;
                     data.cid = myid;
+	            //data.tx = player[myid].tx;
+                    //data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("右\n");
                 }
@@ -70,6 +74,8 @@ void EventMainFighter(int myid, int sock)
                     //SendUpCommand(1);
                     data.command = UP_COMMAND;
                     data.cid = myid;
+	            //data.tx = player[myid].tx;
+                    //data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("上\n");
                 }
@@ -77,6 +83,8 @@ void EventMainFighter(int myid, int sock)
                     //SendDownCommand(1);
                     data.command = DOWN_COMMAND;
                     data.cid = myid;
+	            //data.tx = player[myid].tx;
+                    //data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("下\n");
                 }
@@ -89,12 +97,16 @@ void EventMainFighter(int myid, int sock)
                 case 0:
                     data.command = SEPARATE_LERI_COMMAND; //server.cのcontrol_requests関数より
                     data.cid = myid; //送信をしたIDの挿入
+	            data.tx = player[myid].tx;
+                    data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
                     //printf("%d : 左スティックを離した\n", event.jaxis.axis);
                     break;
                 case 1:
                     data.command = SEPARATE_UPDO_COMMAND; //server.cのcontrol_requests関数より
                     data.cid = myid; //送信をしたIDの挿入
+	            data.tx = player[myid].tx;
+                    data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
                     break;
                 }
@@ -110,6 +122,8 @@ void EventMainFighter(int myid, int sock)
             case 5:
                 data.command = SHOT_COMMAND;
                 data.cid = myid;
+	        //data.tx = player[myid].tx;
+                //data.ty = player[myid].ty;
                 send_data(&data, sizeof(CONTAINER), sock);
                 //SendShotCommand(1);
                 break;
@@ -128,6 +142,8 @@ void EventMainFighter(int myid, int sock)
             case 5:
                 data.command = SHOT_FINISH_COMMAND; //server.cのcontrol_requests関数より
                 data.cid = myid; //送信をしたIDの挿入
+	        //data.tx = player[myid].tx;
+                //data.ty = player[myid].ty;
                 send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
                 //SendShotFinishCommand(1);
                 break;
