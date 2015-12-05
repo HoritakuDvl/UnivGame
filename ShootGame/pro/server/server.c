@@ -134,6 +134,12 @@ int control_requests() {
 	  send_data(BROADCAST, &data, sizeof(data));
 	  result = 1; //メッセージの送信
 	  break;
+        case PLAYER_HIT:
+        case PLAYER_HIT2:
+        case ENEMY_HIT:
+	  send_data(BROADCAST, &data, sizeof(data));
+	  result = 1; //メッセージの送信
+          break;
 	case END_COMMAND:
 	  send_data(BROADCAST, &data, sizeof(data));
 	  result = 0; //チャットプログラムの終了

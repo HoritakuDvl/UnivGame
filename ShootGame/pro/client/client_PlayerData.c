@@ -293,7 +293,7 @@ void PlayerBulletEnter(int pos){
 }
 
 
-void PlayerShotCalc(){
+void PlayerShotCalc(int myid, int sock){
     int i, j;
 
     for(i = 0; i < PLAYER_SHOT_MAX; i++){
@@ -309,23 +309,14 @@ void PlayerShotCalc(){
                     pla_shot[i].bullet[j].cnt++;
 
 /*敵と弾の当たり判定*/
-                    int k;
-                    for(k = 0; k < ENEMY_MAX; k++){
-                        if(enemy[k].flag > 0){
-                            if(PTamaEnemyHitJudge(pla_shot[i].bullet[j], enemy[k])){
-                                enemy[k].hp-=player[pla_shot[i].num].power;
-                                enemy[k].flag2 = 60;
-                                if(enemy[k].hp <= 0){
-                                    enemy[k].flag = 2;
-
-//アイテムを出す
-                                    if(enemy[k].item > 0){
-
-                                    }
+                    if(myid == pla_shot[i].num){
+                        int k;
+                        for(k = 0; k < ENEMY_MAX; k++){
+                            if(enemy[k].flag > 0){
+                                if(PTamaEnemyHitJudge(pla_shot[i].bullet[j], enemy[k])){
+                                    EnemyHit(myid, i, j, k, sock);
+                                    break;
                                 }
-
-                                pla_shot[i].bullet[j].flag = 0;
-                                break;
                             }
                         }
                     }

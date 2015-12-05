@@ -1,6 +1,6 @@
 #include <netdb.h>
 
-#include "../constants.h"
+//#include "../constants.h"
 #include "../common.h"
 #include "client_func.h"
 
@@ -155,7 +155,7 @@ int control_requests () {
   }
 
   SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 0, 0, 0, 255));
-  SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);	// ウィンドウ（ここではSDL_GetVideoSurface関数で指定）に画像を貼り付ける  
+  SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
   int i;
 
   EnemyDraw();
@@ -183,9 +183,9 @@ int control_requests () {
   PlayerEnter(num_clients);
   EnemyEnter();
 
-  EnemyMove(num_clients);
-  PlayerShotCalc();
-  EnemyBulletMove(num_clients);
+  EnemyMove(num_clients, myid, sock);
+  PlayerShotCalc(myid, sock);
+  EnemyBulletMove(num_clients, myid, sock);
 
   return result;
 }
@@ -311,6 +311,20 @@ static int execute_command() {
         //player[data.cid].ty = data.ty;
         result = 1;
         break;
+
+    case PLAYER_HIT:
+        PlayerDamage(data);
+        result = 1;
+        break;
+    case PLAYER_HIT2:
+        PlayerDamage2(data);
+        result = 1;
+        break;
+    case ENEMY_HIT:
+        EnemyDamage(data);
+        result = 1;
+        break;
+
   case END_COMMAND: //誰かが退室したら
     fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
     result = 0; //チャットを終了
