@@ -171,6 +171,7 @@ void PlayerEnter(int num){
     for(i = num; i < MAX_CLIENTS; i++){
         player[i].knd = 0;
     }
+    player[0].knd = 1;
 
     for(i = 0; i < num; i++){
         if(player[i].flag == 0){
@@ -178,7 +179,7 @@ void PlayerEnter(int num){
                 if(player[i].knd == playerOrder[t].knd){
                     player[i].flag = 1;
                     player[i].knd2 = playerOrder[t].knd2;
-                    player[i].sp = playerOrder[t].sp;
+                    player[i].sp = playerOrder[t].sp+5;
                     player[i].power = playerOrder[t].power;
                     player[i].pattern2 = playerOrder[t].pattern2;
 
@@ -283,7 +284,7 @@ void PlayerBulletEnter(int pos){
     int i;
 
     for(i = 0; i < PLAYER_SHOT_MAX; i++){
-        if(player[pla_shot[i].num].flag > 0 && pla_shot[i].cnt == 0){
+        if(player[pla_shot[i].num].flag > 0 && pla_shot[i].cnt == 0 && pos == pla_shot[i].num){
             if(pla_shot[i].flag > 0 && 0 <= pla_shot[i].knd && pla_shot[i].knd < PLAYER_SHOT_PATTERN_MAX){
                 PlayerShotPattern[pla_shot[i].knd](i);
             }

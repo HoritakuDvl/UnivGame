@@ -30,7 +30,7 @@ void PlayerShotPattern0(int n){
             pla_shot[n].bullet[k].ty = player[pla_shot[n].num].ty - 15 + 50 * sin(pla_shot[n].bullet[k].ang);
             break;
         }
-        //fprintf(stderr, "(tx, ty) = (%4d, %4d)\n", (int)pla_shot[n].bullet[k].tx, (int)pla_shot[n].bullet[k].ty);
+        //fprintf(stderr, "Shot : pla_shot[n].num = %d\n", pla_shot[n].num);
 
         pla_shot[n].bullet[k].knd = 0;
         pla_shot[n].bullet[k].src = SrcRectInit(0, 0, 30, 30);

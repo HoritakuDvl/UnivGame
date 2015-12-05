@@ -78,13 +78,13 @@ void setup_client(char *server_name, u_short port) {
   fprintf(stderr, "Input command (M=message, S=select, Q=quit): \n");
 
 /*SDLの初期画面設定*/
-    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) < 0) {
+    if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_TIMER) < 0) {
         printf("failed to initialize SDL.\n");
         return;
     }
     SDL_EnableKeyRepeat(0, 0);
 
-    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, SDL_HWSURFACE | SDL_FULLSCREEN/*SDL_SWSURFACE*/)) == NULL) {
+    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, /*SDL_HWSURFACE | SDL_FULLSCREEN*/SDL_SWSURFACE)) == NULL) {
         printf("failed to initialize videomode.\n");
         exit(-1);
     }
@@ -257,38 +257,58 @@ static int execute_command() {
     switch (data.command) { //クライアントのチャットの行動
     case UP_COMMAND: //メッセージが送信されたら
         player[data.cid].command.up = 1;
+        //player[data.cid].tx = data.tx;
+        //player[data.cid].ty = data.ty;
         result = 1;
     break;
     case DOWN_COMMAND: //メッセージが送信されたら
         player[data.cid].command.down = 1;
+        //player[data.cid].tx = data.tx;
+        //player[data.cid].ty = data.ty;
         result = 1;
     break;
     case LEFT_COMMAND: //メッセージが送信されたら
         player[data.cid].command.left = 1;
+        //player[data.cid].tx = data.tx;
+        //player[data.cid].ty = data.ty;
         result = 1;
     break;
     case RIGHT_COMMAND: //メッセージが送信されたら
         player[data.cid].command.right = 1;
+        //player[data.cid].tx = data.tx;
+        //player[data.cid].ty = data.ty;
         result = 1;
     break;
 
     case SEPARATE_UPDO_COMMAND:
         player[data.cid].command.up = 0;
         player[data.cid].command.down = 0;
+        if(myid != data.cid){
+           player[data.cid].tx = data.tx;
+           player[data.cid].ty = data.ty;
+        }
         result = 1;
         break;
     case SEPARATE_LERI_COMMAND:
         player[data.cid].command.left = 0;
         player[data.cid].command.right = 0;
+        if(myid != data.cid){
+           player[data.cid].tx = data.tx;
+           player[data.cid].ty = data.ty;
+        }
         result = 1;
         break;
 
     case SHOT_COMMAND:
         player[data.cid].command.b5 = 1;
+        //player[data.cid].tx = data.tx;
+        //player[data.cid].ty = data.ty;
         result = 1;
         break;
     case SHOT_FINISH_COMMAND:
         player[data.cid].command.b5 = 0;
+        //player[data.cid].tx = data.tx;
+        //player[data.cid].ty = data.ty;
         result = 1;
         break;
   case END_COMMAND: //誰かが退室したら

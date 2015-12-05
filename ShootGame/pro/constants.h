@@ -17,4 +17,5 @@ typedef struct {
 typedef struct {
     int cid; //クライアントのID
     char command;
+    int tx, ty;
 } CONTAINER;

@@ -7,9 +7,6 @@
 #define MAX_LEN_ADDR 32
 #define BROADCAST -1
 
-#define MESSAGE_COMMAND 'M'
-#define QUIT_COMMAND 'Q'
-
 typedef struct {
   int cid;
   int sock;

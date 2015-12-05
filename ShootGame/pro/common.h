@@ -55,7 +55,9 @@
 #define SEPARATE_LERI_COMMAND	'X'				/* 左スティックを離すコマンド */
 #define SHOT_COMMAND 'S'                    /* 5ボタンを押した時 */
 #define SHOT_FINISH_COMMAND 'F'            /* 5ボタンを離した時 */
-//0: 1:右 3:左 (右スティック)
+//0:上 1:右 3:左 (右スティック)
+
+#define RAGU 'G'
 
 
 #define PLAYER_ORDER_MAX 2

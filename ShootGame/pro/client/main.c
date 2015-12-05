@@ -2,6 +2,7 @@
 #include "../common.h"
 #include "client_func.h"
 
+//static Uint32 SignalHandler(Uint32 interval, void *param);
 static void TimeFrames();
 
 int main(int argc, char *argv[]) {
@@ -27,6 +28,7 @@ int main(int argc, char *argv[]) {
 
   setup_client(server_name, port); //クライアントのセットアップ
 
+  //SDL_AddTimer(5000,SignalHandler,NULL);
   int cond = 1;
   while(cond) {
       cond = control_requests(); //クライアント中の動作
@@ -42,6 +44,13 @@ int main(int argc, char *argv[]) {
   
   return 0;
 }
+
+/*static Uint32 SignalHandler(Uint32 interval, void *param)
+{
+	SendDiamondCommand();
+
+	return interval;
+}*/
 
 //現在100フレーム
 static void TimeFrames(){
