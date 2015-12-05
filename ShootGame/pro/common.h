@@ -45,7 +45,7 @@
 
 #define MAX_DATA		200				/* 送受信するデータの最大値 */
 
-#define END_COMMAND		'E'		  		/* プログラム終了コマンド */
+#define END_COMMAND		'Q'		  		/* プログラム終了コマンド */
 
 #define LEFT_COMMAND	'L'				/* 左コマンド */
 #define RIGHT_COMMAND	'R'				/* 右コマンド */
@@ -57,7 +57,9 @@
 #define SHOT_FINISH_COMMAND 'F'            /* 5ボタンを離した時 */
 //0:上 1:右 3:左 (右スティック)
 
-#define RAGU 'G'
+#define PLAYER_HIT 'P'
+#define PLAYER_HIT2 'A'
+#define ENEMY_HIT 'E'
 
 
 #define PLAYER_ORDER_MAX 2

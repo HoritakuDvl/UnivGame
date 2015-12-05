@@ -6,7 +6,8 @@
 #ifndef _CLIENT_FUNC_H_
 #define _CLIENT_FUNC_H_
 
-#include"../common.h"
+#include "../common.h"
+#include "../constants.h"
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 900
 
@@ -34,7 +35,7 @@ extern void PlayerDownMove(int pos);
 extern void PlayerLeftMove(int pos);
 extern void PlayerRightMove(int pos);
 extern void PlayerBulletEnter(int pos);
-extern void PlayerShotCalc();
+extern void PlayerShotCalc(int myid, int sock);
 extern void PlayerFree();
 
 /* client_PlayerShotPattern.c */
@@ -47,8 +48,8 @@ extern void EnemyInit();
 extern void EnemyDraw();
 extern void EnemyDataLoad();
 extern void EnemyEnter();
-extern void EnemyMove(int num);
-extern void EnemyBulletMove(int num);
+extern void EnemyMove(int num, int myid, int sock);
+extern void EnemyBulletMove(int num, int myid, int sock);
 extern void EnemyFree();
 
 /* client_EnemyPattern.c */
@@ -63,6 +64,13 @@ extern void EnemyShotPattern1(int n, int num);
 extern int PlayerEnemyHitJudge(PlayerData a, EnemyData b);
 extern int PTamaEnemyHitJudge(Bullet a, EnemyData x);
 extern int ETamaPlayerHitJudge(Bullet a, PlayerData x);
+extern void PlayerHit(int myid, int m, int n, int sock);
+extern void PlayerDamage(CONTAINER data);
+extern void PlayerHit2(int myid, int sock);
+extern void PlayerDamage2(CONTAINER data);
+extern void EnemyHit(int myid, int m, int n, int ene_num, int sock);
+extern void EnemyDamage(CONTAINER data);
+
 
 
 #endif

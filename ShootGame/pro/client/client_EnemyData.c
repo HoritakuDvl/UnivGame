@@ -5,7 +5,7 @@ static SDL_Surface *gEnemy1, *gEnemy2;
 static SDL_Surface *gTama0;
 
 static void EnemyShotEnter(int n);
-static void EnemyShotCalc(int n, int num);
+static void EnemyShotCalc(int n, int num, int myid, int sock);
 
 void (*EnemyPattern[ENEMY_PATTERN_MAX])(int) = {
     EnemyPattern0, EnemyPattern1
@@ -192,7 +192,7 @@ void EnemyEnter(){
 }
 
 
-void EnemyMove(int num){
+void EnemyMove(int num, int myid, int sock){
     int i;
     for(i = 0; i < ENEMY_MAX; i++) {
         if(enemy[i].flag > 0) {
@@ -206,13 +206,11 @@ void EnemyMove(int num){
                 enemy[i].cnt++;
 
 //プレイヤーと敵の当たり判定
-                int k;
-                for(k = 0; k < num; k++){
-                    if(player[k].flag > 0){
-                        if(player[k].flag2 == 0 && PlayerEnemyHitJudge(player[k], enemy[i])){
-                            //HP_num--;
-                            player[k].flag2 = 180;
-                        }
+                if(player[myid].flag > 0){
+                    if(player[myid].flag2 == 0 && PlayerEnemyHitJudge(player[myid], enemy[i])){
+                        PlayerHit2(myid, sock);
+                        //HP_num--;
+                        player[myid].flag2 = 180;
                     }
                 }
 
@@ -224,12 +222,12 @@ void EnemyMove(int num){
 }
 
 
-void EnemyBulletMove(int num){
+void EnemyBulletMove(int num, int myid, int sock){
     int i;
     for (i = 0; i < ENEMY_SHOT_MAX; i++) {
         if (ene_shot[i].flag != 0 && 0 <= ene_shot[i].knd && ene_shot[i].knd < ENEMY_SHOT_PATTERN_MAX) {
             EnemyShotPattern[ene_shot[i].knd](i, num); //弾の生成
-            EnemyShotCalc(i, num); //弾を動かす
+            EnemyShotCalc(i, num, myid, sock); //弾を動かす
             ene_shot[i].cnt++;
         }
     }
@@ -261,7 +259,7 @@ static void EnemyShotEnter(int n){
 }
 
 
-static void EnemyShotCalc(int n, int num){
+static void EnemyShotCalc(int n, int num, int myid, int sock){
     //int max = 0;
     int j;
     if (enemy[ene_shot[n].num].flag != 1) //敵が倒されたら
@@ -274,18 +272,11 @@ static void EnemyShotCalc(int n, int num){
             ene_shot[n].bullet[j].cnt++;
 
             //プレイヤーと弾のあたり判定
-            int k;
-            for (k = 0; k < num; k++) {
-                if (player[k].flag > 0) {
-                    if (player[k].flag2 == 0 && ETamaPlayerHitJjudge(ene_shot[n].bullet[j], player[k])) {
-                        //HP_num--;
-                        player[k].flag2 = 180;
-
-                        ene_shot[n].bullet[j].flag = 0;
-                        break;
+                if (player[myid].flag > 0) {
+                    if (player[myid].flag2 == 0 && ETamaPlayerHitJudge(ene_shot[n].bullet[j], player[myid]) == 1) {
+                        PlayerHit(myid, n, j, sock);
                     }
                 }
-            }
 
             //画面外に出たら
             if (ene_shot[n].bullet[j].tx < 0 || WINDOW_WIDTH < ene_shot[n].bullet[j].tx ||
