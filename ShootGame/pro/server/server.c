@@ -129,6 +129,18 @@ int control_requests() {
 	  send_data(BROADCAST, &data, sizeof(data));
 	  result = 1; //メッセージの送信
 	  break;
+        case UP_ROTA:
+        case RIGHT_ROTA:
+        case LEFT_ROTA:
+	  send_data(BROADCAST, &data, sizeof(data));
+	  result = 1; //メッセージの送信
+            break;
+        case UP_SEPA_ROTA:
+        case RIGHT_SEPA_ROTA:
+        case LEFT_SEPA_ROTA:
+	  send_data(BROADCAST, &data, sizeof(data));
+	  result = 1; //メッセージの送信
+            break;
 	case SHOT_COMMAND:
 	case SHOT_FINISH_COMMAND:
 	  send_data(BROADCAST, &data, sizeof(data));
@@ -136,6 +148,9 @@ int control_requests() {
 	  break;
         case PLAYER_HIT:
         case PLAYER_HIT2:
+	  send_data(BROADCAST, &data, sizeof(data));
+	  result = 1; //メッセージの送信
+          break;
         case ENEMY_HIT:
 	  send_data(BROADCAST, &data, sizeof(data));
 	  result = 1; //メッセージの送信

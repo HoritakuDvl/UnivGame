@@ -11,6 +11,11 @@
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 900
 
+int HP_Num; //残り体力
+int HP_Max; //最大体力
+int Total_Score; //合計スコア
+int Score_Plus; //足されるスコア
+
 /* client.c */
 extern void setup_client(char *, u_short);
 extern int control_requests();
@@ -34,6 +39,7 @@ extern void PlayerUpMove(int pos);
 extern void PlayerDownMove(int pos);
 extern void PlayerLeftMove(int pos);
 extern void PlayerRightMove(int pos);
+extern void PlayerBatteryRota(int pos);
 extern void PlayerBulletEnter(int pos);
 extern void PlayerShotCalc(int myid, int sock);
 extern void PlayerFree();
@@ -70,6 +76,7 @@ extern void PlayerHit2(int myid, int sock);
 extern void PlayerDamage2(CONTAINER data);
 extern void EnemyHit(int myid, int m, int n, int ene_num, int sock);
 extern void EnemyDamage(CONTAINER data);
+extern void StringDraw(int num, int knd);
 
 
 

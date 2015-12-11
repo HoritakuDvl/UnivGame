@@ -51,7 +51,7 @@ void EnemyDraw(){
             if (ene_shot[i].bullet[j].flag > 0) {
                 switch (ene_shot[i].bullet[j].knd) { //後に変更する
                 case 0:
-			circleColor(window, ene_shot[i].bullet[j].tx, ene_shot[i].bullet[j].ty, 10, 0xffffffff);
+                    //circleColor(window, ene_shot[i].bullet[j].tx, ene_shot[i].bullet[j].ty, 10, 0xffffffff);
                     Pl = rotozoomSurface(gTama0, -ene_shot[i].bullet[j].rad, 1, 0);
                     wid = (Sint16)((Pl->w-35)/2+0.5);
                     hig = (Sint16)((Pl->h-35)/2+0.5);
@@ -83,7 +83,6 @@ void EnemyDraw(){
                 enemy[i].flag2--;
         }
     }
-    //SDL_Flip(window);
 }
 
 
@@ -142,9 +141,10 @@ void EnemyDataLoad(){
         case 16: enemyOrder[n].hp_max = atoi(inputc); break; //最大HP
         case 17: enemyOrder[n].item = atoi(inputc); break; //落とすアイテムの種類
         case 18: enemyOrder[n].item2 = atoi(inputc); break; //item=1のとき、変更するショットの番号
+        case 19: enemyOrder[n].score = atoi(inputc); break; //高さ
         }
         num++;
-        if (num == 19) {
+        if (num == 20) {
             num = 0;
             enemyOrder[n].flag = 1;
             n++;
@@ -178,12 +178,15 @@ void EnemyEnter(){
                     enemy[i].hp_max = enemyOrder[t].hp_max;
                     enemy[i].item = enemyOrder[t].item;
                     enemy[i].item2 = enemyOrder[t].item2;
+                    enemy[i].score = enemyOrder[t].score;
 
                     enemy[i].src = SrcRectInit(0, 0, enemyOrder[t].w, enemyOrder[t].h);
                     enemy[i].dst = DstRectInit(enemy[i].tx - enemy[i].src.w / 2, enemy[i].ty - enemy[i].src.h / 2);
                     enemy[i].hp = enemy[i].hp_max;
 
                     enemyOrder[t].flag = 0;
+
+                    //fprintf(stderr, "%d : (x, y) = (%4d, %4d)\n", i, enemy[i].tx, enemy[i].ty);
                     break;
                 }
             }
@@ -195,7 +198,7 @@ void EnemyEnter(){
 void EnemyMove(int num, int myid, int sock){
     int i;
     for(i = 0; i < ENEMY_MAX; i++) {
-        if(enemy[i].flag > 0) {
+        if(enemy[i].flag == 1) {
             if(enemy[i].wait == 0){
                 EnemyPattern[enemy[i].pattern](i);
                 enemy[i].dst = DstRectInit(enemy[i].tx - enemy[i].src.w / 2, enemy[i].ty - enemy[i].src.h / 2);
@@ -209,8 +212,6 @@ void EnemyMove(int num, int myid, int sock){
                 if(player[myid].flag > 0){
                     if(player[myid].flag2 == 0 && PlayerEnemyHitJudge(player[myid], enemy[i])){
                         PlayerHit2(myid, sock);
-                        //HP_num--;
-                        player[myid].flag2 = 180;
                     }
                 }
 

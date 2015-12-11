@@ -12,7 +12,7 @@ void EnemyShotPattern0(int n, int num) {
         //敵が倒されていなくて、探した登録可能な弾番号が有効なら
         if (ene_shot[n].flag != 2 && (k = shot_search(n)) != -1) {
             ene_shot[n].bullet[k].knd = enemy[ene_shot[n].num].blknd;
-            ene_shot[n].bullet[k].ang = shotatan2_2(n, num);
+            ene_shot[n].bullet[k].ang = -PI;//shotatan2_2(n, num);
             ene_shot[n].bullet[k].rad = ene_shot[n].bullet[k].ang*180/PI;
             ene_shot[n].bullet[k].flag = 1;
             ene_shot[n].bullet[k].tx = enemy[ene_shot[n].num].tx;
