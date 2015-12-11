@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
   }
 
   SDL_Quit();
+  HaikeiFree();
   PlayerFree();
   EnemyFree();
   terminate_client(); //クライアント
