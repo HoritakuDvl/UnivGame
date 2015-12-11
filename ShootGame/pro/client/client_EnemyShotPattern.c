@@ -26,7 +26,7 @@ void EnemyShotPattern0(int n, int num) {
                 ene_shot[n].bullet[k].src.h = enemy[ene_shot[n].num].blH + 20;
             }
             ene_shot[n].bullet[k].cnt = 0;
-            ene_shot[n].bullet[k].spd = 3;
+            ene_shot[n].bullet[k].spd = 5;
         }
     }
 }

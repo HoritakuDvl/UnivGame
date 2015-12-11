@@ -73,10 +73,10 @@
 #define PLAYER_ORDER_MAX 9
 #define PLAYER_SHOT_MAX 4
 #define PLAYER_SHOT_PATTERN_MAX 2
-#define ENEMY_MAX 3
-#define ENEMY_ORDER_MAX 5
+#define ENEMY_MAX 5
+#define ENEMY_ORDER_MAX 21
 #define ENEMY_PATTERN_MAX 2
-#define ENEMY_SHOT_MAX 3
+#define ENEMY_SHOT_MAX 5
 #define ENEMY_SHOT_PATTERN_MAX 2
 #define SHOT_BULLET_MAX 100
 #define PI 3.1415926535
@@ -171,5 +171,8 @@ Shot pla_shot[PLAYER_SHOT_MAX];
 EnemyData enemy[ENEMY_MAX];
 EnemyOrder enemyOrder[ENEMY_ORDER_MAX];
 Shot ene_shot[ENEMY_SHOT_MAX];
+
+int stage;
+int stageFlag;
 
 #endif

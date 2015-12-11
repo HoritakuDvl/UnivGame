@@ -86,20 +86,27 @@ void EnemyHit(int myid, int m, int n, int ene_num, int sock){ //プレイヤー�
     send_data(&data, sizeof(CONTAINER), sock);
 }
 
-void EnemyDamage(CONTAINER data){
-    enemy[data.ene_num].hp-=player[pla_shot[data.m].num].power;
-    enemy[data.ene_num].flag2 = 60;
-    if(enemy[data.ene_num].hp <= 0){
-        enemy[data.ene_num].flag = 2;
+int num = 0; //倒した敵の数
+int EnemyDamage(CONTAINER data){
+    if(enemy[data.ene_num].flag == 1){
+        enemy[data.ene_num].hp-=player[pla_shot[data.m].num].power;
+        enemy[data.ene_num].flag2 = 60;
+        if(enemy[data.ene_num].hp <= 0){
+            enemy[data.ene_num].flag = 2;
+            enemy[data.ene_num].flag2 = 0;
+            num++;
 
-        Score_Plus += enemy[data.ene_num].score; //ここをサーバーで行う
+            Score_Plus += enemy[data.ene_num].score; //ここをサーバーで行う
 //アイテムを出す
-        if(enemy[data.ene_num].item > 0){
+            if(enemy[data.ene_num].item > 0){
 
+            }
+            pla_shot[data.m].bullet[data.n].flag = 0;
+            return num;
         }
+        pla_shot[data.m].bullet[data.n].flag = 0;
     }
-
-    pla_shot[data.m].bullet[data.n].flag = 0;
+    return -1;
 }
 
 

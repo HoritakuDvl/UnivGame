@@ -23,6 +23,7 @@ extern void terminate_client();
 extern SDL_Rect SrcRectInit(int x, int y, int w, int h);
 extern SDL_Rect DstRectInit(int x, int y);
 extern void handle_error(char *);
+extern void HaikeiFree();
 
 /* client_Event.c */
 extern void EventMainFighter(int myid, int sock);
@@ -35,6 +36,7 @@ extern void PlayerInit(int num);
 extern void PlayerDraw(int pos);
 extern void PlayerDataLoad();
 extern void PlayerEnter(int num);
+extern void PlayerAction(int pos);
 extern void PlayerUpMove(int pos);
 extern void PlayerDownMove(int pos);
 extern void PlayerLeftMove(int pos);
@@ -42,6 +44,7 @@ extern void PlayerRightMove(int pos);
 extern void PlayerBatteryRota(int pos);
 extern void PlayerBulletEnter(int pos);
 extern void PlayerShotCalc(int myid, int sock);
+extern void PlayerBulletClean();
 extern void PlayerFree();
 
 /* client_PlayerShotPattern.c */
@@ -56,6 +59,7 @@ extern void EnemyDataLoad();
 extern void EnemyEnter();
 extern void EnemyMove(int num, int myid, int sock);
 extern void EnemyBulletMove(int num, int myid, int sock);
+extern void EnemyBulletClean();
 extern void EnemyFree();
 
 /* client_EnemyPattern.c */
@@ -75,7 +79,7 @@ extern void PlayerDamage(CONTAINER data);
 extern void PlayerHit2(int myid, int sock);
 extern void PlayerDamage2(CONTAINER data);
 extern void EnemyHit(int myid, int m, int n, int ene_num, int sock);
-extern void EnemyDamage(CONTAINER data);
+extern int EnemyDamage(CONTAINER data);
 extern void StringDraw(int num, int knd);
 
 

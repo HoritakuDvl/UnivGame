@@ -269,6 +269,27 @@ static void PlayerShotEnter(int n, int num){
     }
 }
 
+void PlayerAction(int pos){
+      if(player[pos].command.up == 1){
+          PlayerUpMove(pos);
+      }
+      if(player[pos].command.down == 1){
+          PlayerDownMove(pos);
+      }
+      if(player[pos].command.left == 1){
+          PlayerLeftMove(pos);
+      }
+      if(player[pos].command.right == 1){
+          PlayerRightMove(pos);
+      }
+      if(player[pos].command.b5 == 1){
+          PlayerBulletEnter(pos);
+      }
+      if(player[pos].command.rotaU == 1 || player[pos].command.rotaL == 1 || player[pos].command.rotaR == 1){ //旋回
+          PlayerBatteryRota(pos);
+      }
+}
+
 
 void PlayerUpMove(int pos){
     player[pos].ty-=player[pos].sp;
@@ -397,6 +418,17 @@ void PlayerShotCalc(int myid, int sock){
                         pla_shot[i].bullet[j].flag = 0;
                 }
             }
+        }
+    }
+}
+
+
+void PlayerBulletClean(){
+    int i, j;
+    for(i = 0; i < PLAYER_SHOT_MAX; i++){
+        for(j = 0; j < SHOT_BULLET_MAX; j++){
+            if(pla_shot[i].bullet[j].flag > 0)
+                pla_shot[i].bullet[j].flag = 0;
         }
     }
 }

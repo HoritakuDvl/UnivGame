@@ -18,8 +18,8 @@ static int execute_command(void); //受信（行動実行）
 static int receive_data(void *, int); //データを受け取る
 
 
-static SDL_Surface *haikei1;
-static SDL_Rect src_rect, dst_rect;
+static SDL_Surface *haikei1, *haikei2;
+static SDL_Rect src_rect, dst_rect, src_rect2, dst_rect2;
 
 
 /******************************
@@ -76,7 +76,7 @@ void setup_client(char *server_name, u_short port) {
   FD_ZERO(&mask); //引数をゼロクリア
   FD_SET(0, &mask); //0番目のFDに対応する値を1にセット
   FD_SET(sock, &mask); //
-  fprintf(stderr, "Input command (M=message, S=select, Q=quit): \n");
+  //fprintf(stderr, "Input command (M=message, S=select, Q=quit): \n");
 
 /*SDLの初期画面設定*/
     if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK | SDL_INIT_TIMER) < 0) {
@@ -88,7 +88,7 @@ void setup_client(char *server_name, u_short port) {
     TTF_Init();
     font = TTF_OpenFont("sozai/kochi-gothic-subst.ttf", 36);
 
-    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, SDL_HWSURFACE | SDL_FULLSCREEN/*SDL_SWSURFACE*/)) == NULL) {
+    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, /*SDL_HWSURFACE | SDL_FULLSCREEN*/SDL_SWSURFACE)) == NULL) {
         printf("failed to initialize videomode.\n");
         exit(-1);
     }
@@ -106,18 +106,26 @@ void setup_client(char *server_name, u_short port) {
     }
 
 /*ロード*/
-    haikei1 = IMG_Load("sozai/背景-砂漠.png");
+    //haikei1 = IMG_Load("sozai/haikei1.png");
+    haikei1 = IMG_Load("sozai/Sabaku.png");
+    haikei2 = IMG_Load("sozai/Keikoku.png");
     PlayerLoad();
     EnemyLoad();
 
 /*初期化*/
+    stage = 1;
+    stageFlag = 1;
+
     PlayerInit(num_clients);
     PlayerDataLoad();
     EnemyInit();
     EnemyDataLoad();
     
-    src_rect = SrcRectInit(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+    src_rect = SrcRectInit(100, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     dst_rect = DstRectInit(0, 0);
+    src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
+    dst_rect2 = DstRectInit(0, 0);
+
 
     PlayerEnter(num_clients); //ロードするとき（ゲーム開始前）に取り入れる
 }
@@ -137,33 +145,105 @@ int control_requests () {
 
 //select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
   if(select(num_sock, (fd_set *)&read_flag, NULL, NULL, &timeout) == -1) {
-    handle_error("select()");
+      handle_error("select()");
   }
 
   int result = 1;
-  //input_main_command(); //送信
-  switch(player[myid].knd2){
-  case 1:
-      EventMainFighter(myid, sock);
-      break;
-  case 2:
-      EventMainTank(myid, sock);
-      break;
-  }
-      
-  if (FD_ISSET(sock, &read_flag)) {
-      result = execute_command(); //受信
-  }
 
   SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 0, 0, 0, 255));
-  SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
-  int i;
+  if(stageFlag != 1){
+      switch(stageFlag){
+      case 2 : //ステージ２に移動
+          src_rect.x += 10;
+          if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
+              src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
+          if(src_rect.w < 0){
+              src_rect.w = 0;
+              src_rect2.x+=10;
+          }
+
+          src_rect2.w += 10;
+          /*if(src_rect2.w > WINDOW_WIDTH){
+              src_rect2.w = WINDOW_WIDTH;
+              }*/
+          dst_rect2 = DstRectInit(src_rect.w, 0);
+
+          SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
+          SDL_BlitSurface(haikei2, &src_rect2, window, &dst_rect2);
+
+          if(src_rect.w <= 0/*src_rect2.x >= 100*/){
+              stageFlag = 1;
+              src_rect = SrcRectInit(/*10*/0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+              dst_rect = DstRectInit(0, 0);
+              src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
+              dst_rect2 = DstRectInit(0, 0);
+          }
+          break;
+      case 3:
+          src_rect.x += 10;
+          if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
+              src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
+          if(src_rect.w < 0){
+              src_rect.w = 0;
+              src_rect2.x+=10;
+          }
+
+          src_rect2.w += 10;
+          /*if(src_rect2.w > WINDOW_WIDTH){
+              src_rect2.w = WINDOW_WIDTH;
+              }*/
+          dst_rect2 = DstRectInit(src_rect.w, 0);
+
+          SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
+          SDL_BlitSurface(haikei1, &src_rect2, window, &dst_rect2);
+
+          if(src_rect.w <= 0/*src_rect2.x >= 100*/){
+              stageFlag = 1;
+              src_rect = SrcRectInit(/*10*/0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+              dst_rect = DstRectInit(0, 0);
+              src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
+              dst_rect2 = DstRectInit(0, 0);
+          }
+          break;
+      }
+      result = 1;
+  }
+  else{ //遊んでいるとき
+      switch(stage){
+      case 1:
+          SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
+          break;
+      case 2:
+          SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
+          break;
+      case 3:
+          SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
+          break;
+      }
+      result = 1;
+  }
+
+  if(stageFlag == 1){
+      //input_main_command(); //送信
+      switch(player[myid].knd2){
+      case 1:
+          EventMainFighter(myid, sock);
+          break;
+      case 2:
+          EventMainTank(myid, sock);
+          break;
+      }
+      
+      if (FD_ISSET(sock, &read_flag)) {
+          result = execute_command(); //受信
+      }
+  }
 
 //体力ゲージの描画
   if(HP_Num != 0){
-    boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP_Num / HP_Max, 100, 0xff0000ff);
+      boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP_Num / HP_Max, 100, 0xff0000ff);
 
-    StringDraw(HP_Num, 0);
+      StringDraw(HP_Num, 0);
   }
 
 //スコアの設定
@@ -179,41 +259,26 @@ int control_requests () {
   }
   StringDraw(Total_Score, 1);
 
-
+  if(stageFlag == 1){
 //敵の描画
-  EnemyDraw();
-
+      EnemyDraw();
+  }
+  int i;
 //プレイヤーの動作
   for(i = 0; i < num_clients; i++){
-      if(player[i].command.up == 1){
-          PlayerUpMove(i);
-      }
-      if(player[i].command.down == 1){
-          PlayerDownMove(i);
-      }
-      if(player[i].command.left == 1){
-          PlayerLeftMove(i);
-      }
-      if(player[i].command.right == 1){
-          PlayerRightMove(i);
-      }
-      if(player[i].command.b5 == 1){
-          PlayerBulletEnter(i);
-      }
-      if(player[i].command.rotaU == 1 || player[i].command.rotaL == 1 || player[i].command.rotaR == 1){ //旋回
-          PlayerBatteryRota(i);
-      }
-
+      if(stageFlag == 1)
+          PlayerAction(i);
       PlayerDraw(i);
   }
 
+  if(stageFlag == 1){
 //その他の動作
-  EnemyEnter();
+      EnemyEnter();
 
-  EnemyMove(num_clients, myid, sock);
-  PlayerShotCalc(myid, sock);
-  EnemyBulletMove(num_clients, myid, sock);
-
+      EnemyMove(num_clients, myid, sock);
+      PlayerShotCalc(myid, sock);
+      EnemyBulletMove(num_clients, myid, sock);
+  }
   return result;
 }
 
@@ -227,6 +292,7 @@ static int execute_command()
 static int execute_command() {
     CONTAINER data;
     int result = 1;
+    int k;
     memset(&data, 0, sizeof(CONTAINER));
     receive_data(&data, sizeof(data));
     switch (data.command) { //クライアントのチャットの行動
@@ -314,7 +380,28 @@ static int execute_command() {
         result = 1;
         break;
     case ENEMY_HIT:
-        EnemyDamage(data);
+        k = EnemyDamage(data);
+        if(stage % 3 != 0){ //ザコ面
+            if(k % 10 == 0 + stage/3){
+                stage++;
+                stageFlag = stage;
+                PlayerBulletClean();
+                EnemyBulletClean();
+            }
+        }
+        else { //ボス面
+            if(k == 21) {//中ボス１を倒したら
+                memset(&data, 0, sizeof(CONTAINER));
+                data.command = END_COMMAND;
+                fprintf(stderr, "%d\n", data.command);
+                data.cid = myid;
+                send_data(&data, sizeof(CONTAINER), sock);
+
+                fprintf(stderr, "////////////////////\n");
+                fprintf(stderr, "//     Clear!     //\n");
+                fprintf(stderr, "////////////////////\n");
+            }
+        }
         result = 1;
         break;
 
@@ -382,6 +469,12 @@ void terminate_client() {
   fprintf(stderr, "Connection is closed.\n");
   close(sock);
   exit(0);
+}
+
+
+void HaikeiFree(){
+    SDL_FreeSurface(haikei1);
+    SDL_FreeSurface(haikei2);
 }
 
 

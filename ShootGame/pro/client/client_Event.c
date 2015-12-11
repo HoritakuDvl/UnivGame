@@ -102,7 +102,7 @@ void EventMainFighter(int myid, int sock)
 
             // ジョイスティックのボタンが押された時
         case SDL_JOYBUTTONDOWN:
-            printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
+            //printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
             // ボタンIDに応じた処理
             switch(event.jbutton.button){
 //弾を打つ
@@ -123,7 +123,7 @@ void EventMainFighter(int myid, int sock)
 
             // ボタンが離された時
         case SDL_JOYBUTTONUP:
-            printf("The ID of the released button is %d.\n", event.jbutton.button);	// 離されたボタンのIDを表示（0から）
+            //printf("The ID of the released button is %d.\n", event.jbutton.button);	// 離されたボタンのIDを表示（0から）
             // ボタンIDに応じた処理
             switch(event.jbutton.button){
             case 5:
@@ -214,7 +214,7 @@ void EventMainTank(int myid, int sock){
 
             // ジョイスティックのボタンが押された時
         case SDL_JOYBUTTONDOWN:
-            printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
+            //printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
             // ボタンIDに応じた処理
             switch(event.jbutton.button){
 //砲台を動かす
@@ -250,7 +250,7 @@ void EventMainTank(int myid, int sock){
 
             // ボタンが離された時
         case SDL_JOYBUTTONUP:
-            printf("The ID of the released button is %d.\n", event.jbutton.button);	// 離されたボタンのIDを表示（0から）
+            //printf("The ID of the released button is %d.\n", event.jbutton.button);	// 離されたボタンのIDを表示（0から）
             // ボタンIDに応じた処理
             switch(event.jbutton.button){
             case 0:

@@ -149,6 +149,7 @@ void EnemyDataLoad(){
             enemyOrder[n].flag = 1;
             n++;
         }
+        //fprintf(stderr, "n = %d\n", n);
     }
 EXFILE:
     fclose(fp);
@@ -158,7 +159,8 @@ EXFILE:
 void EnemyEnter(){
     int i, t;
     for(t = 0; t < ENEMY_ORDER_MAX; t++){
-        if (enemyOrder[t].flag == 1 && enemyOrder[t].mission == 1 && enemyOrder[t].stage == 1) { //ミッション１、ステージ１のとき
+        if (enemyOrder[t].flag == 1 && enemyOrder[t].mission == 1 && enemyOrder[t].stage == stage) { //ミッション１のとき
+            fprintf(stderr, "stage = %d\n", stage);
             for(i = 0; i < ENEMY_MAX; i++){
                 if(enemy[i].flag == 0){
                     enemy[i].flag = 1;
@@ -186,7 +188,7 @@ void EnemyEnter(){
 
                     enemyOrder[t].flag = 0;
 
-                    //fprintf(stderr, "%d : (x, y) = (%4d, %4d)\n", i, enemy[i].tx, enemy[i].ty);
+                    fprintf(stderr, "%d : (x, y) = (%4d, %4d)\n", i, enemy[i].tx, enemy[i].ty);
                     break;
                 }
             }
@@ -235,6 +237,17 @@ void EnemyBulletMove(int num, int myid, int sock){
 }
 
 
+void EnemyBulletClean(){
+    int i, j;
+    for(i = 0; i < ENEMY_SHOT_MAX; i++){
+        for(j = 0; j < SHOT_BULLET_MAX; j++){
+            if(ene_shot[i].bullet[j].flag > 0)
+                ene_shot[i].bullet[j].flag = 0;
+        }
+    }
+}
+
+
 void EnemyFree(){
     SDL_FreeSurface(gEnemy1);
     SDL_FreeSurface(gEnemy2);
@@ -254,6 +267,7 @@ static void EnemyShotEnter(int n){
             ene_shot[i].knd = enemy[n].pattern2;
             ene_shot[i].num = n;
             ene_shot[i].cnt = 0;
+            //fprintf(stderr, "ene_shot[%d].flag = 1\n", i);
             return;
         }
     }
