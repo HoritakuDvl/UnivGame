@@ -21,6 +21,7 @@ static int receive_data(void *, int); //データを受け取る
 static SDL_Surface *haikei1;
 static SDL_Rect src_rect, dst_rect;
 
+
 /******************************
 void setup_client(char *server_name, u_short port)
 引数：*server_name サーバー名(ホスト名)
@@ -84,7 +85,10 @@ void setup_client(char *server_name, u_short port) {
     }
     SDL_EnableKeyRepeat(0, 0);
 
-    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, /*SDL_HWSURFACE | SDL_FULLSCREEN*/SDL_SWSURFACE)) == NULL) {
+    TTF_Init();
+    font = TTF_OpenFont("sozai/kochi-gothic-subst.ttf", 36);
+
+    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, SDL_HWSURFACE | SDL_FULLSCREEN/*SDL_SWSURFACE*/)) == NULL) {
         printf("failed to initialize videomode.\n");
         exit(-1);
     }
@@ -107,11 +111,6 @@ void setup_client(char *server_name, u_short port) {
     EnemyLoad();
 
 /*初期化*/
-    /*for(i = 0; i < MAX_CLIENTS; i++){
-        en[i].x = 100;
-        en[i].y = 100*(i+1);
-        en[i].r = 20;
-        }*/
     PlayerInit(num_clients);
     PlayerDataLoad();
     EnemyInit();
@@ -119,6 +118,8 @@ void setup_client(char *server_name, u_short port) {
     
     src_rect = SrcRectInit(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     dst_rect = DstRectInit(0, 0);
+
+    PlayerEnter(num_clients); //ロードするとき（ゲーム開始前）に取り入れる
 }
 
 /*************************************
@@ -158,8 +159,31 @@ int control_requests () {
   SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
   int i;
 
+//体力ゲージの描画
+  if(HP_Num != 0){
+    boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP_Num / HP_Max, 100, 0xff0000ff);
+
+    StringDraw(HP_Num, 0);
+  }
+
+//スコアの設定
+  if(Score_Plus > 0){
+      if(Score_Plus >= 10){
+          Total_Score += 10;
+          Score_Plus -= 10;
+      }
+      else{
+          Total_Score += Score_Plus;
+          Score_Plus = 0;
+      }
+  }
+  StringDraw(Total_Score, 1);
+
+
+//敵の描画
   EnemyDraw();
 
+//プレイヤーの動作
   for(i = 0; i < num_clients; i++){
       if(player[i].command.up == 1){
           PlayerUpMove(i);
@@ -176,11 +200,14 @@ int control_requests () {
       if(player[i].command.b5 == 1){
           PlayerBulletEnter(i);
       }
+      if(player[i].command.rotaU == 1 || player[i].command.rotaL == 1 || player[i].command.rotaR == 1){ //旋回
+          PlayerBatteryRota(i);
+      }
 
       PlayerDraw(i);
   }
 
-  PlayerEnter(num_clients);
+//その他の動作
   EnemyEnter();
 
   EnemyMove(num_clients, myid, sock);
@@ -190,58 +217,6 @@ int control_requests () {
   return result;
 }
 
-/*************************************
-static int input_command()
-引数：なし
-機能：クライアントからサーバーへの送信
-返値：
-*************************************/
-/*static void input_main_command() {
-  CONTAINER data;
-  memset(&data, 0, sizeof(CONTAINER));
-  SDL_Event event;
-
-    if(SDL_PollEvent(&event)){
-        switch(event.type){
-        case SDL_JOYBUTTONDOWN:
-            switch(event.jbutton.button){
-            case 3: //4ボタン
-                data.command = MESSAGE_COMMAND; //server.cのcontrol_requests関数より
-                data.cid = myid; //送信をしたIDの挿入
-                send_data(&data, sizeof(CONTAINER)); //dataの書き込み
-                break;
-            }
-            break;
-        case SDL_JOYBUTTONUP:
-            switch(event.jbutton.button){
-            case 3: //4ボタン
-                data.command = RIGHT_COMMAND; //server.cのcontrol_requests関数より
-                data.cid = myid; //送信をしたIDの挿入
-                send_data(&data, sizeof(CONTAINER)); //dataの書き込み
-                break;
-            }
-            break;
-
-        case SDL_KEYDOWN:
-            switch(event.key.keysym.sym) {
-            case SDLK_RIGHT: //メッセージ送信
-                data.command = MESSAGE_COMMAND; //server.cのcontrol_requests関数より
-                data.cid = myid; //送信をしたIDの挿入
-                send_data(&data, sizeof(CONTAINER)); //dataの書き込み
-                break;
-
-            case SDLK_ESCAPE: //チャットプログラムの終了
-                data.command = QUIT_COMMAND; //server.cのcontrol_requests関数より
-                data.cid = myid; //送信(退室)をしたIDの挿入
-                send_data(&data, sizeof(CONTAINER)); //dataの書き込み
-                break;
-            default:
-                fprintf(stderr, "not a valid command.\n");
-                break;
-            }
-        }
-    }
-}*/
 
 /**********************************
 static int execute_command()
@@ -257,26 +232,18 @@ static int execute_command() {
     switch (data.command) { //クライアントのチャットの行動
     case UP_COMMAND: //メッセージが送信されたら
         player[data.cid].command.up = 1;
-        //player[data.cid].tx = data.tx;
-        //player[data.cid].ty = data.ty;
         result = 1;
     break;
     case DOWN_COMMAND: //メッセージが送信されたら
         player[data.cid].command.down = 1;
-        //player[data.cid].tx = data.tx;
-        //player[data.cid].ty = data.ty;
         result = 1;
     break;
     case LEFT_COMMAND: //メッセージが送信されたら
         player[data.cid].command.left = 1;
-        //player[data.cid].tx = data.tx;
-        //player[data.cid].ty = data.ty;
         result = 1;
     break;
     case RIGHT_COMMAND: //メッセージが送信されたら
         player[data.cid].command.right = 1;
-        //player[data.cid].tx = data.tx;
-        //player[data.cid].ty = data.ty;
         result = 1;
     break;
 
@@ -296,6 +263,32 @@ static int execute_command() {
            player[data.cid].tx = data.tx;
            player[data.cid].ty = data.ty;
         }
+        result = 1;
+        break;
+
+    case UP_ROTA:
+        player[data.cid].command.rotaU = 1;
+        result = 1;
+        break;
+    case RIGHT_ROTA:
+        player[data.cid].command.rotaR = 1;
+        result = 1;
+        break;
+    case LEFT_ROTA:
+        player[data.cid].command.rotaL = 1;
+        result = 1;
+        break;
+
+    case UP_SEPA_ROTA:
+        player[data.cid].command.rotaU = 0;
+        result = 1;
+        break;
+    case RIGHT_SEPA_ROTA:
+        player[data.cid].command.rotaR = 0;
+        result = 1;
+        break;
+    case LEFT_SEPA_ROTA:
+        player[data.cid].command.rotaL = 0;
         result = 1;
         break;
 
@@ -325,15 +318,16 @@ static int execute_command() {
         result = 1;
         break;
 
-  case END_COMMAND: //誰かが退室したら
-    fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
-    result = 0; //チャットを終了
-    break;
-  default:
-    fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
-    exit(1);
-  }
-  return result;
+    case END_COMMAND: //誰かが退室したら
+        fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
+        result = 0; //チャットを終了
+        break;
+    default:
+        fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
+        exit(1);
+        break;
+    }
+    return result;
 }
 
 /*****************************************

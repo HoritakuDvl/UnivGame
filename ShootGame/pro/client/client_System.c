@@ -50,7 +50,7 @@ void PlayerHit(int myid, int m, int n, int sock){ //プレイヤーと弾
 }
 
 void PlayerDamage(CONTAINER data){
-//HP_num--;
+    HP_Num--;
     player[data.cid].flag2 = 180;
 
     ene_shot[data.m].bullet[data.n].flag = 0;
@@ -68,7 +68,7 @@ void PlayerHit2(int myid, int sock){ //プレイヤーと敵
 }
 
 void PlayerDamage2(CONTAINER data){
-//HP_num--;
+    HP_Num--;
     player[data.cid].flag2 = 180;
 }
 
@@ -92,6 +92,7 @@ void EnemyDamage(CONTAINER data){
     if(enemy[data.ene_num].hp <= 0){
         enemy[data.ene_num].flag = 2;
 
+        Score_Plus += enemy[data.ene_num].score; //ここをサーバーで行う
 //アイテムを出す
         if(enemy[data.ene_num].item > 0){
 
@@ -101,3 +102,33 @@ void EnemyDamage(CONTAINER data){
     pla_shot[data.m].bullet[data.n].flag = 0;
 }
 
+
+/******************
+
+knd : 0...体力の数字
+******************/
+void StringDraw(int num, int knd){
+    char str[100];
+    SDL_Surface *stringA;
+    SDL_Color red = {0xFF, 0x00, 0x00};
+
+    SDL_Rect stA_src, stA_dst;
+    switch(knd){
+    case 0:
+        sprintf(str, "%d", num);
+        stringA = TTF_RenderUTF8_Blended(font, str, red);
+        stA_src = SrcRectInit(0, 0, 500, 40);
+        stA_dst = DstRectInit((WINDOW_WIDTH - 380)*HP_Num/HP_Max, 80);
+        break;
+
+    case 1:
+        sprintf(str, "Score:%8d", num);
+        stringA = TTF_RenderUTF8_Blended(font, str, red);
+        stA_src = SrcRectInit(0, 0, 500, 40);
+        stA_dst = DstRectInit(WINDOW_WIDTH - 300, 80);
+        break;
+    }
+
+    SDL_BlitSurface(stringA, &stA_src, window, &stA_dst);
+    SDL_FreeSurface(stringA);
+}

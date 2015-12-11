@@ -3,6 +3,11 @@
 
 static SDL_Surface *gPlayer, *gPTama0;
 static SDL_Surface *gPlayer2, *gPlayer2_2;
+static SDL_Surface *gPlayer3;
+static SDL_Surface *gPlayer4;
+static SDL_Surface *gPlayer5;
+static SDL_Surface *gPlayer6;
+
 
 static void PlayerShotEnter(int n, int num);
 
@@ -16,6 +21,11 @@ void PlayerLoad(){
 
     gPlayer2 = IMG_Load("sozai/player2.png");
     gPlayer2_2 = IMG_Load("sozai/houdai2.png");
+
+    gPlayer3 = IMG_Load("sozai/test_design/player/fighters/fighter1(130*62).png");
+    gPlayer4 = IMG_Load("sozai/test_design/player/fighters/fighter2(150*59).png");
+    gPlayer5 = IMG_Load("sozai/test_design/player/fighters/fighter3(160*82).png");
+    gPlayer6 = IMG_Load("sozai/test_design/player/fighters/fighter4(150*71).png");
 
     gPTama0 = IMG_Load("sozai/Ptama0.png");
 }
@@ -43,7 +53,7 @@ void PlayerDraw(int pos){
     int i, j;
     SDL_Surface *Pl;
     Sint16 wid, hig;
-    SDL_Rect pl_dst;
+    SDL_Rect pl_src, pl_dst;
 
 //弾
     for(i = 0 ; i < PLAYER_SHOT_MAX; i++){
@@ -53,7 +63,6 @@ void PlayerDraw(int pos){
                     if(pla_shot[i].bullet[j].flag > 0){
                         switch(pla_shot[i].bullet[j].knd){
                         case 0:
-                            //circleColor(window, pla_shot[i].bullet[j].tx, pla_shot[i].bullet[j].ty, 10, 0xffffffff);
 
                             Pl = rotozoomSurface(gPTama0, -pla_shot[i].bullet[j].rad, 1, 0);
                             wid = (Sint16)((Pl->w-35)/2+0.5);
@@ -77,23 +86,44 @@ void PlayerDraw(int pos){
     if(player[pos].flag > 0){
         int cnt = player[pos].flag2 % 14;
         if(cnt <= 4 || 11 <= cnt) {
-            switch(player[pos].knd){
-            case 1:
+            switch(player[pos].knd2){
+            case 1://戦闘機のとき
                 SDL_BlitSurface(gPlayer, &player[pos].src, window, &player[pos].dst);
                 break;
-            case 2:
-            //砲台
-                SDL_BlitSurface(gPlayer2_2, &player[pos].src2, window, &player[pos].dst2);
-                /*Pl = rotozoomSurface(gPlayer2_2, -player[pos].rad, 1, 0);
-                wid = (Sint16)((Pl->w-35)/2+0.5);
-                hig = (Sint16)((Pl->h-35)/2+0.5);
-                pl_dst = DstRectInit();
-                SDL_BlitSurface(gPlayer2, &player[pos].src, window, &player[pos].dst);
+            case 2://戦車のとき
+                switch(player[pos].knd){
+                case 2: //見本
+                    //砲台
+                    Pl = rotozoomSurface(gPlayer2_2, -player[pos].rad, 1, 0);
+                    wid = (Sint16)((Pl->w-35)/2+0.5);
+                    hig = (Sint16)((Pl->h-35)/2+0.5);
 
-                SDL_FreeSurface(Pl);*/
+                    pl_src = SrcRectInit(0, 0, player[pos].src2.w + 50, player[pos].src2.h + 50);
+                    pl_dst = DstRectInit(player[pos].dst2.x-wid, player[pos].dst2.y-hig);
+                    SDL_BlitSurface(Pl, &pl_src, window, &pl_dst);
 
-             //本体
-                SDL_BlitSurface(gPlayer2, &player[pos].src, window, &player[pos].dst);
+                    SDL_FreeSurface(Pl);   
+
+                    //本体
+                    SDL_BlitSurface(gPlayer2, &player[pos].src, window, &player[pos].dst);
+                    break;
+
+                case 7: //テスト用１
+
+                    break;
+                }
+                break;
+            case 3:
+                SDL_BlitSurface(gPlayer3, &player[pos].src, window, &player[pos].dst);
+                break;
+            case 4:
+                SDL_BlitSurface(gPlayer4, &player[pos].src, window, &player[pos].dst);
+                break;
+            case 5:
+                SDL_BlitSurface(gPlayer5, &player[pos].src, window, &player[pos].dst);
+                break;
+            case 6:
+                SDL_BlitSurface(gPlayer6, &player[pos].src, window, &player[pos].dst);
                 break;
             }
         }
@@ -165,13 +195,16 @@ EXFILE:
 
 void PlayerEnter(int num){
     int i, t;
-    for(i = 0; i < num; i++){
+    /*for(i = 0; i < num; i++){
         player[i].knd = 1;
     }
     for(i = num; i < MAX_CLIENTS; i++){
         player[i].knd = 0;
-    }
+        }*/
     player[0].knd = 1;
+    player[1].knd = 2;
+    player[2].knd = 2;
+    player[3].knd = 2;
 
     for(i = 0; i < num; i++){
         if(player[i].flag == 0){
@@ -183,7 +216,7 @@ void PlayerEnter(int num){
                     player[i].power = playerOrder[t].power;
                     player[i].pattern2 = playerOrder[t].pattern2;
 
-                    //HP_max += playerOrder[t].hp_max;
+                    HP_Max += playerOrder[t].hp_max;
 
                     player[i].flag2 = 0;
                     player[i].num = i;
@@ -197,23 +230,25 @@ void PlayerEnter(int num){
                     case 2:
                         player[i].src2 = SrcRectInit(0, 0, playerOrder[t].w2, playerOrder[t].h2);
                         player[i].tx = 50*(player[i].num+1);
-                        player[i].ty = 520+10*(player[i].num+1);
+                        player[i].ty = 850+10*(player[i].num+1);
                         player[i].ang = -PI / 6;
+                        player[i].rad = player[i].ang*180/PI;
                         break;
                     }
                     player[i].src = SrcRectInit(0, 0, playerOrder[t].w, playerOrder[t].h);
                     player[i].dst = DstRectInit(player[i].tx - player[i].src.w / 2, player[i].ty - player[i].src.h / 2);
-                    player[i].dst2 = DstRectInit(player[i].tx - player[i].src.w / 2, player[i].ty - player[i].src.h / 2 - 45);
+                    player[i].dst2 = DstRectInit(player[i].tx - player[i].src.w / 2 + 30, player[i].ty - player[i].src.h / 2 - 8);
 
                     PlayerShotEnter(i, num);
+
+                    fprintf(stderr, "knd = %d, w = %d, h = %d\n", player[i].knd, player[i].src.w, player[i].src.h);
 
                     break;
                 }
             }
         }
-
     }
-
+    HP_Num = HP_Max;
 }
 
 
@@ -241,9 +276,6 @@ void PlayerUpMove(int pos){
         player[pos].ty = player[pos].src.h/2;
 
     player[pos].dst = DstRectInit(player[pos].tx - player[pos].src.w/2, player[pos].ty - player[pos].src.h/2);
-
-    if(player[pos].knd2 == 2)
-        player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2-45, player[pos].ty - player[pos].src.h/2-45);
 }
 
 void PlayerDownMove(int pos){
@@ -252,9 +284,6 @@ void PlayerDownMove(int pos){
         player[pos].ty = WINDOW_HEIGHT - player[pos].src.h/2;
 
     player[pos].dst = DstRectInit(player[pos].tx - player[pos].src.w/2, player[pos].ty - player[pos].src.h/2);
-
-    if(player[pos].knd2 == 2)
-        player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2-45, player[pos].ty - player[pos].src.h/2-45);
 }
 
 void PlayerLeftMove(int pos){
@@ -265,7 +294,7 @@ void PlayerLeftMove(int pos){
     player[pos].dst = DstRectInit(player[pos].tx - player[pos].src.w/2, player[pos].ty - player[pos].src.h/2);
 
     if(player[pos].knd2 == 2)
-        player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2-45, player[pos].ty - player[pos].src.h/2-45);
+        player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 30, player[pos].ty - player[pos].src.h/2-8);
 }
 
 void PlayerRightMove(int pos){
@@ -276,7 +305,47 @@ void PlayerRightMove(int pos){
     player[pos].dst = DstRectInit(player[pos].tx - player[pos].src.w/2, player[pos].ty - player[pos].src.h/2);
 
     if(player[pos].knd2 == 2)
-        player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2-45, player[pos].ty - player[pos].src.h/2-45);
+        player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 30, player[pos].ty - player[pos].src.h/2-8);
+}
+
+void PlayerBatteryRota(int pos){
+    int num = player[pos].command.rotaR*1 + player[pos].command.rotaU*2 + player[pos].command.rotaL * 4;
+    double ang = 0; //動かす目標の角度
+    //double rad;
+
+    fprintf(stderr, "%d : rota = %d\n", pos, num);
+
+    switch(num){
+    case 1:
+        ang = 0;
+        break;
+    case 2:
+        ang = -PI/2;
+        break;
+    case 3:
+        ang = -PI/4;
+        break;
+    case 4:
+    case 6:
+        ang = -PI*3/4;
+        break;
+    }
+    //rad = ang*180/PI;
+
+    if(player[pos].ang < ang){
+        player[pos].ang += PI/180*3;
+    }
+    else if(player[pos].ang > ang){
+        player[pos].ang -= PI/180*3;
+    }
+
+    if(player[pos].ang < -PI*3/4)
+        player[pos].ang = -PI*3/4;
+    if(player[pos].ang > 0)
+    player[pos].ang = 0;
+
+    player[pos].rad = player[pos].ang*180/PI;
+
 }
 
 
@@ -312,7 +381,7 @@ void PlayerShotCalc(int myid, int sock){
                     if(myid == pla_shot[i].num){
                         int k;
                         for(k = 0; k < ENEMY_MAX; k++){
-                            if(enemy[k].flag > 0){
+                            if(enemy[k].flag == 1){
                                 if(PTamaEnemyHitJudge(pla_shot[i].bullet[j], enemy[k])){
                                     EnemyHit(myid, i, j, k, sock);
                                     break;
@@ -337,5 +406,9 @@ void PlayerFree(){
     SDL_FreeSurface(gPlayer);
     SDL_FreeSurface(gPlayer2);
     SDL_FreeSurface(gPlayer2_2);
+    SDL_FreeSurface(gPlayer3);
+    SDL_FreeSurface(gPlayer4);
+    SDL_FreeSurface(gPlayer5);
+    SDL_FreeSurface(gPlayer6);
     SDL_FreeSurface(gPTama0);
 }

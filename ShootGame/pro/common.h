@@ -7,6 +7,7 @@
 バグ
 ・client_EnemyShotPattern.c  自機狙いができない 解決
 ・client_EnemyData.c  たまに敵が描画されない
+・server.c　スコアの計算をする
 */
 
 #ifndef _COMMON_H_
@@ -55,14 +56,21 @@
 #define SEPARATE_LERI_COMMAND	'X'				/* 左スティックを離すコマンド */
 #define SHOT_COMMAND 'S'                    /* 5ボタンを押した時 */
 #define SHOT_FINISH_COMMAND 'F'            /* 5ボタンを離した時 */
+
 //0:上 1:右 3:左 (右スティック)
+#define LEFT_ROTA 'B'
+#define LEFT_SEPA_ROTA 'G'
+#define RIGHT_ROTA 'T'
+#define RIGHT_SEPA_ROTA 'V'
+#define UP_ROTA 'O'
+#define UP_SEPA_ROTA 'N'
 
 #define PLAYER_HIT 'P'
 #define PLAYER_HIT2 'A'
 #define ENEMY_HIT 'E'
 
 
-#define PLAYER_ORDER_MAX 2
+#define PLAYER_ORDER_MAX 9
 #define PLAYER_SHOT_MAX 4
 #define PLAYER_SHOT_PATTERN_MAX 2
 #define ENEMY_MAX 3
@@ -75,6 +83,8 @@
 
 
 SDL_Surface *window;
+SDL_Joystick *joystick;
+TTF_Font* font;
 
 typedef struct{
     Uint32 now; //現在時間
@@ -85,6 +95,7 @@ typedef struct{
 typedef struct{
     int up, down, left, right;
     int b5;
+    int rotaU, rotaL, rotaR;
 }Command;
 
 typedef struct{
@@ -97,7 +108,7 @@ typedef struct{
     int knd, knd2, pattern2; //どの機種か //戦闘機か戦車か //初期の攻撃方法
     int power; //攻撃力
     int sp; //速度
-    double ang; //砲台の角度
+    double ang, rad; //砲台の角度
     int num; //○Pか
 }PlayerData;
 
@@ -120,6 +131,7 @@ typedef struct {
     int knd, pattern, sp, cnt; //種類、移動
     int pattern2, blknd, blW, blH, blCnt, bltime; //攻撃
     int item, item2;
+    int score;
 }EnemyData;
 
 typedef struct {
@@ -129,6 +141,7 @@ typedef struct {
     int knd, pattern, sp; //種類、移動
     int pattern2, blknd, blW, blH, blCnt, bltime; //攻撃
     int item, item2;
+    int score;
 }EnemyOrder;
 
 typedef struct {
@@ -158,10 +171,5 @@ Shot pla_shot[PLAYER_SHOT_MAX];
 EnemyData enemy[ENEMY_MAX];
 EnemyOrder enemyOrder[ENEMY_ORDER_MAX];
 Shot ene_shot[ENEMY_SHOT_MAX];
-
-extern int HP_Max;
-extern int HP_Num;
-
-SDL_Joystick *joystick;
 
 #endif
