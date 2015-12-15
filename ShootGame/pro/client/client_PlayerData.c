@@ -143,7 +143,7 @@ void PlayerDataLoad(){
 
     if((fp = fopen("PlayerData.csv", "r")) == NULL){//ファイル読み込み
         
-        exit(-1);;
+        exit(-1);
     }
     for (i = 0; i < 2; i++)//   2      
         while (getc(fp) != '\n');
@@ -195,16 +195,16 @@ EXFILE:
 
 void PlayerEnter(int num){
     int i, t;
-    /*for(i = 0; i < num; i++){
+    for(i = 0; i < num; i++){
         player[i].knd = 1;
     }
     for(i = num; i < MAX_CLIENTS; i++){
         player[i].knd = 0;
-        }*/
-    player[0].knd = 1;
-    player[1].knd = 2;
-    player[2].knd = 2;
-    player[3].knd = 2;
+    }
+    /*player[0].knd = 1;
+    player[1].knd = 1;
+    player[2].knd = 1;
+    player[3].knd = 1;*/
 
     for(i = 0; i < num; i++){
         if(player[i].flag == 0){

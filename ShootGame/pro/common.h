@@ -6,8 +6,9 @@
 /*
 バグ
 ・client_EnemyShotPattern.c  自機狙いができない 解決
-・client_EnemyData.c  たまに敵が描画されない
+・client_EnemyData.c  たまに敵が描画されない 解決
 ・server.c　スコアの計算をする
+・クライアントで管理しているもの（敵の状態など）を共通させる[描画の違いをなくすため]
 */
 
 #ifndef _COMMON_H_

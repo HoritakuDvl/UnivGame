@@ -49,9 +49,21 @@ void PlayerHit(int myid, int m, int n, int sock){ //プレイヤーと弾
     send_data(&data, sizeof(CONTAINER), sock);
 }
 
-void PlayerDamage(CONTAINER data){
+void PlayerDamage(CONTAINER data, int myid, int sock){
     HP_Num--;
     player[data.cid].flag2 = 180;
+
+    if(HP_Num <= 0){ //ゲームオーバー
+        memset(&data, 0, sizeof(CONTAINER));
+        data.command = END_COMMAND;
+        fprintf(stderr, "%d\n", data.command);
+        data.cid = myid;
+        send_data(&data, sizeof(CONTAINER), sock);
+
+        fprintf(stderr, "/////////////////////\n");
+        fprintf(stderr, "//   GameOver...   //\n");
+        fprintf(stderr, "/////////////////////\n");
+    }
 
     ene_shot[data.m].bullet[data.n].flag = 0;
 }
@@ -67,9 +79,21 @@ void PlayerHit2(int myid, int sock){ //プレイヤーと敵
     send_data(&data, sizeof(CONTAINER), sock);
 }
 
-void PlayerDamage2(CONTAINER data){
-    HP_Num--;
+void PlayerDamage2(CONTAINER data, int myid, int sock){
+    HP_Num-=5;
     player[data.cid].flag2 = 180;
+
+    if(HP_Num <= 0){ //ゲームオーバー
+        memset(&data, 0, sizeof(CONTAINER));
+        data.command = END_COMMAND;
+        fprintf(stderr, "%d\n", data.command);
+        data.cid = myid;
+        send_data(&data, sizeof(CONTAINER), sock);
+
+        fprintf(stderr, "/////////////////////\n");
+        fprintf(stderr, "//   GameOver...   //\n");
+        fprintf(stderr, "/////////////////////\n");
+    }
 }
 
 
