@@ -18,7 +18,7 @@ void PlayerShotPattern0(int n){
         pla_shot[n].bullet[k].flag = 1;
         pla_shot[n].bullet[k].ang = player[pla_shot[n].num].ang; //弾の角度
         pla_shot[n].bullet[k].rad = pla_shot[n].bullet[k].ang*180/PI;
-        pla_shot[n].bullet[k].spd = 5; //速度
+        pla_shot[n].bullet[k].spd = 30; //速度
 
         switch (player[pla_shot[n].num].knd2) { //機種ごとの初期位置
         case 1:
@@ -47,7 +47,7 @@ void PlayerShotPattern1(int n){
         pla_shot[n].bullet[k].flag = 1;
         pla_shot[n].bullet[k].ang = player[pla_shot[n].num].ang; //弾の角度
         pla_shot[n].bullet[k].rad = pla_shot[n].bullet[k].ang*180/PI;
-        pla_shot[n].bullet[k].spd = 10; //速度
+        pla_shot[n].bullet[k].spd = 30; //速度
 
         switch (player[pla_shot[n].num].knd) { //機種ごとの初期位置
         case 1:

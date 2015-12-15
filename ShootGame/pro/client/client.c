@@ -88,7 +88,7 @@ void setup_client(char *server_name, u_short port) {
     TTF_Init();
     font = TTF_OpenFont("sozai/kochi-gothic-subst.ttf", 36);
 
-    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, /*SDL_HWSURFACE | SDL_FULLSCREEN*/SDL_SWSURFACE)) == NULL) {
+    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, SDL_HWSURFACE | SDL_FULLSCREEN/*SDL_SWSURFACE*/)) == NULL) {
         printf("failed to initialize videomode.\n");
         exit(-1);
     }
@@ -372,11 +372,11 @@ static int execute_command() {
         break;
 
     case PLAYER_HIT:
-        PlayerDamage(data);
+        PlayerDamage(data, myid, sock);
         result = 1;
         break;
     case PLAYER_HIT2:
-        PlayerDamage2(data);
+        PlayerDamage2(data, myid, sock);
         result = 1;
         break;
     case ENEMY_HIT:
