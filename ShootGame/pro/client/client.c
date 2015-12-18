@@ -88,7 +88,7 @@ void setup_client(char *server_name, u_short port) {
     TTF_Init();
     font = TTF_OpenFont("sozai/kochi-gothic-subst.ttf", 36);
 
-    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, SDL_HWSURFACE | SDL_FULLSCREEN/*SDL_SWSURFACE*/)) == NULL) {
+    if((window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 32, /*SDL_HWSURFACE | SDL_FULLSCREEN*/SDL_SWSURFACE)) == NULL) {
         printf("failed to initialize videomode.\n");
         exit(-1);
     }
@@ -117,7 +117,7 @@ void setup_client(char *server_name, u_short port) {
     stageFlag = 1;
 
     PlayerInit(num_clients);
-    PlayerDataLoad();
+    //PlayerDataLoad();
     EnemyInit();
     EnemyDataLoad();
     
@@ -126,8 +126,17 @@ void setup_client(char *server_name, u_short port) {
     src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
     dst_rect2 = DstRectInit(0, 0);
 
+    player[myid].knd = 3; //ここは機体セレクトで決める
+    CONTAINER data;
+    memset(&data, 0, sizeof(CONTAINER));
 
-    PlayerEnter(num_clients); //ロードするとき（ゲーム開始前）に取り入れる
+    data.command = DATA_PULL;
+    data.cid = myid;
+    data.player = player[myid];
+    data.flag = 2;
+    send_data(&data, sizeof(CONTAINER), sock);
+
+    //PlayerEnter(num_clients, sock); //ロードするとき（ゲーム開始前）に取り入れる
 }
 
 /*************************************
@@ -149,6 +158,32 @@ int control_requests () {
   }
 
   int result = 1;
+  if(stageFlag == 1){
+      //input_main_command(); //送信
+      switch(player[myid].knd2){
+      case 1:
+          EventMainFighter(myid, sock);
+          break;
+      case 2:
+          EventMainTank(myid, sock);
+          break;
+      }
+      
+      if (FD_ISSET(sock, &read_flag)) {
+          result = execute_command(); //受信
+      }
+  }
+
+  int i;
+  if(HP == 0){
+      for(i = 0; i < num_clients; i++){
+          if(player[i].flag == 0){ //読み込み中
+              result = 1;
+              return result;
+          }
+      }
+  }
+  
 
   SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 0, 0, 0, 255));
   if(stageFlag != 1){
@@ -223,27 +258,11 @@ int control_requests () {
       result = 1;
   }
 
-  if(stageFlag == 1){
-      //input_main_command(); //送信
-      switch(player[myid].knd2){
-      case 1:
-          EventMainFighter(myid, sock);
-          break;
-      case 2:
-          EventMainTank(myid, sock);
-          break;
-      }
-      
-      if (FD_ISSET(sock, &read_flag)) {
-          result = execute_command(); //受信
-      }
-  }
-
 //体力ゲージの描画
-  if(HP_Num != 0){
-      boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP_Num / HP_Max, 100, 0xff0000ff);
+  if(HP != 0){
+      boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP / HP_M, 100, 0xff0000ff);
 
-      StringDraw(HP_Num, 0);
+      StringDraw(HP, 0);
   }
 
 //スコアの設定
@@ -263,7 +282,7 @@ int control_requests () {
 //敵の描画
       EnemyDraw();
   }
-  int i;
+
 //プレイヤーの動作
   for(i = 0; i < num_clients; i++){
       if(stageFlag == 1)
@@ -403,6 +422,20 @@ static int execute_command() {
             }
         }
         result = 1;
+        break;
+
+    case DATA_PULL:
+        switch(data.flag){
+        case 2:
+            player[data.cid] = data.player;
+            fprintf(stderr, "%d:in! %d\n", data.cid, data.player.flag);
+            PlayerShotEnter(data.cid, num_clients);
+            if(data.hp > 0){
+                HP_M = data.hp;
+                HP = HP_M;
+            }
+            break;
+        }
         break;
 
     case END_COMMAND: //誰かが退室したら
