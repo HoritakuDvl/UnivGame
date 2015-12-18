@@ -9,6 +9,7 @@
 ・client_EnemyData.c  たまに敵が描画されない 解決
 ・server.c　スコアの計算をする
 ・クライアントで管理しているもの（敵の状態など）を共通させる[描画の違いをなくすため]
+・各クライアントでスコア等の動作が違う（ラグかな？）
 */
 
 #ifndef _COMMON_H_
@@ -175,5 +176,15 @@ Shot ene_shot[ENEMY_SHOT_MAX];
 
 int stage;
 int stageFlag;
+
+
+typedef struct {
+    int cid; //クライアントのID
+    char command;
+    int tx, ty; //プレイヤーの中心座標を送るときに使用
+    int m, n; //敵の打った弾の番号を送るときに使用(ene_shot[m].bullet[n]),(pla_shot[m].bullet[n])
+    int ene_num; //敵に弾が当たった時の敵の番号
+    PlayerData player;
+} CONTAINER;
 
 #endif

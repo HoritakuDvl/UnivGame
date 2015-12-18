@@ -3,7 +3,7 @@
 
 static SDL_Surface *gPlayer, *gPTama0;
 static SDL_Surface *gPlayer2, *gPlayer2_2;
-static SDL_Surface *gPlayer3;
+static SDL_Surface *gPlayer3, *gPTama1;
 static SDL_Surface *gPlayer4;
 static SDL_Surface *gPlayer5;
 static SDL_Surface *gPlayer6;
@@ -28,6 +28,7 @@ void PlayerLoad(){
     gPlayer6 = IMG_Load("sozai/test_design/player/fighters/fighter4(150*71).png");
 
     gPTama0 = IMG_Load("sozai/Ptama0.png");
+    gPTama1 = IMG_Load("sozai/test_design/player/shots/F_shot1(20*20).png");
 }
 
 
@@ -64,15 +65,34 @@ void PlayerDraw(int pos){
                         switch(pla_shot[i].bullet[j].knd){
                         case 0:
 
-                            Pl = rotozoomSurface(gPTama0, -pla_shot[i].bullet[j].rad, 1, 0);
-                            wid = (Sint16)((Pl->w-35)/2+0.5);
-                            hig = (Sint16)((Pl->h-35)/2+0.5);
-                            pl_dst = DstRectInit(pla_shot[i].bullet[j].dst.x-wid, pla_shot[i].bullet[j].dst.y-hig);
+                            switch(player[pos].knd){
+                            case 1:
+                            case 2:
+                                Pl = rotozoomSurface(gPTama0, -pla_shot[i].bullet[j].rad, 1, 0);
+                                wid = (Sint16)((Pl->w-35)/2+0.5);
+                                hig = (Sint16)((Pl->h-35)/2+0.5);
+                                pl_dst = DstRectInit(pla_shot[i].bullet[j].dst.x-wid, pla_shot[i].bullet[j].dst.y-hig);
 
-                            SDL_BlitSurface(Pl, &pla_shot[i].bullet[j].src, window, &pl_dst);
+                                SDL_BlitSurface(Pl, &pla_shot[i].bullet[j].src, window, &pl_dst);
 
-                            SDL_FreeSurface(Pl);
+                                SDL_FreeSurface(Pl);
 				break;
+
+                            case 3:
+                            case 4:
+                            case 5:
+                            case 6:
+                                Pl = rotozoomSurface(gPTama1, -pla_shot[i].bullet[j].rad, 1, 0);
+                                wid = (Sint16)((Pl->w-35)/2+0.5);
+                                hig = (Sint16)((Pl->h-35)/2+0.5);
+                                pl_dst = DstRectInit(pla_shot[i].bullet[j].dst.x-wid, pla_shot[i].bullet[j].dst.y-hig);
+
+                                SDL_BlitSurface(Pl, &pla_shot[i].bullet[j].src, window, &pl_dst);
+
+                                SDL_FreeSurface(Pl);
+				break;
+                            }
+                            break;
                         }
                     }
                 }
@@ -88,7 +108,23 @@ void PlayerDraw(int pos){
         if(cnt <= 4 || 11 <= cnt) {
             switch(player[pos].knd2){
             case 1://戦闘機のとき
-                SDL_BlitSurface(gPlayer, &player[pos].src, window, &player[pos].dst);
+                switch(player[pos].knd){
+                case 1:
+                    SDL_BlitSurface(gPlayer, &player[pos].src, window, &player[pos].dst);
+                    break;
+                case 3:
+                    SDL_BlitSurface(gPlayer3, &player[pos].src, window, &player[pos].dst);
+                    break;
+                case 4:
+                    SDL_BlitSurface(gPlayer4, &player[pos].src, window, &player[pos].dst);
+                    break;
+                case 5:
+                    SDL_BlitSurface(gPlayer5, &player[pos].src, window, &player[pos].dst);
+                    break;
+                case 6:
+                    SDL_BlitSurface(gPlayer6, &player[pos].src, window, &player[pos].dst);
+                    break;
+                }
                 break;
             case 2://戦車のとき
                 switch(player[pos].knd){
@@ -112,18 +148,6 @@ void PlayerDraw(int pos){
 
                     break;
                 }
-                break;
-            case 3:
-                SDL_BlitSurface(gPlayer3, &player[pos].src, window, &player[pos].dst);
-                break;
-            case 4:
-                SDL_BlitSurface(gPlayer4, &player[pos].src, window, &player[pos].dst);
-                break;
-            case 5:
-                SDL_BlitSurface(gPlayer5, &player[pos].src, window, &player[pos].dst);
-                break;
-            case 6:
-                SDL_BlitSurface(gPlayer6, &player[pos].src, window, &player[pos].dst);
                 break;
             }
         }
@@ -201,10 +225,10 @@ void PlayerEnter(int num){
     for(i = num; i < MAX_CLIENTS; i++){
         player[i].knd = 0;
     }
-    /*player[0].knd = 1;
-    player[1].knd = 1;
-    player[2].knd = 1;
-    player[3].knd = 1;*/
+    player[0].knd = 3;
+    player[1].knd = 4;
+    player[2].knd = 5;
+    player[3].knd = 6;
 
     for(i = 0; i < num; i++){
         if(player[i].flag == 0){

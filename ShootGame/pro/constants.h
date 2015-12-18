@@ -14,10 +14,10 @@ typedef struct {
   char name[MAX_LEN_NAME];
 } CLIENT;
 
-typedef struct {
+/*typedef struct {
     int cid; //クライアントのID
     char command;
     int tx, ty; //プレイヤーの中心座標を送るときに使用
     int m, n; //敵の打った弾の番号を送るときに使用(ene_shot[m].bullet[n]),(pla_shot[m].bullet[n])
     int ene_num; //敵に弾が当たった時の敵の番号
-} CONTAINER;
+} CONTAINER;*/
