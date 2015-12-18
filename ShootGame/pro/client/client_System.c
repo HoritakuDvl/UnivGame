@@ -45,15 +45,19 @@ void PlayerHit(int myid, int m, int n, int sock){ //プレイヤーと弾
     data.cid = myid;
     data.m = m;
     data.n = n;
+    data.player = player[myid];
 
     send_data(&data, sizeof(CONTAINER), sock);
 }
 
 void PlayerDamage(CONTAINER data, int myid, int sock){
-    HP_Num--;
-    player[data.cid].flag2 = 180;
+    //HP--;
+    //player[data.cid].flag2 = 180;
 
-    if(HP_Num <= 0){ //ゲームオーバー
+    HP = data.hp;
+    player[data.cid] = data.player;
+
+    if(HP <= 0){ //ゲームオーバー
         memset(&data, 0, sizeof(CONTAINER));
         data.command = END_COMMAND;
         fprintf(stderr, "%d\n", data.command);
@@ -75,15 +79,19 @@ void PlayerHit2(int myid, int sock){ //プレイヤーと敵
 
     data.command = PLAYER_HIT2;
     data.cid = myid;
+    data.player = player[myid];
 
     send_data(&data, sizeof(CONTAINER), sock);
 }
 
 void PlayerDamage2(CONTAINER data, int myid, int sock){
-    HP_Num-=5;
-    player[data.cid].flag2 = 180;
+    //HP_Num-=5;
+    //player[data.cid].flag2 = 180;
 
-    if(HP_Num <= 0){ //ゲームオーバー
+    HP = data.hp;
+    player[data.cid] = data.player;
+
+    if(HP <= 0){ //ゲームオーバー
         memset(&data, 0, sizeof(CONTAINER));
         data.command = END_COMMAND;
         fprintf(stderr, "%d\n", data.command);
@@ -106,12 +114,14 @@ void EnemyHit(int myid, int m, int n, int ene_num, int sock){ //プレイヤー�
     data.m = m;
     data.n = n;
     data.ene_num = ene_num;
+    data.enemy = enemy[ene_num];
 
     send_data(&data, sizeof(CONTAINER), sock);
 }
 
 int num = 0; //倒した敵の数
 int EnemyDamage(CONTAINER data){
+    enemy[data.ene_num] = data.enemy;
     if(enemy[data.ene_num].flag == 1){
         enemy[data.ene_num].hp-=player[pla_shot[data.m].num].power;
         enemy[data.ene_num].flag2 = 60;
@@ -149,7 +159,7 @@ void StringDraw(int num, int knd){
         sprintf(str, "%d", num);
         stringA = TTF_RenderUTF8_Blended(font, str, red);
         stA_src = SrcRectInit(0, 0, 500, 40);
-        stA_dst = DstRectInit((WINDOW_WIDTH - 380)*HP_Num/HP_Max, 80);
+        stA_dst = DstRectInit((WINDOW_WIDTH - 380)*HP/HP_M, 80);
         break;
 
     case 1:

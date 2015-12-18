@@ -58,6 +58,7 @@
 #define SEPARATE_LERI_COMMAND	'X'				/* 左スティックを離すコマンド */
 #define SHOT_COMMAND 'S'                    /* 5ボタンを押した時 */
 #define SHOT_FINISH_COMMAND 'F'            /* 5ボタンを離した時 */
+#define DATA_PULL 'C'
 
 //0:上 1:右 3:左 (右スティック)
 #define LEFT_ROTA 'B'
@@ -114,15 +115,6 @@ typedef struct{
     int num; //○Pか
 }PlayerData;
 
-typedef struct{
-    int w, h;
-    int hp_max;
-    int knd, knd2, sp;
-    int pattern2, blknd, blCnt;
-    int power;
-    int w2, h2;
-}PlayerOrder;
-
 typedef struct {
     SDL_Rect src, dst; //画像
     int tx, ty;
@@ -168,7 +160,6 @@ En en[MAX_CLIENTS];
 
 Timer timer;
 PlayerData player[MAX_CLIENTS];
-PlayerOrder playerOrder[PLAYER_ORDER_MAX];
 Shot pla_shot[PLAYER_SHOT_MAX];
 EnemyData enemy[ENEMY_MAX];
 EnemyOrder enemyOrder[ENEMY_ORDER_MAX];
@@ -177,7 +168,6 @@ Shot ene_shot[ENEMY_SHOT_MAX];
 int stage;
 int stageFlag;
 
-
 typedef struct {
     int cid; //クライアントのID
     char command;
@@ -185,6 +175,9 @@ typedef struct {
     int m, n; //敵の打った弾の番号を送るときに使用(ene_shot[m].bullet[n]),(pla_shot[m].bullet[n])
     int ene_num; //敵に弾が当たった時の敵の番号
     PlayerData player;
+    EnemyData enemy;
+    int hp;
+    int flag; //1:最大HPの送信  2:
 } CONTAINER;
 
 #endif

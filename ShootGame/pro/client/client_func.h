@@ -11,10 +11,9 @@
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 900
 
-int HP_Num; //残り体力
-int HP_Max; //最大体力
 int Total_Score; //合計スコア
 int Score_Plus; //足されるスコア
+int HP, HP_M;
 
 /* client.c */
 extern void setup_client(char *, u_short);
@@ -34,8 +33,9 @@ extern void send_data(void *, int, int);
 extern void PlayerLoad();
 extern void PlayerInit(int num);
 extern void PlayerDraw(int pos);
-extern void PlayerDataLoad();
-extern void PlayerEnter(int num);
+//extern void PlayerDataLoad();
+//extern void PlayerEnter(int num, int sock);
+extern void PlayerShotEnter(int n, int num);
 extern void PlayerAction(int pos);
 extern void PlayerUpMove(int pos);
 extern void PlayerDownMove(int pos);
