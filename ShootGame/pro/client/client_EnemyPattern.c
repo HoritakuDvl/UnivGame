@@ -4,11 +4,18 @@
 void EnemyPattern0(int n){
     if(enemy[n].cnt <= 60)
         enemy[n].tx -= enemy[n].sp;
+
+    else if(enemy[n].tx+enemy[n].src.w/2 > WINDOW_WIDTH)
+        enemy[n].tx -= enemy[n].sp;
+
 }
 
 
 void EnemyPattern1(int n){
     if (enemy[n].cnt <= 60)
+        enemy[n].tx -= enemy[n].sp;
+
+    else if(enemy[n].tx+enemy[n].src.w/2 > WINDOW_WIDTH)
         enemy[n].tx -= enemy[n].sp;
 
     else {

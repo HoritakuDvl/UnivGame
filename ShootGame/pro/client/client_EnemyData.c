@@ -2,6 +2,7 @@
 #include "client_func.h"
 
 static SDL_Surface *gEnemy1, *gEnemy2;
+static SDL_Surface *gBoss1;
 static SDL_Surface *gTama0;
 
 static void EnemyShotEnter(int n);
@@ -16,10 +17,12 @@ void(*EnemyShotPattern[ENEMY_SHOT_PATTERN_MAX])(int, int) = {
 };
 
 void EnemyLoad(){
-    gEnemy1 = IMG_Load("sozai/enemy1.png");
-    gEnemy2 = IMG_Load("sozai/enemy2.png");
+    gEnemy1 = IMG_Load("sozai/test_design/enemy/enemy/enemy1-1.png");
+    gEnemy2 = IMG_Load("sozai/test_design/enemy/enemy/enemy2-1.png");
 
-    gTama0 = IMG_Load("sozai/Etama0.png");
+    gBoss1 = IMG_Load("sozai/test_design/enemy/boss/boss.png");
+
+    gTama0 = IMG_Load("sozai//test_design/enemy/shot/shot.png");
 }
 
 
@@ -76,6 +79,9 @@ void EnemyDraw(){
                     break;
                 case 1:
                     SDL_BlitSurface(gEnemy2, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 2:
+                    SDL_BlitSurface(gBoss1, &enemy[i].src, window, &enemy[i].dst);
                     break;
                 }
             }
@@ -251,6 +257,8 @@ void EnemyBulletClean(){
 void EnemyFree(){
     SDL_FreeSurface(gEnemy1);
     SDL_FreeSurface(gEnemy2);
+
+    SDL_FreeSurface(gBoss1);
 
     SDL_FreeSurface(gTama0);
 }

@@ -15,7 +15,7 @@ void EnemyShotPattern0(int n, int num) {
             ene_shot[n].bullet[k].ang = -PI;//shotatan2_2(n, num);
             ene_shot[n].bullet[k].rad = ene_shot[n].bullet[k].ang*180/PI;
             ene_shot[n].bullet[k].flag = 1;
-            ene_shot[n].bullet[k].tx = enemy[ene_shot[n].num].tx;
+            ene_shot[n].bullet[k].tx = enemy[ene_shot[n].num].dst.x+50;
             ene_shot[n].bullet[k].ty = enemy[ene_shot[n].num].ty;
             if(enemy[ene_shot[n].num].blW > enemy[ene_shot[n].num].blH){
                 ene_shot[n].bullet[k].src.w = enemy[ene_shot[n].num].blW + 20;
@@ -39,7 +39,7 @@ void EnemyShotPattern1(int n, int num) {
             ene_shot[n].bullet[k].knd = enemy[ene_shot[n].num].blknd;
             ene_shot[n].bullet[k].ang = -PI;
             ene_shot[n].bullet[k].flag = 1;
-            ene_shot[n].bullet[k].tx = enemy[ene_shot[n].num].tx;
+            ene_shot[n].bullet[k].tx = enemy[ene_shot[n].num].dst.x+50;
             ene_shot[n].bullet[k].ty = enemy[ene_shot[n].num].ty;
             ene_shot[n].bullet[k].src.w = enemy[ene_shot[n].num].blW;
             ene_shot[n].bullet[k].src.h = enemy[ene_shot[n].num].blH;
