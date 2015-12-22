@@ -382,15 +382,33 @@ static PlayerData PlayerEnter(int myid, int knd){
                 break;
             case 2:
                 tmp.src2 = SrcRectInit(0, 0, playerOrder[t].w2, playerOrder[t].h2);
-                tmp.tx = 50*(tmp.num+1);
-                tmp.ty = 850+10*(tmp.num+1);
+                tmp.tx = 100*(tmp.num+1);
+                tmp.ty = 800+20*(tmp.num+1);
                 tmp.ang = -PI / 6;
                 tmp.rad = tmp.ang*180/PI;
                 break;
             }
             tmp.src = SrcRectInit(0, 0, playerOrder[t].w, playerOrder[t].h);
             tmp.dst = DstRectInit(tmp.tx - tmp.src.w / 2, tmp.ty - tmp.src.h / 2);
-            tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 30, tmp.ty - tmp.src.h / 2 - 8);
+            if(tmp.dst.x < 0){
+                tmp.tx = tmp.src.w/2+30;
+                tmp.dst = DstRectInit(tmp.tx - tmp.src.w / 2, tmp.ty - tmp.src.h / 2);
+            }
+
+            switch(knd){ //砲台の初期位置
+            case 2:
+                tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 30, tmp.ty - tmp.src.h / 2 - 8);
+                break;
+            case 7:
+                tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 80, tmp.ty - tmp.src.h / 2 + 5);
+                break;
+            case 8:
+                tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 100, tmp.ty - tmp.src.h / 2 + 10);
+                break;
+            case 9:
+                tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 110, tmp.ty - tmp.src.h / 2 +5);
+                break;
+            }
 
             //PlayerShotEnter(myid, tmp2); //クライアントで行う
 

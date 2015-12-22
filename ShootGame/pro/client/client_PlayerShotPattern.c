@@ -26,8 +26,24 @@ void PlayerShotPattern0(int n){
             pla_shot[n].bullet[k].ty = player[pla_shot[n].num].ty;
             break;
         case 2:
-            pla_shot[n].bullet[k].tx = player[pla_shot[n].num].tx + 5 + 50 * cos(player[pla_shot[n].num].ang);
-            pla_shot[n].bullet[k].ty = player[pla_shot[n].num].ty - 15 + 50 * sin(player[pla_shot[n].num].ang);
+            switch(player[pla_shot[n].num].knd){
+            case 2:
+                pla_shot[n].bullet[k].tx = player[pla_shot[n].num].tx + 5 + 50 * cos(player[pla_shot[n].num].ang);
+                pla_shot[n].bullet[k].ty = player[pla_shot[n].num].ty - 15 + 50 * sin(player[pla_shot[n].num].ang);
+                break;
+            case 7:
+                pla_shot[n].bullet[k].tx = player[pla_shot[n].num].tx + 5 + 50 * cos(player[pla_shot[n].num].ang);
+                pla_shot[n].bullet[k].ty = player[pla_shot[n].num].ty - 15 + 50 * sin(player[pla_shot[n].num].ang);
+                break;
+            case 8:
+                pla_shot[n].bullet[k].tx = player[pla_shot[n].num].tx + 5 + 50 * cos(player[pla_shot[n].num].ang);
+                pla_shot[n].bullet[k].ty = player[pla_shot[n].num].ty - 15 + 50 * sin(player[pla_shot[n].num].ang);
+                break;
+            case 9:
+                pla_shot[n].bullet[k].tx = player[pla_shot[n].num].tx + 5 + 50 * cos(player[pla_shot[n].num].ang);
+                pla_shot[n].bullet[k].ty = player[pla_shot[n].num].ty - 15 + 50 * sin(player[pla_shot[n].num].ang);
+                break;
+            }
             break;
         }
         //fprintf(stderr, "Shot : pla_shot[n].num = %d\n", pla_shot[n].num);
