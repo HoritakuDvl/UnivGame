@@ -126,7 +126,7 @@ void setup_client(char *server_name, u_short port) {
     src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
     dst_rect2 = DstRectInit(0, 0);
 
-    player[myid].knd = 5; //ここは機体セレクトで決める
+    player[myid].knd = 9; //ここは機体セレクトで決める
     CONTAINER data;
     memset(&data, 0, sizeof(CONTAINER));
 
