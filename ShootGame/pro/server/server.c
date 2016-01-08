@@ -11,6 +11,8 @@
 #include "../common.h"
 #include "server_common.h"
 
+static GAME_STATE gstate;
+
 static CLIENT clients[MAX_NUM_CLIENTS]; 
 static int num_clients;
 static int num_socks;
@@ -111,6 +113,7 @@ void setup_server(int num_cl, u_short port) {
 //敵データの読み込み
   //EnemyDataLoad();
 
+  gstate = GAME_TITLE;
 }
 
 /************************
@@ -119,108 +122,270 @@ int control_requests()
 機能：サーバー中の動作
 返値：1…メッセージ送信　0…チャットプログラム終了
 ************************/
-int numF = 0;
+int numF = 0; //カウントの間隔
+int numC[4] = {0}; //送信したクライアント数（全員が揃うかの確認）
 int control_requests() {
-  fd_set read_flag = mask;
-  memset(&data, 0, sizeof(CONTAINER)); //dataの先頭から"sizeof(CONTAINER)"バイト分'0'をセット(全て0)
+    fd_set read_flag = mask;
+    memset(&data, 0, sizeof(CONTAINER)); //dataの先頭から"sizeof(CONTAINER)"バイト分'0'をセット(全て0)
   
-  //fprintf(stderr, "select() is started.\n");
+    //fprintf(stderr, "select() is started.\n");
 //select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
-  if(select(num_socks, (fd_set *)&read_flag, NULL, NULL, NULL) == -1) handle_error("select()");
+    if(select(num_socks, (fd_set *)&read_flag, NULL, NULL, NULL) == -1) handle_error("select()");
 
-  //EnemyData eneA;
+    //EnemyData eneA;
 
-  int i, result = 1;
-  for (i = 0; i < num_clients; i++) {
-      if(FD_ISSET(clients[i].sock, &read_flag)) {//FD_ISSET:[引数１]番目のFDが1かどうかの確認
-	receive_data(i, &data, sizeof(data)); //読み込み先から引数２へのデータの読み込み
-        fprintf(stderr, "%d : %c\n", data.cid, data.command);
+    int i, result = 1;
+    for (i = 0; i < num_clients; i++) {
+        if(FD_ISSET(clients[i].sock, &read_flag)) {//FD_ISSET:[引数１]番目のFDが1かどうかの確認
+            receive_data(i, &data, sizeof(data)); //読み込み先から引数２へのデータの読み込み
+            fprintf(stderr, "%d : %c\n", data.cid, data.command);
 
-	switch(data.command) {
-        case LEFT_COMMAND:
-	case RIGHT_COMMAND:
-        case UP_COMMAND:
-	case DOWN_COMMAND:
-	  send_data(BROADCAST, &data, sizeof(data));
-	  result = 1; //メッセージの送信
-	  break;
-	case SEPARATE_UPDO_COMMAND:
-	case SEPARATE_LERI_COMMAND:
-	  send_data(BROADCAST, &data, sizeof(data));
-	  result = 1; //メッセージの送信
-	  break;
-        case UP_ROTA:
-        case RIGHT_ROTA:
-        case LEFT_ROTA:
-	  send_data(BROADCAST, &data, sizeof(data));
-	  result = 1; //メッセージの送信
-            break;
-        case UP_SEPA_ROTA:
-        case RIGHT_SEPA_ROTA:
-        case LEFT_SEPA_ROTA:
-	  send_data(BROADCAST, &data, sizeof(data));
-	  result = 1; //メッセージの送信
-            break;
-	case SHOT_COMMAND:
-	case SHOT_FINISH_COMMAND:
-	  send_data(BROADCAST, &data, sizeof(data));
-	  result = 1; //メッセージの送信
-	  break;
-        case PLAYER_HIT:
-            HP_Num--;
-            data.hp = HP_Num;
-            data.player.flag2 = 180;
-            send_data(BROADCAST, &data, sizeof(data));
-            result = 1; //メッセージの送信
-            break;
-        case PLAYER_HIT2:
-            HP_Num-=5;
-            data.hp = HP_Num;
-            data.player.flag2 = 180;
-            send_data(BROADCAST, &data, sizeof(data));
-            result = 1; //メッセージの送信
-            break;
-        case ENEMY_HIT:
-
-	  send_data(BROADCAST, &data, sizeof(data));
-	  result = 1; //メッセージの送信
-          break;
-        case DATA_PULL:
-            switch(data.flag){
-            case 1: //HPの設定
-                HP_Max = data.hp;
-                HP_Num = HP_Max;
-                break;
-            case 2: //プレイヤーの書き込み・送信
-                data.player = PlayerEnter(data.cid, data.player.knd);
-                fprintf(stderr, "data.player.flag = %d\n", data.player.flag);
-                numF++;
-                if(numF == num_clients){
-                    HP_Num = HP_Max;
-                    data.hp = HP_Num;
+            switch(gstate) {
+//GAME_TITLE
+            case GAME_TITLE:
+                if(data.state != gstate){
+                    fprintf(stderr, "not state.[GAME_TITLE]\n");
+                    exit(1);
+                    break;
                 }
-                send_data(BROADCAST, &data, sizeof(data));
-                break;
-            case 3: //敵の書き込み
-                //EnemyData eneA;
-                //Shot ene_shoA;
+                switch(data.command) {
+                case FOUR_COMMAND:
+                    numC[data.cid] = 1;
+                    fprintf(stderr, "numC[%d] = 1\n", data.cid);
 
-                //EnemyEnter();
+                    for(i = 0; i < num_clients; i++){
+                        if(numC[i] == 0)
+                            break;
+                        if(i == num_clients-1){
+                            gstate = GAME_MAIN;
+                            data.state = gstate;
+                            send_data(BROADCAST, &data, sizeof(data));
+                            result = 1;
+
+                            for(i = 0; i < 4; i++)
+                                numC[i] = 0;
+
+                            break;
+                        }
+                    }
+                    break;
+                case END_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 0; //チャットプログラムの終了
+                    break;
+                default:
+                    fprintf(stderr, "control_requests(): %c is not a valid command.[GAME_TITLE]\n", data.command);
+                    exit(1);
+                    break;
+                }
+                break;
+
+//GAME_SELECT
+            case GAME_SELECT:
+                if(data.state != gstate){
+                    fprintf(stderr, "not state.[GAME_SELECT]\n");
+                    exit(1);
+                    break;
+                }
+                switch(data.command) {
+                case FOUR_COMMAND: //決定
+/*                    numC[data.cid] = 1;
+                    fprintf(stderr, "numC[%d] = 1\n", data.cid);
+
+                    for(i = 0; i < num_clients; i++){
+                        if(numC[i] == 0)
+                            break;
+                        if(i == num_clients-1){
+                            gstate = GAME_MAIN;
+                            data.state = gstate;
+                            send_data(BROADCAST, &data, sizeof(data));
+                            result = 1;
+
+                            for(i = 0; i < 4; i++)
+                                numC[i] = 0;
+
+                            break;
+                        }
+                        }*/
+                    break;
+                case THREE_COMMAND: //戻る・選び直し
+
+                    break;
+                case END_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 0; //チャットプログラムの終了
+                    break;
+                default:
+                    fprintf(stderr, "control_requests(): %c is not a valid command.[GAME_SELECT]\n", data.command);
+                    exit(1);
+                    break;
+                }
+                break;
+
+//GAME_LOAD
+            case GAME_LOAD: //各プレイヤーの機種等のデータを送信
+                if(data.state != gstate){
+                    fprintf(stderr, "not state.[GAME_LOAD]\n");
+                    exit(1);
+                    break;
+                }
+                switch(data.command) {
+                case END_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 0; //チャットプログラムの終了
+                    break;
+                default:
+                    fprintf(stderr, "control_requests(): %c is not a valid command.[GAME_LOAD]\n", data.command);
+                    exit(1);
+                    break;
+                }
+                break;
+
+//GAME_MAIN
+            case GAME_MAIN:
+                if(data.state != gstate){
+                    fprintf(stderr, "not state.[GAME_MAIN]\n");
+                    exit(1);
+                    break;
+                }
+                switch(data.command) {
+                case LEFT_COMMAND:
+                case RIGHT_COMMAND:
+                case UP_COMMAND:
+                case DOWN_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
+                case SEPARATE_UPDO_COMMAND:
+                case SEPARATE_LERI_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
+                case UP_ROTA:
+                case RIGHT_ROTA:
+                case LEFT_ROTA:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
+                case UP_SEPA_ROTA:
+                case RIGHT_SEPA_ROTA:
+                case LEFT_SEPA_ROTA:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
+                case SHOT_COMMAND:
+                case SHOT_FINISH_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
+                case PLAYER_HIT:
+                    HP_Num--;
+                    data.hp = HP_Num;
+                    data.player.flag2 = 180;
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
+                case PLAYER_HIT2:
+                    HP_Num-=5;
+                    data.hp = HP_Num;
+                    data.player.flag2 = 180;
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
+                case ENEMY_HIT:
+
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
+                case DATA_PULL:
+                    switch(data.flag){
+                    case 1: //HPの設定
+                        HP_Max = data.hp;
+                        HP_Num = HP_Max;
+                        break;
+                    case 2: //プレイヤーの書き込み・送信
+                        data.player = PlayerEnter(data.cid, data.player.knd);
+                        fprintf(stderr, "data.player.flag = %d\n", data.player.flag);
+                        numF++;
+                        if(numF == num_clients){
+                            HP_Num = HP_Max;
+                            data.hp = HP_Num;
+                        }
+                        send_data(BROADCAST, &data, sizeof(data));
+                        break;
+                    case 3: //敵の書き込み
+                        //EnemyData eneA;
+                        //Shot ene_shoA;
+
+                        //EnemyEnter();
+                        break;
+                    }
+                    result = 1;
+                    break;
+                case END_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 0; //チャットプログラムの終了
+                    break;
+                default:
+                    fprintf(stderr, "control_requests(): %c is not a valid command.[GAME_MAIN]\n", data.command);
+                    exit(1);
+                    break;
+                }
+                break;
+
+//GAME_OVER
+            case GAME_OVER:
+                if(data.state != gstate){
+                    fprintf(stderr, "not state.[GAME_OVER]\n");
+                    exit(1);
+                    break;
+                }
+                switch(data.command) {
+                case FOUR_COMMAND:
+                    data.state = GAME_TITLE;
+                      /*この間にランキングの処理を入れる*/
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1;
+                    break;
+                case END_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 0; //チャットプログラムの終了
+                    break;
+                default:
+                    fprintf(stderr, "control_requests(): %c is not a valid command.[GAME_OVER]\n", data.command);
+                    exit(1);
+                    break;
+                }
+                break;
+
+//GAME_CLEAR
+            case GAME_CLEAR:
+                if(data.state != gstate){
+                    fprintf(stderr, "not state.[GAME_CLEAR]\n");
+                    exit(1);
+                    break;
+                }
+                switch(data.command) {
+                case FOUR_COMMAND:
+                    data.state = GAME_TITLE;
+                      /*この間にランキングの処理を入れる*/
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1;
+                    break;
+                case END_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 0; //チャットプログラムの終了
+                    break;
+                default:
+                    fprintf(stderr, "control_requests(): %c is not a valid command.[GAME_CLEAR]\n", data.command);
+                    exit(1);
+                    break;
+                }
                 break;
             }
-            result = 1;
-            break;
-	case END_COMMAND:
-	  send_data(BROADCAST, &data, sizeof(data));
-	  result = 0; //チャットプログラムの終了
-	  break;
-	default:
-	  fprintf(stderr, "control_requests(): %c is not a valid command.\n", data.command);
-	  exit(1);
-	}
+        }
     }
-  }
-  return result;   
+    return result;   
 }
 
 /***********************

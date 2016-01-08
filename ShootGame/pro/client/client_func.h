@@ -25,8 +25,13 @@ extern void handle_error(char *);
 extern void HaikeiFree();
 
 /* client_Event.c */
+extern void EventTitle(int myid, int sock);
+extern void EventSelect(int myid, int sock);
+extern void EventLoad(int myid, int sock);
 extern void EventMainFighter(int myid, int sock);
 extern void EventMainTank(int myid, int sock);
+extern void EventOver(int myid, int sock);
+extern void EventClear(int myid, int sock);
 extern void send_data(void *, int, int);
 
 /* client_PlayerData.c */

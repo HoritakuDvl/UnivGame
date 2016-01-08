@@ -50,6 +50,9 @@
 
 #define END_COMMAND		'Q'		  		/* プログラム終了コマンド */
 
+#define FOUR_COMMAND     'H'
+#define THREE_COMMAND    'I'
+
 #define LEFT_COMMAND	'L'				/* 左コマンド */
 #define RIGHT_COMMAND	'R'				/* 右コマンド */
 #define UP_COMMAND	'U'				/* 上コマンド */
@@ -88,6 +91,15 @@
 SDL_Surface *window;
 SDL_Joystick *joystick;
 TTF_Font* font;
+
+typedef enum{
+    GAME_TITLE,
+    GAME_SELECT,
+    GAME_LOAD,
+    GAME_MAIN,
+    GAME_OVER,
+    GAME_CLEAR
+}GAME_STATE;
 
 typedef struct{
     Uint32 now; //現在時間
@@ -171,6 +183,7 @@ int stageFlag;
 typedef struct {
     int cid; //クライアントのID
     char command;
+    GAME_STATE state;
     int tx, ty; //プレイヤーの中心座標を送るときに使用
     int m, n; //敵の打った弾の番号を送るときに使用(ene_shot[m].bullet[n]),(pla_shot[m].bullet[n])
     int ene_num; //敵に弾が当たった時の敵の番号
