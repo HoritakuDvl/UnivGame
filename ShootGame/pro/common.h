@@ -10,6 +10,7 @@
 ・server.c　スコアの計算をする
 ・クライアントで管理しているもの（敵の状態など）を共通させる[描画の違いをなくすため]
 ・各クライアントでスコア等の動作が違う（ラグかな？）
+・PlayerData.csv　本番用に変える
 */
 
 #ifndef _COMMON_H_
@@ -113,6 +114,7 @@ typedef struct{
     int rotaU, rotaL, rotaR;
 
     int kndP; //機種選択
+    int kPflag; //決定
 }Command;
 
 typedef struct{
@@ -193,9 +195,10 @@ typedef struct {
     PlayerData player;
     EnemyData enemy;
     int hp;
-    int flag; //1:最大HPの送信  2:
+    int flag; //1:最大HPの送信  2:  3:機種決定した時  4:全員が機種決定した時
 
     int kndP; //選択時の各クライアントの位置
+    int kPflag;
 } CONTAINER;
 
 #endif

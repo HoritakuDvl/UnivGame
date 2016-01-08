@@ -36,7 +36,7 @@ extern void send_data(void *, int, int);
 
 /*client_PlayerSelect.c*/
 extern void PlSeLoad();
-extern void PlayerSelect(int num);
+extern void PlayerSelect(int myid, int num);
 extern void PlSeFree();
 
 /* client_PlayerData.c */

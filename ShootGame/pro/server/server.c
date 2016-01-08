@@ -115,7 +115,8 @@ void setup_server(int num_cl, u_short port) {
 
   gstate = GAME_TITLE;
   for(i = 0; i < num_clients; i++) {
-      pla_sele[i].kndP = 0;
+      pla_sele[i].kndP = i;
+      pla_sele[i].kPflag = 0;
   }
 }
 
@@ -156,17 +157,18 @@ int control_requests() {
                     numC[data.cid] = 1;
                     fprintf(stderr, "numC[%d] = 1\n", data.cid);
 
-                    for(i = 0; i < num_clients; i++){
-                        if(numC[i] == 0)
+                    int j;
+                    for(j = 0; j < num_clients; j++){
+                        if(numC[j] == 0)
                             break;
-                        if(i == num_clients-1){
+                        if(j == num_clients-1){
                             gstate = GAME_SELECT;
                             data.state = gstate;
                             send_data(BROADCAST, &data, sizeof(data));
                             result = 1;
 
-                            for(i = 0; i < 4; i++)
-                                numC[i] = 0;
+                            for(j = 0; j < 4; j++)
+                                numC[j] = 0;
 
                             break;
                         }
@@ -214,24 +216,33 @@ int control_requests() {
                     result = 1;
                     break;
                 case FOUR_COMMAND: //決定
-/*                    numC[data.cid] = 1;
+                    numC[data.cid] = 1;
                     fprintf(stderr, "numC[%d] = 1\n", data.cid);
 
                     for(i = 0; i < num_clients; i++){
-                        if(numC[i] == 0)
+                        if(numC[i] == 0){ //まだ決定していない人がいるとき
+                            pla_sele[data.cid].kPflag = 1;
+                            data.kPflag = pla_sele[data.cid].kPflag;
+                            data.flag = 3;
+                            send_data(BROADCAST, &data, sizeof(data));
                             break;
+                        }
                         if(i == num_clients-1){
                             gstate = GAME_MAIN;
                             data.state = gstate;
+                            data.flag = 4;
                             send_data(BROADCAST, &data, sizeof(data));
                             result = 1;
 
-                            for(i = 0; i < 4; i++)
+                            for(i = 0; i < 4; i++){
                                 numC[i] = 0;
+                                pla_sele[i].kndP = i;
+                                pla_sele[i].kPflag = 0;
+                            }
 
                             break;
                         }
-                        }*/
+                    }
                     break;
                 case THREE_COMMAND: //戻る・選び直し
 
@@ -330,7 +341,7 @@ int control_requests() {
                         break;
                     case 2: //プレイヤーの書き込み・送信
                         data.player = PlayerEnter(data.cid, data.player.knd);
-                        fprintf(stderr, "data.player.flag = %d\n", data.player.flag);
+                        fprintf(stderr, "data.player.knd = %d\n", data.player.knd);
                         numF++;
                         if(numF == num_clients){
                             HP_Num = HP_Max;
@@ -553,6 +564,7 @@ static PlayerData PlayerEnter(int myid, int knd){
     int t;
     for(t = 0; t < PLAYER_ORDER_MAX; t++){
         if(knd == playerOrder[t].knd){
+            tmp.knd = knd;
             tmp.flag = 1;
             tmp.knd2 = playerOrder[t].knd2;
             tmp.sp = playerOrder[t].sp+5;
