@@ -63,6 +63,7 @@ void PlayerDamage(CONTAINER data, int myid, int sock){
         data.command = END_COMMAND;
         fprintf(stderr, "%d\n", data.command);
         data.cid = myid;
+        data.state = GAME_MAIN;
         send_data(&data, sizeof(CONTAINER), sock);
 
         fprintf(stderr, "/////////////////////\n");

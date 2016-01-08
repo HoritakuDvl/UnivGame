@@ -10,6 +10,9 @@ static SDL_Surface *gMachine1, *gMachine2, *gMachine3, *gMachine4, *gMachine5,
 static SDL_Surface *gMark1, *gMark2, *gMark3, *gMark4;
 static SDL_Rect src_rect, dst_rect;
 
+static void MarkDraw(int n);
+
+
 void PlSeLoad() {
 
     gHaikei = IMG_Load("sozai/main_resource/00_Common/common_bg.png");
@@ -36,7 +39,8 @@ void PlSeLoad() {
 
     int i;
     for(i = 0; i < MAX_CLIENTS; i++) {
-        pla_sele[i].kndP = 0;
+        pla_sele[i].kndP = i;
+        pla_sele[i].kPflag = 0;
     }
 }
 
@@ -46,7 +50,7 @@ void PlayerSelect(int num)
 機能：
 返値：
 ***********************************/
-void PlayerSelect(int num) {
+void PlayerSelect(int myid, int num) {
 
 //背景
     src_rect = SrcRectInit(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -108,24 +112,40 @@ void PlayerSelect(int num) {
 
 //マーク
     for(i = 0; i < num; i++) {
-        src_rect = SrcRectInit(0, 0, 215, 75);
-        dst_rect = DstRectInit(292 + 300*(pla_sele[i].kndP/5), 242+100*(pla_sele[i].kndP%5));
-        switch(i) {
-        case 0:
-            SDL_BlitSurface(gMark1, &src_rect, window, &dst_rect);
-            break;
-        case 1:
-            SDL_BlitSurface(gMark2, &src_rect, window, &dst_rect);
-            break;
-        case 2:
-            SDL_BlitSurface(gMark3, &src_rect, window, &dst_rect);
-            break;
-        case 3:
-            SDL_BlitSurface(gMark4, &src_rect, window, &dst_rect);
-            break;
+        if(i != myid) {
+            MarkDraw(i);
         }
     }
+    MarkDraw(myid);
+
 }
+
+static void MarkDraw(int n){
+//薄暗くする
+    if(pla_sele[n].kPflag == 1) { 
+        src_rect = SrcRectInit(0, 0, 200, 60);
+        dst_rect = DstRectInit(300 + 300*(pla_sele[n].kndP/5), 250+100*(pla_sele[n].kndP%5));
+    }
+
+//マーク
+    src_rect = SrcRectInit(0, 0, 215, 75);
+    dst_rect = DstRectInit(292 + 300*(pla_sele[n].kndP/5), 242+100*(pla_sele[n].kndP%5));
+    switch(n) {
+    case 0:
+        SDL_BlitSurface(gMark1, &src_rect, window, &dst_rect);
+        break;
+    case 1:
+        SDL_BlitSurface(gMark2, &src_rect, window, &dst_rect);
+        break;
+    case 2:
+        SDL_BlitSurface(gMark3, &src_rect, window, &dst_rect);
+        break;
+    case 3:
+        SDL_BlitSurface(gMark4, &src_rect, window, &dst_rect);
+        break;
+    }
+}
+
 
 
 void PlSeFree() {

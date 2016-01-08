@@ -103,61 +103,63 @@ void EventSelect(int myid, int sock){
 
 	case SDL_JOYAXISMOTION:
             //printf("The axis ID of the operated key is %d.\n",event.jaxis.axis);	// 操作された方向キーの方向軸を表示（0：アナログキー，1：アナログキー，2：方向キー左右方向，3：方向キー上下方向）
-            if(event.jaxis.axis==0){
-                if(event.jaxis.value == -32768){
-                    data.command = LEFT_COMMAND;
-                    data.cid = myid;
-                    data.state = GAME_SELECT;
-                    send_data(&data, sizeof(CONTAINER), sock);
-                    //printf("左\n");
+            if(stageFlag == 1){ //決定していないとき
+                if(event.jaxis.axis==0){
+                    if(event.jaxis.value == -32768){
+                        data.command = LEFT_COMMAND;
+                        data.cid = myid;
+                        data.state = GAME_SELECT;
+                        send_data(&data, sizeof(CONTAINER), sock);
+                        //printf("左\n");
+                    }
+                    if(event.jaxis.value == 32767){
+                        data.command = RIGHT_COMMAND;
+                        data.cid = myid;
+                        data.state = GAME_SELECT;
+                        send_data(&data, sizeof(CONTAINER), sock);
+                        //printf("右\n");
+                    }
+                    //printf("--- Analog-Direction Key: ?? Axis\n");
                 }
-                if(event.jaxis.value == 32767){
-                    data.command = RIGHT_COMMAND;
-                    data.cid = myid;
-                    data.state = GAME_SELECT;
-                    send_data(&data, sizeof(CONTAINER), sock);
-                    //printf("右\n");
+                else if(event.jaxis.axis==1){
+                    if(event.jaxis.value == -32768){
+                        data.command = UP_COMMAND;
+                        data.cid = myid;
+                        data.state = GAME_SELECT;
+                        send_data(&data, sizeof(CONTAINER), sock);
+                        //printf("上\n");
+                    }
+                    if(event.jaxis.value == 32767){
+                        data.command = DOWN_COMMAND;
+                        data.cid = myid;
+                        data.state = GAME_SELECT;
+                        send_data(&data, sizeof(CONTAINER), sock);
+                        //printf("下\n");
+                    }
+                    //printf("--- Anolag-Direction Key: ?? Axis\n");
                 }
-                //printf("--- Analog-Direction Key: ?? Axis\n");
-            }
-            else if(event.jaxis.axis==1){
-                if(event.jaxis.value == -32768){
-                    data.command = UP_COMMAND;
-                    data.cid = myid;
-                    data.state = GAME_SELECT;
-                    send_data(&data, sizeof(CONTAINER), sock);
-                    //printf("上\n");
-                }
-                if(event.jaxis.value == 32767){
-                    data.command = DOWN_COMMAND;
-                    data.cid = myid;
-                    data.state = GAME_SELECT;
-                    send_data(&data, sizeof(CONTAINER), sock);
-                    //printf("下\n");
-                }
-                //printf("--- Anolag-Direction Key: ?? Axis\n");
             }
             break;
 
             // ジョイスティックのボタンが押された時
-            /*case SDL_JOYBUTTONDOWN:
+        case SDL_JOYBUTTONDOWN:
             printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
             // ボタンIDに応じた処理
             switch(event.jbutton.button){
 //弾を打つ
             case 3:
-                fprintf(stderr, "4 push.\n");
-                data.command = FOUR_COMMAND;
-                data.cid = myid;
-                data.state = GAME_SELECT;
-//data.tx = player[myid].tx;
-//data.ty = player[myid].ty;
-                send_data(&data, sizeof(CONTAINER), sock);
-                stageFlag = 2;
-//SendShotCommand(1);
+                if(stageFlag == 1) {
+                    fprintf(stderr, "4 push.\n");
+                    data.command = FOUR_COMMAND;
+                    data.cid = myid;
+                    data.state = GAME_SELECT;
+                    data.kndP = pla_sele[myid].kndP; //決定
+                    send_data(&data, sizeof(CONTAINER), sock);
+                    stageFlag = 2;
+                }
                 break;
             }
-            break;*/
+            break;
         }
     }
 }
@@ -321,10 +323,7 @@ void EventMainFighter(int myid, int sock)
                 data.command = SHOT_COMMAND;
                 data.cid = myid;
                 data.state = GAME_MAIN;
-	        //data.tx = player[myid].tx;
-                //data.ty = player[myid].ty;
                 send_data(&data, sizeof(CONTAINER), sock);
-                //SendShotCommand(1);
                 break;
             }
 

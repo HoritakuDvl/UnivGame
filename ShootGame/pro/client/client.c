@@ -210,7 +210,7 @@ static int DrawGameSelect(){
     }
 
     int result = 1;
-    if(stageFlag == 1){
+    if(stageFlag > 0){
         EventSelect(myid, sock);
     }
     if (FD_ISSET(sock, &read_flag)) {
@@ -219,7 +219,7 @@ static int DrawGameSelect(){
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
 
-    PlayerSelect(num_clients);
+    PlayerSelect(myid, num_clients);
 
     return result;
 }
@@ -511,6 +511,7 @@ static void PlayerAllInit(int knd) {
     dst_rect2 = DstRectInit(0, 0);
 
     player[myid].knd = knd; //ここは機体セレクトで決める
+    //fprintf(stderr, "player[%d].knd = %d\n", myid, player[myid].knd);
     CONTAINER data;
     memset(&data, 0, sizeof(CONTAINER));
 
@@ -571,7 +572,23 @@ static int execute_command() {
             result = 1;
             break;
         case FOUR_COMMAND:
-
+            switch(data.flag) {
+            case 3:
+                pla_sele[data.cid].kPflag = data.kPflag;
+                result = 1;
+                break;
+            case 4:
+                gstate = data.state;
+                stageFlag = 1;
+                PlayerAllInit(pla_sele[myid].kndP);
+                int i;
+                for(i = 0; i < num_clients; i++){
+                    pla_sele[i].kndP = i;
+                    pla_sele[i].kPflag = 0;
+                }
+                result = 1;
+                break;
+            }
             break;
         case THREE_COMMAND:
 
@@ -718,7 +735,7 @@ static int execute_command() {
             switch(data.flag){
             case 2:
                 player[data.cid] = data.player;
-                fprintf(stderr, "%d:in! %d\n", data.cid, data.player.flag);
+                fprintf(stderr, "%d:in! %d\n", data.cid, player[data.cid].knd);
                 PlayerShotEnter(data.cid, num_clients);
                 if(data.hp > 0){
                     HP_M = data.hp;
