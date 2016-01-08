@@ -2,6 +2,170 @@
 #include "../common.h"
 #include "client_func.h"
 
+static SDL_Event event;
+
+/*****************************************************************
+void EventTitle(int myid, int sock)
+引数：
+機能：
+返値：
+*****************************************************************/
+void EventTitle(int myid, int sock){
+    CONTAINER data;
+    memset(&data, 0, sizeof(CONTAINER));
+
+    //SDL_Event event;
+
+//コントローラーから
+    if(SDL_PollEvent(&event)){
+        switch(event.type){
+
+        case SDL_QUIT:
+            data.command = END_COMMAND;
+            fprintf(stderr, "%d\n", data.command);
+            data.cid = myid;
+            data.state = GAME_TITLE;
+            send_data(&data, sizeof(CONTAINER), sock);
+            break;
+
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym){
+            case SDLK_ESCAPE:
+                data.command = END_COMMAND;
+                data.cid = myid;
+                data.state = GAME_TITLE;
+                send_data(&data, sizeof(CONTAINER), sock);
+                break;
+            default:
+                fprintf(stderr, "not a valid command.\n");
+                break;
+            }
+            break;
+
+            // ジョイスティックのボタンが押された時
+        case SDL_JOYBUTTONDOWN:
+            printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
+            // ボタンIDに応じた処理
+            switch(event.jbutton.button){
+            case 3:
+                fprintf(stderr, "4 push.\n");
+                data.command = FOUR_COMMAND;
+                data.cid = myid;
+                data.state = GAME_TITLE;
+                send_data(&data, sizeof(CONTAINER), sock);
+                stageFlag = 2;
+                break;
+            }
+            break;
+        }
+    }
+}
+
+
+/*****************************************************************
+void EventSelect(int myid, int sock)
+引数：
+機能：
+返値：
+*****************************************************************/
+void EventSelect(int myid, int sock){
+    CONTAINER data;
+    memset(&data, 0, sizeof(CONTAINER));
+
+    //SDL_Event event;
+
+//コントローラーから
+    if(SDL_PollEvent(&event)){
+        switch(event.type){
+
+        case SDL_QUIT:
+            data.command = END_COMMAND;
+            fprintf(stderr, "%d\n", data.command);
+            data.cid = myid;
+            data.state = GAME_SELECT;
+            send_data(&data, sizeof(CONTAINER), sock);
+            break;
+
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym){
+            case SDLK_ESCAPE:
+                data.command = END_COMMAND;
+                data.cid = myid;
+                data.state = GAME_SELECT;
+                send_data(&data, sizeof(CONTAINER), sock);
+                break;
+            default:
+                fprintf(stderr, "not a valid command.\n");
+                break;
+            }
+            break;
+
+            // ジョイスティックのボタンが押された時
+            /*case SDL_JOYBUTTONDOWN:
+            printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
+            // ボタンIDに応じた処理
+            switch(event.jbutton.button){
+//弾を打つ
+            case 3:
+                fprintf(stderr, "4 push.\n");
+                data.command = FOUR_COMMAND;
+                data.cid = myid;
+                data.state = GAME_SELECT;
+//data.tx = player[myid].tx;
+//data.ty = player[myid].ty;
+                send_data(&data, sizeof(CONTAINER), sock);
+                stageFlag = 2;
+//SendShotCommand(1);
+                break;
+            }
+            break;*/
+        }
+    }
+}
+
+
+/*****************************************************************
+void EventLoad(int myid, int sock)
+引数：
+機能：
+返値：
+*****************************************************************/
+void EventLoad(int myid, int sock){
+    CONTAINER data;
+    memset(&data, 0, sizeof(CONTAINER));
+
+    //SDL_Event event;
+
+//コントローラーから
+    if(SDL_PollEvent(&event)){
+        switch(event.type){
+
+        case SDL_QUIT:
+            data.command = END_COMMAND;
+            fprintf(stderr, "%d\n", data.command);
+            data.cid = myid;
+            data.state = GAME_LOAD;
+            send_data(&data, sizeof(CONTAINER), sock);
+            break;
+
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym){
+            case SDLK_ESCAPE:
+                data.command = END_COMMAND;
+                data.cid = myid;
+                data.state = GAME_LOAD;
+                send_data(&data, sizeof(CONTAINER), sock);
+                break;
+            default:
+                fprintf(stderr, "not a valid command.\n");
+                break;
+            }
+            break;
+        }
+    }
+}
+
+
 /*****************************************************************
 ´Ø¿ôÌ¾	: EventMainFighter
 µ¡Ç½	: ¥á¥¤¥ó¥¦¥¤¥ó¥É¥¦¤ËÂÐ¤¹¤ë¥¤¥Ù¥ó¥È½èÍý¤ò¹Ô¤¦
@@ -13,7 +177,7 @@ void EventMainFighter(int myid, int sock)
     CONTAINER data;
     memset(&data, 0, sizeof(CONTAINER));
 
-    SDL_Event event;
+    //SDL_Event event;
     //int buttonNO;
 
     /* °ú¤­¿ô¥Á¥§¥Ã¥¯ */
@@ -27,6 +191,7 @@ void EventMainFighter(int myid, int sock)
             data.command = END_COMMAND;
             fprintf(stderr, "%d\n", data.command);
             data.cid = myid;
+            data.state = GAME_MAIN;
             send_data(&data, sizeof(CONTAINER), sock);
             break;
 
@@ -36,6 +201,7 @@ void EventMainFighter(int myid, int sock)
             case SDLK_ESCAPE:
                 data.command = END_COMMAND;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
             default:
@@ -51,12 +217,14 @@ void EventMainFighter(int myid, int sock)
                 if(event.jaxis.value == -32768){
                     data.command = LEFT_COMMAND;
                     data.cid = myid;
+                    data.state = GAME_MAIN;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("左\n");
                 }
                 if(event.jaxis.value == 32767){
                     data.command = RIGHT_COMMAND;
                     data.cid = myid;
+                    data.state = GAME_MAIN;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("右\n");
                 }
@@ -66,12 +234,14 @@ void EventMainFighter(int myid, int sock)
                 if(event.jaxis.value == -32768){
                     data.command = UP_COMMAND;
                     data.cid = myid;
+                    data.state = GAME_MAIN;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("上\n");
                 }
                 if(event.jaxis.value == 32767){
                     data.command = DOWN_COMMAND;
                     data.cid = myid;
+                    data.state = GAME_MAIN;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("下\n");
                 }
@@ -83,6 +253,7 @@ void EventMainFighter(int myid, int sock)
                 case 0:
                     data.command = SEPARATE_LERI_COMMAND; //server.cのcontrol_requests関数より
                     data.cid = myid; //送信をしたIDの挿入
+                    data.state = GAME_MAIN;
 	            data.tx = player[myid].tx;
                     data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
@@ -91,6 +262,7 @@ void EventMainFighter(int myid, int sock)
                 case 1:
                     data.command = SEPARATE_UPDO_COMMAND; //server.cのcontrol_requests関数より
                     data.cid = myid; //送信をしたIDの挿入
+                    data.state = GAME_MAIN;
 	            data.tx = player[myid].tx;
                     data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
@@ -109,6 +281,7 @@ void EventMainFighter(int myid, int sock)
             case 5:
                 data.command = SHOT_COMMAND;
                 data.cid = myid;
+                data.state = GAME_MAIN;
 	        //data.tx = player[myid].tx;
                 //data.ty = player[myid].ty;
                 send_data(&data, sizeof(CONTAINER), sock);
@@ -129,6 +302,7 @@ void EventMainFighter(int myid, int sock)
             case 5:
                 data.command = SHOT_FINISH_COMMAND; //server.cのcontrol_requests関数より
                 data.cid = myid; //送信をしたIDの挿入
+                data.state = GAME_MAIN;
 	        //data.tx = player[myid].tx;
                 //data.ty = player[myid].ty;
                 send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
@@ -285,6 +459,123 @@ void EventMainTank(int myid, int sock){
     }
 }
 
+
+/*****************************************************************
+void EventOver(int myid, int sock)
+引数：
+機能：
+返値：
+*****************************************************************/
+void EventOver(int myid, int sock){
+    CONTAINER data;
+    memset(&data, 0, sizeof(CONTAINER));
+
+    //SDL_Event event;
+
+//コントローラーから
+    if(SDL_PollEvent(&event)){
+        switch(event.type){
+
+        case SDL_QUIT:
+            data.command = END_COMMAND;
+            fprintf(stderr, "%d\n", data.command);
+            data.cid = myid;
+            data.state = GAME_OVER;
+            send_data(&data, sizeof(CONTAINER), sock);
+            break;
+
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym){
+            case SDLK_ESCAPE:
+                data.command = END_COMMAND;
+                data.cid = myid;
+                data.state = GAME_OVER;
+                send_data(&data, sizeof(CONTAINER), sock);
+                break;
+            default:
+                fprintf(stderr, "not a valid command.\n");
+                break;
+            }
+            break;
+
+            // ジョイスティックのボタンが押された時
+        case SDL_JOYBUTTONDOWN:
+            printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
+            // ボタンIDに応じた処理
+            switch(event.jbutton.button){
+//弾を打つ
+            case 3:
+                fprintf(stderr, "4 push.\n");
+                data.command = FOUR_COMMAND;
+                data.cid = myid;
+                data.state = GAME_OVER;
+                send_data(&data, sizeof(CONTAINER), sock);
+                stageFlag = 2;
+                break;
+            }
+            break;
+        }
+    }
+}
+
+
+/*****************************************************************
+void EventClear(int myid, int sock)
+引数：
+機能：
+返値：
+*****************************************************************/
+void EventClear(int myid, int sock){
+    CONTAINER data;
+    memset(&data, 0, sizeof(CONTAINER));
+
+    //SDL_Event event;
+
+//コントローラーから
+    if(SDL_PollEvent(&event)){
+        switch(event.type){
+
+        case SDL_QUIT:
+            data.command = END_COMMAND;
+            fprintf(stderr, "%d\n", data.command);
+            data.cid = myid;
+            data.state = GAME_CLEAR;
+            send_data(&data, sizeof(CONTAINER), sock);
+            break;
+
+        case SDL_KEYDOWN:
+            switch(event.key.keysym.sym){
+            case SDLK_ESCAPE:
+                data.command = END_COMMAND;
+                data.cid = myid;
+                data.state = GAME_CLEAR;
+                send_data(&data, sizeof(CONTAINER), sock);
+                break;
+            default:
+                fprintf(stderr, "not a valid command.\n");
+                break;
+            }
+            break;
+
+            // ジョイスティックのボタンが押された時
+        case SDL_JOYBUTTONDOWN:
+            printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
+            // ボタンIDに応じた処理
+            switch(event.jbutton.button){
+//弾を打つ
+            case 3:
+                fprintf(stderr, "4 push.\n");
+                data.command = FOUR_COMMAND;
+                data.cid = myid;
+                data.state = GAME_CLEAR;
+                send_data(&data, sizeof(CONTAINER), sock);
+                stageFlag = 2;
+                break;
+            }
+            break;
+        }
+    }
+}
 
 void send_data(void *data, int size, int sock) {
   if ((data == NULL) || (size <= 0)) {

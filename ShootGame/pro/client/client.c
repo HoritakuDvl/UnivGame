@@ -4,6 +4,7 @@
 #include "../common.h"
 #include "client_func.h"
 
+static GAME_STATE gstate = GAME_TITLE;
 
 static int num_clients;
 static int myid;
@@ -12,6 +13,13 @@ static int num_sock;
 static fd_set mask;
 static CLIENT clients[MAX_NUM_CLIENTS];
 
+static int DrawGameTitle();
+static int DrawGameSelect();
+static int DrawGameLoad();
+static int DrawGameMain();
+static int DrawGameOver();
+static int DrawGameClear();
+static void PlayerAllInit(int knd); //初期データの送信・受信
 //static void input_main_command(void); //送信（コマンド入力）
 static int execute_command(void); //受信（行動実行）
 //static void send_data(void *, int); //データを送る
@@ -113,6 +121,379 @@ void setup_client(char *server_name, u_short port) {
     EnemyLoad();
 
 /*初期化*/
+    stageFlag = 1;
+    //PlayerAllInit(3); //一斉スタートするとき
+}
+
+/*************************************
+int control_requests ()
+引数：なし
+機能：クライアント中の動作(main画面)
+返値：1…メッセージの送信　0…チャット終了
+***************************************/
+int control_requests () {
+  int result = 1;
+  switch(gstate){
+  case GAME_TITLE:
+      result = DrawGameTitle();
+      break;
+  case GAME_SELECT:
+      result = DrawGameSelect();
+      break;
+  case GAME_LOAD:
+      result = DrawGameLoad();
+      break;
+  case GAME_MAIN:
+      result = DrawGameMain();
+      break;
+  case GAME_OVER:
+      result = DrawGameOver();
+      break;
+  case GAME_CLEAR:
+      result = DrawGameClear();
+      break;
+  }
+  return result;
+}
+
+
+/************************************
+static int DrawGameTitle()
+引数：
+機能：
+返値：result
+*************************************/
+static int DrawGameTitle(){
+
+    fd_set read_flag = mask;
+
+    struct timeval timeout;
+    timeout.tv_sec = 0; //クライアント側
+    timeout.tv_usec = 30; //ユーザー側
+
+//select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
+    if(select(num_sock, (fd_set *)&read_flag, NULL, NULL, &timeout) == -1) {
+        handle_error("select()");
+    }
+
+    int result = 1;
+    if(stageFlag == 1){
+        EventTitle(myid, sock);
+    }
+    if (FD_ISSET(sock, &read_flag)) {
+        result = execute_command(); //受信
+    }
+
+    SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
+
+    return result;
+}
+
+/************************************
+static int DrawGameSelect()
+引数：
+機能：
+返値：result
+*************************************/
+static int DrawGameSelect(){
+
+    fd_set read_flag = mask;
+
+    struct timeval timeout;
+    timeout.tv_sec = 0; //クライアント側
+    timeout.tv_usec = 30; //ユーザー側
+
+//select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
+    if(select(num_sock, (fd_set *)&read_flag, NULL, NULL, &timeout) == -1) {
+        handle_error("select()");
+    }
+
+    int result = 1;
+    if(stageFlag == 1){
+        EventSelect(myid, sock);
+    }
+    if (FD_ISSET(sock, &read_flag)) {
+        result = execute_command(); //受信
+    }
+
+    SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
+
+    return result;
+}
+
+/************************************
+static int DrawGameLoad()
+引数：
+機能：
+返値：result
+*************************************/
+static int DrawGameLoad(){
+
+    fd_set read_flag = mask;
+
+    struct timeval timeout;
+    timeout.tv_sec = 0; //クライアント側
+    timeout.tv_usec = 30; //ユーザー側
+
+//select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
+    if(select(num_sock, (fd_set *)&read_flag, NULL, NULL, &timeout) == -1) {
+        handle_error("select()");
+    }
+
+    int result = 1;
+    if(stageFlag == 1){
+        EventLoad(myid, sock);
+    }
+    if (FD_ISSET(sock, &read_flag)) {
+        result = execute_command(); //受信
+    }
+
+    SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
+
+    return result;
+}
+
+/************************************
+static void DrawGameMain()
+引数：
+機能：
+返値：result
+*************************************/
+static int DrawGameMain(){
+    fd_set read_flag = mask;
+
+    struct timeval timeout;
+    timeout.tv_sec = 0; //クライアント側
+    timeout.tv_usec = 30; //ユーザー側
+
+//select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
+    if(select(num_sock, (fd_set *)&read_flag, NULL, NULL, &timeout) == -1) {
+        handle_error("select()");
+    }
+
+    int result = 1;
+    if(stageFlag == 1){
+        //input_main_command(); //送信
+        switch(player[myid].knd2){
+        case 1:
+            EventMainFighter(myid, sock);
+            break;
+        case 2:
+            EventMainTank(myid, sock);
+            break;
+        }
+      
+        if (FD_ISSET(sock, &read_flag)) {
+            result = execute_command(); //受信
+        }
+    }
+
+    int i;
+    if(HP == 0){
+        for(i = 0; i < num_clients; i++){
+            if(player[i].flag == 0){ //読み込み中
+                result = 1;
+                return result;
+            }
+        }
+    }
+  
+
+    SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 0, 0, 0, 255));
+    if(stageFlag != 1){
+        switch(stageFlag){
+        case 2 : //ステージ２に移動
+            src_rect.x += 10;
+            if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
+                src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
+            if(src_rect.w < 0){
+                src_rect.w = 0;
+                src_rect2.x+=10;
+            }
+
+            src_rect2.w += 10;
+            /*if(src_rect2.w > WINDOW_WIDTH){
+              src_rect2.w = WINDOW_WIDTH;
+              }*/
+            dst_rect2 = DstRectInit(src_rect.w, 0);
+
+            SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei2, &src_rect2, window, &dst_rect2);
+
+            if(src_rect.w <= 0/*src_rect2.x >= 100*/){
+                stageFlag = 1;
+                src_rect = SrcRectInit(/*10*/0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+                dst_rect = DstRectInit(0, 0);
+                src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
+                dst_rect2 = DstRectInit(0, 0);
+            }
+            break;
+        case 3:
+            src_rect.x += 10;
+            if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
+                src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
+            if(src_rect.w < 0){
+                src_rect.w = 0;
+                src_rect2.x+=10;
+            }
+
+            src_rect2.w += 10;
+            /*if(src_rect2.w > WINDOW_WIDTH){
+              src_rect2.w = WINDOW_WIDTH;
+              }*/
+            dst_rect2 = DstRectInit(src_rect.w, 0);
+
+            SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei1, &src_rect2, window, &dst_rect2);
+
+            if(src_rect.w <= 0/*src_rect2.x >= 100*/){
+                stageFlag = 1;
+                src_rect = SrcRectInit(/*10*/0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+                dst_rect = DstRectInit(0, 0);
+                src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
+                dst_rect2 = DstRectInit(0, 0);
+            }
+            break;
+        }
+        result = 1;
+    }
+    else{ //遊んでいるとき
+        switch(stage){
+        case 1:
+            SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
+            break;
+        case 2:
+            SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
+            break;
+        case 3:
+            SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
+            break;
+        }
+        result = 1;
+    }
+
+//体力ゲージの描画
+    if(HP != 0){
+        boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP / HP_M, 100, 0xff0000ff);
+
+        StringDraw(HP, 0);
+    }
+
+//スコアの設定
+    if(Score_Plus > 0){
+        if(Score_Plus >= 10){
+            Total_Score += 10;
+            Score_Plus -= 10;
+        }
+        else{
+            Total_Score += Score_Plus;
+            Score_Plus = 0;
+        }
+    }
+    StringDraw(Total_Score, 1);
+
+//攻撃レベル
+    int power = 1;
+    StringDraw(power,2);
+
+//速度レベル
+    int speed = 1;
+    StringDraw(speed, 3);
+
+    if(stageFlag == 1){
+//敵の描画
+        EnemyDraw();
+    }
+
+//プレイヤーの動作
+    for(i = 0; i < num_clients; i++){
+        if(stageFlag == 1)
+            PlayerAction(i);
+        PlayerDraw(i);
+    }
+
+    if(stageFlag == 1){
+//その他の動作
+        EnemyEnter();
+
+        EnemyMove(num_clients, myid, sock);
+        PlayerShotCalc(myid, sock);
+        EnemyBulletMove(num_clients, myid, sock);
+    }
+    return result;
+}
+
+/************************************
+static int DrawGameOver()
+引数：
+機能：
+返値：result
+*************************************/
+static int DrawGameOver(){
+
+    fd_set read_flag = mask;
+
+    struct timeval timeout;
+    timeout.tv_sec = 0; //クライアント側
+    timeout.tv_usec = 30; //ユーザー側
+
+//select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
+    if(select(num_sock, (fd_set *)&read_flag, NULL, NULL, &timeout) == -1) {
+        handle_error("select()");
+    }
+
+    int result = 1;
+    if(stageFlag == 1){
+        EventOver(myid, sock);
+    }
+    if (FD_ISSET(sock, &read_flag)) {
+        result = execute_command(); //受信
+    }
+
+    SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
+
+    return result;
+}
+
+/************************************
+static int DrawGameClear()
+引数：
+機能：
+返値：result
+*************************************/
+static int DrawGameClear(){
+
+    fd_set read_flag = mask;
+
+    struct timeval timeout;
+    timeout.tv_sec = 0; //クライアント側
+    timeout.tv_usec = 30; //ユーザー側
+
+//select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
+    if(select(num_sock, (fd_set *)&read_flag, NULL, NULL, &timeout) == -1) {
+        handle_error("select()");
+    }
+
+    int result = 1;
+    if(stageFlag == 1){
+        EventClear(myid, sock);
+    }
+    if (FD_ISSET(sock, &read_flag)) {
+        result = execute_command(); //受信
+    }
+
+    SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
+
+    return result;
+}
+
+/********************************************
+static void PlayerAllInit()
+引数：
+機能：自分の選んだ機種をサーバーからもらう
+返値：
+*********************************************/
+static void PlayerAllInit(int knd) {
     stage = 1;
     stageFlag = 1;
 
@@ -126,179 +507,18 @@ void setup_client(char *server_name, u_short port) {
     src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
     dst_rect2 = DstRectInit(0, 0);
 
-    player[myid].knd = 9; //ここは機体セレクトで決める
+    player[myid].knd = knd; //ここは機体セレクトで決める
     CONTAINER data;
     memset(&data, 0, sizeof(CONTAINER));
 
     data.command = DATA_PULL;
     data.cid = myid;
+    data.state = gstate;
     data.player = player[myid];
     data.flag = 2;
     send_data(&data, sizeof(CONTAINER), sock);
 
     //PlayerEnter(num_clients, sock); //ロードするとき（ゲーム開始前）に取り入れる
-}
-
-/*************************************
-int control_requests ()
-引数：なし
-機能：クライアント中の動作(main画面)
-返値：1…メッセージの送信　0…チャット終了
-***************************************/
-int control_requests () {
-  fd_set read_flag = mask;
-
-  struct timeval timeout;
-  timeout.tv_sec = 0; //クライアント側
-  timeout.tv_usec = 30; //ユーザー側
-
-//select:FDの集合から読み込み可(引数２)/書き込み可(引数３)/例外発生(引数４)のFDを発見
-  if(select(num_sock, (fd_set *)&read_flag, NULL, NULL, &timeout) == -1) {
-      handle_error("select()");
-  }
-
-  int result = 1;
-  if(stageFlag == 1){
-      //input_main_command(); //送信
-      switch(player[myid].knd2){
-      case 1:
-          EventMainFighter(myid, sock);
-          break;
-      case 2:
-          EventMainTank(myid, sock);
-          break;
-      }
-      
-      if (FD_ISSET(sock, &read_flag)) {
-          result = execute_command(); //受信
-      }
-  }
-
-  int i;
-  if(HP == 0){
-      for(i = 0; i < num_clients; i++){
-          if(player[i].flag == 0){ //読み込み中
-              result = 1;
-              return result;
-          }
-      }
-  }
-  
-
-  SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 0, 0, 0, 255));
-  if(stageFlag != 1){
-      switch(stageFlag){
-      case 2 : //ステージ２に移動
-          src_rect.x += 10;
-          if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
-              src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
-          if(src_rect.w < 0){
-              src_rect.w = 0;
-              src_rect2.x+=10;
-          }
-
-          src_rect2.w += 10;
-          /*if(src_rect2.w > WINDOW_WIDTH){
-              src_rect2.w = WINDOW_WIDTH;
-              }*/
-          dst_rect2 = DstRectInit(src_rect.w, 0);
-
-          SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
-          SDL_BlitSurface(haikei2, &src_rect2, window, &dst_rect2);
-
-          if(src_rect.w <= 0/*src_rect2.x >= 100*/){
-              stageFlag = 1;
-              src_rect = SrcRectInit(/*10*/0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-              dst_rect = DstRectInit(0, 0);
-              src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
-              dst_rect2 = DstRectInit(0, 0);
-          }
-          break;
-      case 3:
-          src_rect.x += 10;
-          if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
-              src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
-          if(src_rect.w < 0){
-              src_rect.w = 0;
-              src_rect2.x+=10;
-          }
-
-          src_rect2.w += 10;
-          /*if(src_rect2.w > WINDOW_WIDTH){
-              src_rect2.w = WINDOW_WIDTH;
-              }*/
-          dst_rect2 = DstRectInit(src_rect.w, 0);
-
-          SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
-          SDL_BlitSurface(haikei1, &src_rect2, window, &dst_rect2);
-
-          if(src_rect.w <= 0/*src_rect2.x >= 100*/){
-              stageFlag = 1;
-              src_rect = SrcRectInit(/*10*/0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-              dst_rect = DstRectInit(0, 0);
-              src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
-              dst_rect2 = DstRectInit(0, 0);
-          }
-          break;
-      }
-      result = 1;
-  }
-  else{ //遊んでいるとき
-      switch(stage){
-      case 1:
-          SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
-          break;
-      case 2:
-          SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
-          break;
-      case 3:
-          SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
-          break;
-      }
-      result = 1;
-  }
-
-//体力ゲージの描画
-  if(HP != 0){
-      boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP / HP_M, 100, 0xff0000ff);
-
-      StringDraw(HP, 0);
-  }
-
-//スコアの設定
-  if(Score_Plus > 0){
-      if(Score_Plus >= 10){
-          Total_Score += 10;
-          Score_Plus -= 10;
-      }
-      else{
-          Total_Score += Score_Plus;
-          Score_Plus = 0;
-      }
-  }
-  StringDraw(Total_Score, 1);
-
-  if(stageFlag == 1){
-//敵の描画
-      EnemyDraw();
-  }
-
-//プレイヤーの動作
-  for(i = 0; i < num_clients; i++){
-      if(stageFlag == 1)
-          PlayerAction(i);
-      PlayerDraw(i);
-  }
-
-  if(stageFlag == 1){
-//その他の動作
-      EnemyEnter();
-
-      EnemyMove(num_clients, myid, sock);
-      PlayerShotCalc(myid, sock);
-      EnemyBulletMove(num_clients, myid, sock);
-  }
-  return result;
 }
 
 
@@ -314,137 +534,229 @@ static int execute_command() {
     int k;
     memset(&data, 0, sizeof(CONTAINER));
     receive_data(&data, sizeof(data));
-    switch (data.command) { //クライアントのチャットの行動
-    case UP_COMMAND: //メッセージが送信されたら
-        player[data.cid].command.up = 1;
-        result = 1;
-    break;
-    case DOWN_COMMAND: //メッセージが送信されたら
-        player[data.cid].command.down = 1;
-        result = 1;
-    break;
-    case LEFT_COMMAND: //メッセージが送信されたら
-        player[data.cid].command.left = 1;
-        result = 1;
-    break;
-    case RIGHT_COMMAND: //メッセージが送信されたら
-        player[data.cid].command.right = 1;
-        result = 1;
-    break;
-
-    case SEPARATE_UPDO_COMMAND:
-        player[data.cid].command.up = 0;
-        player[data.cid].command.down = 0;
-        if(myid != data.cid){
-           player[data.cid].tx = data.tx;
-           player[data.cid].ty = data.ty;
-        }
-        result = 1;
-        break;
-    case SEPARATE_LERI_COMMAND:
-        player[data.cid].command.left = 0;
-        player[data.cid].command.right = 0;
-        if(myid != data.cid){
-           player[data.cid].tx = data.tx;
-           player[data.cid].ty = data.ty;
-        }
-        result = 1;
-        break;
-
-    case UP_ROTA:
-        player[data.cid].command.rotaU = 1;
-        result = 1;
-        break;
-    case RIGHT_ROTA:
-        player[data.cid].command.rotaR = 1;
-        result = 1;
-        break;
-    case LEFT_ROTA:
-        player[data.cid].command.rotaL = 1;
-        result = 1;
-        break;
-
-    case UP_SEPA_ROTA:
-        player[data.cid].command.rotaU = 0;
-        result = 1;
-        break;
-    case RIGHT_SEPA_ROTA:
-        player[data.cid].command.rotaR = 0;
-        result = 1;
-        break;
-    case LEFT_SEPA_ROTA:
-        player[data.cid].command.rotaL = 0;
-        result = 1;
-        break;
-
-    case SHOT_COMMAND:
-        player[data.cid].command.b5 = 1;
-        //player[data.cid].tx = data.tx;
-        //player[data.cid].ty = data.ty;
-        result = 1;
-        break;
-    case SHOT_FINISH_COMMAND:
-        player[data.cid].command.b5 = 0;
-        //player[data.cid].tx = data.tx;
-        //player[data.cid].ty = data.ty;
-        result = 1;
-        break;
-
-    case PLAYER_HIT:
-        PlayerDamage(data, myid, sock);
-        result = 1;
-        break;
-    case PLAYER_HIT2:
-        PlayerDamage2(data, myid, sock);
-        result = 1;
-        break;
-    case ENEMY_HIT:
-        k = EnemyDamage(data);
-        if(stage % 3 != 0){ //ザコ面
-            if(k % 10 == 0 + stage/3){
-                stage++;
-                stageFlag = stage;
-                PlayerBulletClean();
-                EnemyBulletClean();
-            }
-        }
-        else { //ボス面
-            if(k == 21) {//中ボス１を倒したら
-                memset(&data, 0, sizeof(CONTAINER));
-                data.command = END_COMMAND;
-                fprintf(stderr, "%d\n", data.command);
-                data.cid = myid;
-                send_data(&data, sizeof(CONTAINER), sock);
-
-                fprintf(stderr, "////////////////////\n");
-                fprintf(stderr, "//     Clear!     //\n");
-                fprintf(stderr, "////////////////////\n");
-            }
-        }
-        result = 1;
-        break;
-
-    case DATA_PULL:
-        switch(data.flag){
-        case 2:
-            player[data.cid] = data.player;
-            fprintf(stderr, "%d:in! %d\n", data.cid, data.player.flag);
-            PlayerShotEnter(data.cid, num_clients);
-            if(data.hp > 0){
-                HP_M = data.hp;
-                HP = HP_M;
-            }
+    switch(gstate) {
+//GAME_TITLE
+    case GAME_TITLE:
+        switch(data.command) {
+        case FOUR_COMMAND:
+            fprintf(stderr, "Go to Game!\n");
+            gstate = data.state;
+            stageFlag = 1;
+            PlayerAllInit(3);
+            result = 1;
+            break;
+        case END_COMMAND:
+            fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
+            result = 0; //チャットを終了
+            break;
+        default:
+            fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
+            exit(1);
             break;
         }
         break;
 
-    case END_COMMAND: //誰かが退室したら
-        fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
-        result = 0; //チャットを終了
+//GAME_SELECT
+    case GAME_SELECT:
+        switch(data.command) {
+        case FOUR_COMMAND:
+
+            break;
+        case END_COMMAND:
+            fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
+            result = 0; //チャットを終了
+            break;
+        default:
+            fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
+            exit(1);
+            break;
+        }
         break;
-    default:
-        fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
-        exit(1);
+
+//GAME_LOAD
+    case GAME_LOAD:
+        switch(data.command) {
+        case END_COMMAND:
+            fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
+            result = 0; //チャットを終了
+            break;
+        default:
+            fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
+            exit(1);
+            break;
+        }
+        break;
+
+//GAME_MAIN
+    case GAME_MAIN:
+        switch (data.command) { //クライアントのチャットの行動
+        case UP_COMMAND: //メッセージが送信されたら
+            player[data.cid].command.up = 1;
+            result = 1;
+            break;
+        case DOWN_COMMAND: //メッセージが送信されたら
+            player[data.cid].command.down = 1;
+            result = 1;
+            break;
+        case LEFT_COMMAND: //メッセージが送信されたら
+            player[data.cid].command.left = 1;
+            result = 1;
+            break;
+        case RIGHT_COMMAND: //メッセージが送信されたら
+            player[data.cid].command.right = 1;
+            result = 1;
+            break;
+
+        case SEPARATE_UPDO_COMMAND:
+            player[data.cid].command.up = 0;
+            player[data.cid].command.down = 0;
+            if(myid != data.cid){
+                player[data.cid].tx = data.tx;
+                player[data.cid].ty = data.ty;
+            }
+            result = 1;
+            break;
+        case SEPARATE_LERI_COMMAND:
+            player[data.cid].command.left = 0;
+            player[data.cid].command.right = 0;
+            if(myid != data.cid){
+                player[data.cid].tx = data.tx;
+                player[data.cid].ty = data.ty;
+            }
+            result = 1;
+            break;
+
+        case UP_ROTA:
+            player[data.cid].command.rotaU = 1;
+            result = 1;
+            break;
+        case RIGHT_ROTA:
+            player[data.cid].command.rotaR = 1;
+            result = 1;
+            break;
+        case LEFT_ROTA:
+            player[data.cid].command.rotaL = 1;
+            result = 1;
+            break;
+
+        case UP_SEPA_ROTA:
+            player[data.cid].command.rotaU = 0;
+            result = 1;
+            break;
+        case RIGHT_SEPA_ROTA:
+            player[data.cid].command.rotaR = 0;
+            result = 1;
+            break;
+        case LEFT_SEPA_ROTA:
+            player[data.cid].command.rotaL = 0;
+            result = 1;
+            break;
+
+        case SHOT_COMMAND:
+            player[data.cid].command.b5 = 1;
+            //player[data.cid].tx = data.tx;
+            //player[data.cid].ty = data.ty;
+            result = 1;
+            break;
+        case SHOT_FINISH_COMMAND:
+            player[data.cid].command.b5 = 0;
+            //player[data.cid].tx = data.tx;
+            //player[data.cid].ty = data.ty;
+            result = 1;
+            break;
+
+        case PLAYER_HIT:
+            PlayerDamage(data, myid, sock);
+            result = 1;
+            break;
+        case PLAYER_HIT2:
+            PlayerDamage2(data, myid, sock);
+            result = 1;
+            break;
+        case ENEMY_HIT:
+            k = EnemyDamage(data);
+            if(stage % 3 != 0){ //ザコ面
+                if(k % 10 == 0 + stage/3){
+                    stage++;
+                    stageFlag = stage;
+                    PlayerBulletClean();
+                    EnemyBulletClean();
+                }
+            }
+            else { //ボス面
+                if(k == 21) {//中ボス１を倒したら
+                    memset(&data, 0, sizeof(CONTAINER));
+                    data.command = END_COMMAND;
+                    fprintf(stderr, "%d\n", data.command);
+                    data.cid = myid;
+                    data.state = gstate;
+                    send_data(&data, sizeof(CONTAINER), sock);
+
+                    fprintf(stderr, "////////////////////\n");
+                    fprintf(stderr, "//     Clear!     //\n");
+                    fprintf(stderr, "////////////////////\n");
+                }
+            }
+            result = 1;
+            break;
+
+        case DATA_PULL:
+            switch(data.flag){
+            case 2:
+                player[data.cid] = data.player;
+                fprintf(stderr, "%d:in! %d\n", data.cid, data.player.flag);
+                PlayerShotEnter(data.cid, num_clients);
+                if(data.hp > 0){
+                    HP_M = data.hp;
+                    HP = HP_M;
+                }
+                break;
+            }
+            break;
+
+        case END_COMMAND: //誰かが退室したら
+            fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
+            result = 0; //チャットを終了
+            break;
+        default:
+            fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
+            exit(1);
+            break;
+        }
+        break;
+
+//GAME_OVER
+    case GAME_OVER:
+        switch(data.command) {
+        case FOUR_COMMAND:
+
+            break;
+        case END_COMMAND: //誰かが退室したら
+            fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
+            result = 0; //チャットを終了
+            break;
+        default:
+            fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
+            exit(1);
+            break;
+        }
+        break;
+
+//GAME_CLEAR
+    case GAME_CLEAR:
+        switch(data.command) {
+        case FOUR_COMMAND:
+
+            break;
+        case END_COMMAND: //誰かが退室したら
+            fprintf(stderr, "client[%d] %s sent quit command.\n", data.cid, clients[data.cid].name);
+            result = 0; //チャットを終了
+            break;
+        default:
+            fprintf(stderr, "execute_command(): %c is not a valid command.\n", data.command);    
+            exit(1);
+            break;
+        }
         break;
     }
     return result;

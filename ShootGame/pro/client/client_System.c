@@ -43,6 +43,7 @@ void PlayerHit(int myid, int m, int n, int sock){ //プレイヤーと弾
 
     data.command = PLAYER_HIT;
     data.cid = myid;
+    data.state = GAME_MAIN;
     data.m = m;
     data.n = n;
     data.player = player[myid];
@@ -79,6 +80,7 @@ void PlayerHit2(int myid, int sock){ //プレイヤーと敵
 
     data.command = PLAYER_HIT2;
     data.cid = myid;
+    data.state = GAME_MAIN;
     data.player = player[myid];
 
     send_data(&data, sizeof(CONTAINER), sock);
@@ -111,6 +113,7 @@ void EnemyHit(int myid, int m, int n, int ene_num, int sock){ //プレイヤー�
 
     data.command = ENEMY_HIT;
     data.cid = myid;
+    data.state = GAME_MAIN;
     data.m = m;
     data.n = n;
     data.ene_num = ene_num;
@@ -152,6 +155,7 @@ void StringDraw(int num, int knd){
     char str[100];
     SDL_Surface *stringA;
     SDL_Color red = {0xFF, 0x00, 0x00};
+    SDL_Color green = {0x00, 0xFF, 0x00};
 
     SDL_Rect stA_src, stA_dst;
     switch(knd){
@@ -165,8 +169,22 @@ void StringDraw(int num, int knd){
     case 1:
         sprintf(str, "Score:%8d", num);
         stringA = TTF_RenderUTF8_Blended(font, str, red);
+        stA_src = SrcRectInit(0, 0, 500, 60);
+        stA_dst = DstRectInit(WINDOW_WIDTH - 300, 40);
+        break;
+
+    case 2:
+        sprintf(str, "P : %d", num);
+        stringA = TTF_RenderUTF8_Blended(font, str, red);
         stA_src = SrcRectInit(0, 0, 500, 40);
         stA_dst = DstRectInit(WINDOW_WIDTH - 300, 80);
+        break;
+
+    case 3:
+        sprintf(str, "S : %d", num);
+        stringA = TTF_RenderUTF8_Blended(font, str, green);
+        stA_src = SrcRectInit(0, 0, 500, 40);
+        stA_dst = DstRectInit(WINDOW_WIDTH - 150, 80);
         break;
     }
 

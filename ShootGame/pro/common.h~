@@ -6,8 +6,10 @@
 /*
 バグ
 ・client_EnemyShotPattern.c  自機狙いができない 解決
-・client_EnemyData.c  たまに敵が描画されない
+・client_EnemyData.c  たまに敵が描画されない 解決
 ・server.c　スコアの計算をする
+・クライアントで管理しているもの（敵の状態など）を共通させる[描画の違いをなくすため]
+・各クライアントでスコア等の動作が違う（ラグかな？）
 */
 
 #ifndef _COMMON_H_
@@ -48,6 +50,8 @@
 
 #define END_COMMAND		'Q'		  		/* プログラム終了コマンド */
 
+#define FOUR_COMMAND     'H'
+
 #define LEFT_COMMAND	'L'				/* 左コマンド */
 #define RIGHT_COMMAND	'R'				/* 右コマンド */
 #define UP_COMMAND	'U'				/* 上コマンド */
@@ -56,6 +60,7 @@
 #define SEPARATE_LERI_COMMAND	'X'				/* 左スティックを離すコマンド */
 #define SHOT_COMMAND 'S'                    /* 5ボタンを押した時 */
 #define SHOT_FINISH_COMMAND 'F'            /* 5ボタンを離した時 */
+#define DATA_PULL 'C'
 
 //0:上 1:右 3:左 (右スティック)
 #define LEFT_ROTA 'B'
@@ -86,6 +91,11 @@ SDL_Surface *window;
 SDL_Joystick *joystick;
 TTF_Font* font;
 
+typedef enum{
+    GAME_TITLE,
+    GAME_MAIN
+}GAME_STATE;
+
 typedef struct{
     Uint32 now; //現在時間
     Uint32 wit; //待ち時間
@@ -111,15 +121,6 @@ typedef struct{
     double ang, rad; //砲台の角度
     int num; //○Pか
 }PlayerData;
-
-typedef struct{
-    int w, h;
-    int hp_max;
-    int knd, knd2, sp;
-    int pattern2, blknd, blCnt;
-    int power;
-    int w2, h2;
-}PlayerOrder;
 
 typedef struct {
     SDL_Rect src, dst; //画像
@@ -166,7 +167,6 @@ En en[MAX_CLIENTS];
 
 Timer timer;
 PlayerData player[MAX_CLIENTS];
-PlayerOrder playerOrder[PLAYER_ORDER_MAX];
 Shot pla_shot[PLAYER_SHOT_MAX];
 EnemyData enemy[ENEMY_MAX];
 EnemyOrder enemyOrder[ENEMY_ORDER_MAX];
@@ -174,5 +174,18 @@ Shot ene_shot[ENEMY_SHOT_MAX];
 
 int stage;
 int stageFlag;
+
+typedef struct {
+    int cid; //クライアントのID
+    char command;
+    GAME_STATE state;
+    int tx, ty; //プレイヤーの中心座標を送るときに使用
+    int m, n; //敵の打った弾の番号を送るときに使用(ene_shot[m].bullet[n]),(pla_shot[m].bullet[n])
+    int ene_num; //敵に弾が当たった時の敵の番号
+    PlayerData player;
+    EnemyData enemy;
+    int hp;
+    int flag; //1:最大HPの送信  2:
+} CONTAINER;
 
 #endif
