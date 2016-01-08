@@ -111,6 +111,8 @@ typedef struct{
     int up, down, left, right;
     int b5;
     int rotaU, rotaL, rotaR;
+
+    int kndP; //機種選択
 }Command;
 
 typedef struct{
@@ -171,6 +173,7 @@ typedef struct{
 En en[MAX_CLIENTS];
 
 Timer timer;
+Command pla_sele[MAX_CLIENTS]; //選択画面で使用(サーバー側・クライアント側両方で使用)
 PlayerData player[MAX_CLIENTS];
 Shot pla_shot[PLAYER_SHOT_MAX];
 EnemyData enemy[ENEMY_MAX];
@@ -181,8 +184,8 @@ int stage;
 int stageFlag;
 
 typedef struct {
-    int cid; //クライアントのID
     char command;
+    int cid; //クライアントのID
     GAME_STATE state;
     int tx, ty; //プレイヤーの中心座標を送るときに使用
     int m, n; //敵の打った弾の番号を送るときに使用(ene_shot[m].bullet[n]),(pla_shot[m].bullet[n])
@@ -191,6 +194,8 @@ typedef struct {
     EnemyData enemy;
     int hp;
     int flag; //1:最大HPの送信  2:
+
+    int kndP; //選択時の各クライアントの位置
 } CONTAINER;
 
 #endif

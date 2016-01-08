@@ -114,6 +114,9 @@ void setup_server(int num_cl, u_short port) {
   //EnemyDataLoad();
 
   gstate = GAME_TITLE;
+  for(i = 0; i < num_clients; i++) {
+      pla_sele[i].kndP = 0;
+  }
 }
 
 /************************
@@ -157,7 +160,7 @@ int control_requests() {
                         if(numC[i] == 0)
                             break;
                         if(i == num_clients-1){
-                            gstate = GAME_MAIN;
+                            gstate = GAME_SELECT;
                             data.state = gstate;
                             send_data(BROADCAST, &data, sizeof(data));
                             result = 1;
@@ -188,6 +191,28 @@ int control_requests() {
                     break;
                 }
                 switch(data.command) {
+                case LEFT_COMMAND:
+                case RIGHT_COMMAND:
+                    pla_sele[data.cid].kndP = (pla_sele[data.cid].kndP + 5)%10;
+                    data.kndP = pla_sele[data.cid].kndP;
+                    send_data(BROADCAST, &data, sizeof(data));
+                    fprintf(stderr, "pla_sele[%d].kndP = %d\n", data.cid, pla_sele[data.cid].kndP);
+                    result = 1;
+                    break;
+                case UP_COMMAND:
+                    pla_sele[data.cid].kndP = (pla_sele[data.cid].kndP + 9)%10;
+                    data.kndP = pla_sele[data.cid].kndP;
+                    send_data(BROADCAST, &data, sizeof(data));
+                    fprintf(stderr, "pla_sele[%d].kndP = %d\n", data.cid, pla_sele[data.cid].kndP);
+                    result = 1;
+                    break;
+                case DOWN_COMMAND:
+                    pla_sele[data.cid].kndP = (pla_sele[data.cid].kndP + 1)%10;
+                    data.kndP = pla_sele[data.cid].kndP;
+                    send_data(BROADCAST, &data, sizeof(data));
+                    fprintf(stderr, "pla_sele[%d].kndP = %d\n", data.cid, pla_sele[data.cid].kndP);
+                    result = 1;
+                    break;
                 case FOUR_COMMAND: //決定
 /*                    numC[data.cid] = 1;
                     fprintf(stderr, "numC[%d] = 1\n", data.cid);

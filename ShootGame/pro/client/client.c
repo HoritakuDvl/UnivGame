@@ -119,6 +119,7 @@ void setup_client(char *server_name, u_short port) {
     haikei2 = IMG_Load("sozai/Keikoku.png");
     PlayerLoad();
     EnemyLoad();
+    PlSeLoad();
 
 /*初期化*/
     stageFlag = 1;
@@ -217,6 +218,8 @@ static int DrawGameSelect(){
     }
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
+
+    PlayerSelect(num_clients);
 
     return result;
 }
@@ -542,7 +545,7 @@ static int execute_command() {
             fprintf(stderr, "Go to Game!\n");
             gstate = data.state;
             stageFlag = 1;
-            PlayerAllInit(3);
+            //PlayerAllInit(3);
             result = 1;
             break;
         case END_COMMAND:
@@ -559,7 +562,18 @@ static int execute_command() {
 //GAME_SELECT
     case GAME_SELECT:
         switch(data.command) {
+        case LEFT_COMMAND:
+        case RIGHT_COMMAND:
+        case UP_COMMAND:
+        case DOWN_COMMAND:
+            pla_sele[data.cid].kndP = data.kndP;
+            fprintf(stderr, "pla_sele[%d] = %d\n", data.cid, data.kndP);
+            result = 1;
+            break;
         case FOUR_COMMAND:
+
+            break;
+        case THREE_COMMAND:
 
             break;
         case END_COMMAND:

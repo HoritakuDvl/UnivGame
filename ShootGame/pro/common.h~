@@ -51,6 +51,7 @@
 #define END_COMMAND		'Q'		  		/* プログラム終了コマンド */
 
 #define FOUR_COMMAND     'H'
+#define THREE_COMMAND    'I'
 
 #define LEFT_COMMAND	'L'				/* 左コマンド */
 #define RIGHT_COMMAND	'R'				/* 右コマンド */
@@ -93,7 +94,11 @@ TTF_Font* font;
 
 typedef enum{
     GAME_TITLE,
-    GAME_MAIN
+    GAME_SELECT,
+    GAME_LOAD,
+    GAME_MAIN,
+    GAME_OVER,
+    GAME_CLEAR
 }GAME_STATE;
 
 typedef struct{
