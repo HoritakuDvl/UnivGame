@@ -157,33 +157,34 @@ void StringDraw(int num, int knd){
     SDL_Surface *stringA;
     SDL_Color red = {0xFF, 0x00, 0x00};
     SDL_Color green = {0x00, 0xFF, 0x00};
+    SDL_Color blue = {0x00, 0x00, 0xFF};
 
     SDL_Rect stA_src, stA_dst;
     switch(knd){
-    case 0:
+    case 0://体力
         sprintf(str, "%d", num);
-        stringA = TTF_RenderUTF8_Blended(font, str, red);
+        stringA = TTF_RenderUTF8_Blended(font, str, green);
         stA_src = SrcRectInit(0, 0, 500, 40);
         stA_dst = DstRectInit((WINDOW_WIDTH - 380)*HP/HP_M, 80);
         break;
 
-    case 1:
+    case 1://スコア
         sprintf(str, "Score:%8d", num);
         stringA = TTF_RenderUTF8_Blended(font, str, red);
         stA_src = SrcRectInit(0, 0, 500, 60);
         stA_dst = DstRectInit(WINDOW_WIDTH - 300, 40);
         break;
 
-    case 2:
+    case 2://パワー
         sprintf(str, "P : %d", num);
         stringA = TTF_RenderUTF8_Blended(font, str, red);
         stA_src = SrcRectInit(0, 0, 500, 40);
         stA_dst = DstRectInit(WINDOW_WIDTH - 300, 80);
         break;
 
-    case 3:
+    case 3://スピード
         sprintf(str, "S : %d", num);
-        stringA = TTF_RenderUTF8_Blended(font, str, green);
+        stringA = TTF_RenderUTF8_Blended(font, str, blue);
         stA_src = SrcRectInit(0, 0, 500, 40);
         stA_dst = DstRectInit(WINDOW_WIDTH - 150, 80);
         break;

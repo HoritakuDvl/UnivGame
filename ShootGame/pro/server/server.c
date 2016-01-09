@@ -154,7 +154,12 @@ int control_requests() {
                 }
                 switch(data.command) {
                 case FOUR_COMMAND:
-                    numC[data.cid] = 1;
+                    gstate = GAME_SELECT;
+                    data.state = gstate;
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1;
+
+                    /*numC[data.cid] = 1;
                     fprintf(stderr, "numC[%d] = 1\n", data.cid);
 
                     int j;
@@ -172,7 +177,7 @@ int control_requests() {
 
                             break;
                         }
-                    }
+                        }*/
                     break;
                 case END_COMMAND:
                     send_data(BROADCAST, &data, sizeof(data));
@@ -280,7 +285,7 @@ int control_requests() {
 //GAME_MAIN
             case GAME_MAIN:
                 if(data.state != gstate){
-                    fprintf(stderr, "not state.[GAME_MAIN]\n");
+                    fprintf(stderr, "'%c' %d not state.[%d:GAME_MAIN]\n", data.command, data.state, gstate);
                     exit(1);
                     break;
                 }
@@ -567,7 +572,7 @@ static PlayerData PlayerEnter(int myid, int knd){
             tmp.knd = knd;
             tmp.flag = 1;
             tmp.knd2 = playerOrder[t].knd2;
-            tmp.sp = playerOrder[t].sp+5;
+            tmp.sp = playerOrder[t].sp;
             tmp.power = playerOrder[t].power;
             tmp.pattern2 = playerOrder[t].pattern2;
 
@@ -598,17 +603,20 @@ static PlayerData PlayerEnter(int myid, int knd){
             }
 
             switch(knd){ //砲台の初期位置
-            case 2:
-                tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 30, tmp.ty - tmp.src.h / 2 - 8);
-                break;
-            case 7:
+            case 5:
                 tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 80, tmp.ty - tmp.src.h / 2 + 5);
                 break;
-            case 8:
+            case 6:
                 tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 100, tmp.ty - tmp.src.h / 2 + 10);
                 break;
-            case 9:
+            case 7:
+                tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 100, tmp.ty - tmp.src.h / 2 + 10);
+                break;
+            case 8:
                 tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 110, tmp.ty - tmp.src.h / 2 +5);
+                break;
+            case 9:
+                tmp.dst2 = DstRectInit(tmp.tx - tmp.src.w / 2 + 32, tmp.ty - tmp.src.h / 2 -5);
                 break;
             }
 

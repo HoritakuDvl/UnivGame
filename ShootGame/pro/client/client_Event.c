@@ -376,6 +376,7 @@ void EventMainTank(int myid, int sock){
         case SDL_QUIT:
             data.command = END_COMMAND;
             data.cid = myid;
+            data.state = GAME_MAIN;
             send_data(&data, sizeof(CONTAINER), sock);
             break;
 
@@ -385,6 +386,7 @@ void EventMainTank(int myid, int sock){
             case SDLK_ESCAPE:
                 data.command = END_COMMAND;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
             default:
@@ -401,6 +403,7 @@ void EventMainTank(int myid, int sock){
                     //SendLeftCommand(1);
                     data.command = LEFT_COMMAND;
                     data.cid = myid;
+                    data.state = GAME_MAIN;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("左\n");
                 }
@@ -408,6 +411,7 @@ void EventMainTank(int myid, int sock){
                     //SendRightCommand(1);
                     data.command = RIGHT_COMMAND;
                     data.cid = myid;
+                    data.state = GAME_MAIN;
                     send_data(&data, sizeof(CONTAINER), sock);
                     //printf("右\n");
                 }
@@ -418,6 +422,7 @@ void EventMainTank(int myid, int sock){
                 //SendSeparateCommand(1, event.jaxis.axis);
                 data.command = SEPARATE_LERI_COMMAND; //server.cのcontrol_requests関数より
                     data.cid = myid; //送信をしたIDの挿入
+                    data.state = GAME_MAIN;
                     send_data(&data, sizeof(CONTAINER), sock);
                 //printf("%d : 左スティックを離した\n", event.jaxis.axis);
             }
@@ -433,16 +438,19 @@ void EventMainTank(int myid, int sock){
             case 0:
                 data.command = UP_ROTA;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
             case 1:
                 data.command = RIGHT_ROTA;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
             case 3:
                 data.command = LEFT_ROTA;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
 
@@ -451,6 +459,7 @@ void EventMainTank(int myid, int sock){
                 //SendShotCommand(1);
                 data.command = SHOT_COMMAND;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
             }
@@ -468,16 +477,19 @@ void EventMainTank(int myid, int sock){
             case 0:
                 data.command = UP_SEPA_ROTA;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
             case 1:
                 data.command = RIGHT_SEPA_ROTA;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
             case 3:
                 data.command = LEFT_SEPA_ROTA;
                 data.cid = myid;
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
 
@@ -485,6 +497,7 @@ void EventMainTank(int myid, int sock){
                 //SendShotFinishCommand(1);
                 data.command = SHOT_FINISH_COMMAND; //server.cのcontrol_requests関数より
                 data.cid = myid; //送信をしたIDの挿入
+                data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
                 break;
             }
