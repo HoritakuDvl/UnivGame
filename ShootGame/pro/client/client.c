@@ -26,7 +26,7 @@ static int execute_command(void); //受信（行動実行）
 static int receive_data(void *, int); //データを受け取る
 
 
-static SDL_Surface *haikei1, *haikei2;
+static SDL_Surface *haikei1, *haikei2, *haikei3;
 static SDL_Rect src_rect, dst_rect, src_rect2, dst_rect2;
 
 
@@ -115,8 +115,9 @@ void setup_client(char *server_name, u_short port) {
 
 /*ロード*/
     //haikei1 = IMG_Load("sozai/haikei1.png");
-    haikei1 = IMG_Load("sozai/Sabaku.png");
-    haikei2 = IMG_Load("sozai/Keikoku.png");
+    haikei1 = IMG_Load("sozai/main_resource/05_main_game/background/bg_1.png");
+    haikei2 = IMG_Load("sozai/main_resource/05_main_game/background/bg_2.png");
+    haikei3 = IMG_Load("sozai/main_resource/05_main_game/background/bg_3.png");
     PlayerLoad();
     EnemyLoad();
     PlSeLoad();
@@ -347,7 +348,7 @@ static int DrawGameMain(){
             dst_rect2 = DstRectInit(src_rect.w, 0);
 
             SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
-            SDL_BlitSurface(haikei1, &src_rect2, window, &dst_rect2);
+            SDL_BlitSurface(haikei3, &src_rect2, window, &dst_rect2);
 
             if(src_rect.w <= 0/*src_rect2.x >= 100*/){
                 stageFlag = 1;
@@ -369,15 +370,16 @@ static int DrawGameMain(){
             SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
             break;
         case 3:
-            SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei3, &src_rect, window, &dst_rect);
             break;
         }
         result = 1;
     }
 
+    boxColor(window, 30/*1280*/, 30, WINDOW_WIDTH-30, 120, 0xffffffaa);
 //体力ゲージの描画
     if(HP != 0){
-        boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP / HP_M, 100, 0xff0000ff);
+        boxColor(window, 50, 50, (WINDOW_WIDTH - 400)*HP / HP_M, 100, 0x00ff00ff);
 
         StringDraw(HP, 0);
     }
@@ -851,6 +853,7 @@ void terminate_client() {
 void HaikeiFree(){
     SDL_FreeSurface(haikei1);
     SDL_FreeSurface(haikei2);
+    SDL_FreeSurface(haikei3);
 }
 
 

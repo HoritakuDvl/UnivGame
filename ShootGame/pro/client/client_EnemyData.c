@@ -1,8 +1,11 @@
 #include "../common.h"
 #include "client_func.h"
 
-static SDL_Surface *gEnemy1, *gEnemy2;
-static SDL_Surface *gBoss1;
+static SDL_Surface *gEnemy1, *gEnemy2, *gEnemy3, *gEnemy4, *gEnemy5,
+    *gEnemy6, *gEnemy7, *gEnemy8, *gEnemy9, *gEnemy10,
+    *gEnemy11, *gEnemy12, *gEnemy13, *gEnemy14, *gEnemy15;
+static SDL_Surface *gBoss1, *gBoss2;
+static SDL_Surface *gLastBoss;
 static SDL_Surface *gTama0;
 
 static void EnemyShotEnter(int n);
@@ -17,12 +20,28 @@ void(*EnemyShotPattern[ENEMY_SHOT_PATTERN_MAX])(int, int) = {
 };
 
 void EnemyLoad(){
-    gEnemy1 = IMG_Load("sozai/test_design/enemy/enemy/enemy1-1.png");
-    gEnemy2 = IMG_Load("sozai/test_design/enemy/enemy/enemy2-1.png");
+    gEnemy1 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_1.png");
+    gEnemy2 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_2.png");
+    gEnemy3 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_3.png");
+    gEnemy4 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_4.png");
+    gEnemy5 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_5.png");
+    gEnemy6 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_6.png");
+    gEnemy7 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_7.png");
+    gEnemy8 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_8.png");
+    gEnemy9 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_9.png");
+    gEnemy10 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_10.png");
+    gEnemy11 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_11.png");
+    gEnemy12 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_12.png");
+    gEnemy13 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_13.png");
+    gEnemy14 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_14.png");
+    gEnemy15 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_15.png");
 
-    gBoss1 = IMG_Load("sozai/test_design/enemy/boss/boss.png");
+    gBoss1 = IMG_Load("sozai/main_resource/05_main_game/enemy/mid_boss/mid_boss_2.png");
+    gBoss2 = IMG_Load("sozai/main_resource/05_main_game/enemy/mid_boss/mid_boss_3.png");
 
-    gTama0 = IMG_Load("sozai//test_design/enemy/shot/shot.png");
+    gLastBoss = IMG_Load("sozai/main_resource/05_main_game/enemy/last_boss/last_boss.png");
+
+    gTama0 = IMG_Load("sozai/main_resource/05_main_game/enemy/enemy_shots/minions_shot.png");
 }
 
 
@@ -257,8 +276,24 @@ void EnemyBulletClean(){
 void EnemyFree(){
     SDL_FreeSurface(gEnemy1);
     SDL_FreeSurface(gEnemy2);
+    SDL_FreeSurface(gEnemy3);
+    SDL_FreeSurface(gEnemy4);
+    SDL_FreeSurface(gEnemy5);
+    SDL_FreeSurface(gEnemy6);
+    SDL_FreeSurface(gEnemy7);
+    SDL_FreeSurface(gEnemy8);
+    SDL_FreeSurface(gEnemy9);
+    SDL_FreeSurface(gEnemy10);
+    SDL_FreeSurface(gEnemy11);
+    SDL_FreeSurface(gEnemy12);
+    SDL_FreeSurface(gEnemy13);
+    SDL_FreeSurface(gEnemy14);
+    SDL_FreeSurface(gEnemy15);
 
     SDL_FreeSurface(gBoss1);
+    SDL_FreeSurface(gBoss2);
+
+    SDL_FreeSurface(gLastBoss);
 
     SDL_FreeSurface(gTama0);
 }

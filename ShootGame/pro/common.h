@@ -10,7 +10,7 @@
 ・server.c　スコアの計算をする
 ・クライアントで管理しているもの（敵の状態など）を共通させる[描画の違いをなくすため]
 ・各クライアントでスコア等の動作が違う（ラグかな？）
-・PlayerData.csv　本番用に変える
+・PlayerData.csv　本番用に変える　解決
 */
 
 #ifndef _COMMON_H_
@@ -77,7 +77,7 @@
 #define ENEMY_HIT 'E'
 
 
-#define PLAYER_ORDER_MAX 9
+#define PLAYER_ORDER_MAX 10
 #define PLAYER_SHOT_MAX 4
 #define PLAYER_SHOT_PATTERN_MAX 2
 #define ENEMY_MAX 5
@@ -114,7 +114,7 @@ typedef struct{
     int rotaU, rotaL, rotaR;
 
     int kndP; //機種選択
-    int kPflag; //決定
+    int kPflag; //決定したか
 }Command;
 
 typedef struct{

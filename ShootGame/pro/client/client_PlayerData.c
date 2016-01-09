@@ -1,16 +1,16 @@
 #include "../common.h"
 #include "client_func.h"
 
-static SDL_Surface *gPlayer1, *gPTama0;
-static SDL_Surface *gPlayer2;
-static SDL_Surface *gPlayer3, *gPTama1;
+static SDL_Surface *gPlayer0, *gPTama0;
+static SDL_Surface *gPlayer1;
+static SDL_Surface *gPlayer2, *gPTama1;
+static SDL_Surface *gPlayer3;
 static SDL_Surface *gPlayer4;
-//static SDL_Surface *gPlayer5;
+static SDL_Surface *gPlayer5, *gPlayer5_2;
 static SDL_Surface *gPlayer6, *gPlayer6_2;
 static SDL_Surface *gPlayer7, *gPlayer7_2;
 static SDL_Surface *gPlayer8, *gPlayer8_2;
 static SDL_Surface *gPlayer9, *gPlayer9_2;
-//static SDL_Surface *gPlayer10, *gPlayer10_2;
 
 
 //static void PlayerShotEnter(int n, int num);
@@ -26,23 +26,26 @@ void PlayerLoad(){
     gPlayer2 = IMG_Load("sozai/player2.png");
     gPlayer2_2 = IMG_Load("sozai/houdai2.png");*/
 
-    gPlayer1 = IMG_Load("sozai/test_design/player/fighters/fighter_1.png");
-    gPlayer2 = IMG_Load("sozai/test_design/player/fighters/fighter_2.png");
-    gPlayer3 = IMG_Load("sozai/test_design/player/fighters/fighter_3.png");
-    gPlayer4 = IMG_Load("sozai/test_design/player/fighters/fighter_4.png");
+    gPlayer0 = IMG_Load("sozai/main_resource/05_main_game/player/fighters/fighter_1.png");
+    gPlayer1 = IMG_Load("sozai/main_resource/05_main_game/player/fighters/fighter_2.png");
+    gPlayer2 = IMG_Load("sozai/main_resource/05_main_game/player/fighters/fighter_3.png");
+    gPlayer3 = IMG_Load("sozai/main_resource/05_main_game/player/fighters/fighter_4.png");
+    gPlayer4 = IMG_Load("sozai/main_resource/05_main_game/player/fighters/fighter_5.png");
 
-    gPlayer6 = IMG_Load("sozai/test_design/player/tanks/bodies/tank_body_1.png");
-    gPlayer6_2 = IMG_Load("sozai/test_design/player/tanks/batteries/battery1.png");
-    gPlayer7 = IMG_Load("sozai/test_design/player/tanks/bodies/tank_body_2.png");
-    gPlayer7_2 = IMG_Load("sozai/test_design/player/tanks/batteries/battery2.png");
-    gPlayer8 = IMG_Load("sozai/test_design/player/tanks/bodies/tank_body_3.png");
-    gPlayer8_2 = IMG_Load("sozai/test_design/player/tanks/batteries/battery3.png");
-    gPlayer9 = IMG_Load("sozai/test_design/player/tanks/bodies/tank_body_4.png");
-    gPlayer9_2 = IMG_Load("sozai/test_design/player/tanks/batteries/battery4.png");
+    gPlayer5 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/bodies/tank_body_1.png");
+    gPlayer5_2 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/batteries/tank_bat_1.png");
+    gPlayer6 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/bodies/tank_body_2.png");
+    gPlayer6_2 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/batteries/tank_bat_2.png");
+    gPlayer7 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/bodies/tank_body_3.png");
+    gPlayer7_2 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/batteries/tank_bat_3.png");
+    gPlayer8 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/bodies/tank_body_4.png");
+    gPlayer8_2 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/batteries/tank_bat_4.png");
+    gPlayer9 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/bodies/tank_body_5.png");
+    gPlayer9_2 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/batteries/tank_bat_5.png");
 
 
-    gPTama0 = IMG_Load("sozai/Ptama0.png");
-    gPTama1 = IMG_Load("sozai/test_design/player/fighters/fighter_shots/fighter_shot_1.png");
+    gPTama0 = IMG_Load("sozai/main_resource/05_main_game/player/fighters/fighter_shots/fighter_shot_1.png");
+    gPTama1 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/tank_shots/tank_shot_1.png");
 }
 
 
@@ -86,7 +89,7 @@ void PlayerDraw(int pos){
                             case 3:
                             case 4:
                                 
-                                Pl = rotozoomSurface(gPTama1, -pla_shot[i].bullet[j].rad, 1, 0);
+                                Pl = rotozoomSurface(gPTama0, -pla_shot[i].bullet[j].rad, 1, 0);
                                 wid = (Sint16)((Pl->w-35)/2+0.5);
                                 hig = (Sint16)((Pl->h-35)/2+0.5);
                                 pl_dst = DstRectInit(pla_shot[i].bullet[j].dst.x-wid, pla_shot[i].bullet[j].dst.y-hig);
@@ -95,6 +98,23 @@ void PlayerDraw(int pos){
 
                                 SDL_FreeSurface(Pl);
 				break;
+
+                            case 5:
+                            case 6:
+                            case 7:
+                            case 8:
+                            case 9:
+
+                                Pl = rotozoomSurface(gPTama1, -pla_shot[i].bullet[j].rad, 1, 0);
+                                wid = (Sint16)((Pl->w-35)/2+0.5);
+                                hig = (Sint16)((Pl->h-35)/2+0.5);
+                                pl_dst = DstRectInit(pla_shot[i].bullet[j].dst.x-wid, pla_shot[i].bullet[j].dst.y-hig);
+
+                                SDL_BlitSurface(Pl, &pla_shot[i].bullet[j].src, window, &pl_dst);
+
+                                SDL_FreeSurface(Pl);
+
+                                break;
                             }
                             break;
                         }
@@ -114,27 +134,27 @@ void PlayerDraw(int pos){
             case 1://戦闘機のとき
                 switch(player[pos].knd){
                 case 0:
-                    SDL_BlitSurface(gPlayer1, &player[pos].src, window, &player[pos].dst);
+                    SDL_BlitSurface(gPlayer0, &player[pos].src, window, &player[pos].dst);
                     break;
                 case 1:
-                    SDL_BlitSurface(gPlayer2, &player[pos].src, window, &player[pos].dst);
+                    SDL_BlitSurface(gPlayer1, &player[pos].src, window, &player[pos].dst);
                     break;
                 case 2:
-                    SDL_BlitSurface(gPlayer3, &player[pos].src, window, &player[pos].dst);
+                    SDL_BlitSurface(gPlayer2, &player[pos].src, window, &player[pos].dst);
                     break;
                 case 3:
+                    SDL_BlitSurface(gPlayer3, &player[pos].src, window, &player[pos].dst);
+                    break;
+                case 4:
                     SDL_BlitSurface(gPlayer4, &player[pos].src, window, &player[pos].dst);
                     break;
-/*                case 4:
-                    SDL_BlitSurface(gPlayer6, &player[pos].src, window, &player[pos].dst);
-                    break;*/
                 }
                 break;
             case 2://戦車のとき
                 switch(player[pos].knd){
                 case 5: //テスト用１
                     //砲台
-                    Pl = rotozoomSurface(gPlayer6_2, -player[pos].rad, 1, 0);
+                    Pl = rotozoomSurface(gPlayer5_2, -player[pos].rad, 1, 0);
                     wid = (Sint16)((Pl->w-35)/2+0.5);
                     hig = (Sint16)((Pl->h-35)/2+0.5);
 
@@ -145,11 +165,28 @@ void PlayerDraw(int pos){
                     SDL_FreeSurface(Pl);   
 
                     //本体
-                    SDL_BlitSurface(gPlayer6, &player[pos].src, window, &player[pos].dst);
+                    SDL_BlitSurface(gPlayer5, &player[pos].src, window, &player[pos].dst);
                     circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
 
                 case 6: //テスト用１
+                    //砲台
+                    Pl = rotozoomSurface(gPlayer6_2, -player[pos].rad, 1, 0);
+                    wid = (Sint16)((Pl->w-35)/2+0.5);
+                    hig = (Sint16)((Pl->h-35)/2+0.5);
+
+                    pl_src = SrcRectInit(0, 0, player[pos].src2.w + 100, player[pos].src2.h + 100);
+                    pl_dst = DstRectInit(player[pos].dst2.x-wid, player[pos].dst2.y-hig);
+                    SDL_BlitSurface(Pl, &pl_src, window, &pl_dst);
+
+                    SDL_FreeSurface(Pl);   
+
+                    //本体
+                    SDL_BlitSurface(gPlayer6, &player[pos].src, window, &player[pos].dst);
+                    circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
+                    break;
+
+                case 7: //テスト用１
                     //砲台
                     Pl = rotozoomSurface(gPlayer7_2, -player[pos].rad, 1, 0);
                     wid = (Sint16)((Pl->w-35)/2+0.5);
@@ -166,13 +203,13 @@ void PlayerDraw(int pos){
                     circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
 
-                case 7: //テスト用１
+                case 8: //テスト用１
                     //砲台
                     Pl = rotozoomSurface(gPlayer8_2, -player[pos].rad, 1, 0);
                     wid = (Sint16)((Pl->w-35)/2+0.5);
                     hig = (Sint16)((Pl->h-35)/2+0.5);
 
-                    pl_src = SrcRectInit(0, 0, player[pos].src2.w + 50, player[pos].src2.h + 50);
+                    pl_src = SrcRectInit(0, 0, player[pos].src2.w + 130, player[pos].src2.h + 130);
                     pl_dst = DstRectInit(player[pos].dst2.x-wid, player[pos].dst2.y-hig);
                     SDL_BlitSurface(Pl, &pl_src, window, &pl_dst);
 
@@ -183,13 +220,13 @@ void PlayerDraw(int pos){
                     circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
 
-                case 8: //テスト用１
+                case 9: //テスト用１
                     //砲台
                     Pl = rotozoomSurface(gPlayer9_2, -player[pos].rad, 1, 0);
                     wid = (Sint16)((Pl->w-35)/2+0.5);
                     hig = (Sint16)((Pl->h-35)/2+0.5);
 
-                    pl_src = SrcRectInit(0, 0, player[pos].src2.w + 50, player[pos].src2.h + 50);
+                    pl_src = SrcRectInit(0, 0, player[pos].src2.w + 130, player[pos].src2.h + 130);
                     pl_dst = DstRectInit(player[pos].dst2.x-wid, player[pos].dst2.y-hig);
                     SDL_BlitSurface(Pl, &pl_src, window, &pl_dst);
 
@@ -199,24 +236,6 @@ void PlayerDraw(int pos){
                     SDL_BlitSurface(gPlayer9, &player[pos].src, window, &player[pos].dst);
                     circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
-
-/*                case 9: //テスト用１
-                    //砲台
-                    Pl = rotozoomSurface(gPlayer10_2, -player[pos].rad, 1, 0);
-                    wid = (Sint16)((Pl->w-35)/2+0.5);
-                    hig = (Sint16)((Pl->h-35)/2+0.5);
-
-                    pl_src = SrcRectInit(0, 0, player[pos].src2.w + 50, player[pos].src2.h + 50);
-                    pl_dst = DstRectInit(player[pos].dst2.x-wid, player[pos].dst2.y-hig);
-                    SDL_BlitSurface(Pl, &pl_src, window, &pl_dst);
-
-                    SDL_FreeSurface(Pl);   
-
-                    //本体
-                    SDL_BlitSurface(gPlayer10, &player[pos].src, window, &player[pos].dst);
-                    circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
-                    break;
-*/
                 }
                 break;
             }
@@ -293,17 +312,20 @@ void PlayerLeftMove(int pos){
 
     if(player[pos].knd2 == 2){
         switch(player[pos].knd){
-        case 2:
-            player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 30, player[pos].ty - player[pos].src.h/2-8);
-            break;
-        case 7:
+        case 5:
             player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 80, player[pos].ty - player[pos].src.h/2+5);
             break;
-        case 8:
+        case 6:
             player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 100, player[pos].ty - player[pos].src.h/2+10);
             break;
-        case 9:
+        case 7:
+            player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 100, player[pos].ty - player[pos].src.h/2+10);
+            break;
+        case 8:
             player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 110, player[pos].ty - player[pos].src.h/2+5);
+            break;
+        case 9:
+            player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 32, player[pos].ty - player[pos].src.h/2 -5);
             break;
         }
     }
@@ -318,17 +340,20 @@ void PlayerRightMove(int pos){
 
     if(player[pos].knd2 == 2){
         switch(player[pos].knd){
-        case 2:
-            player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 30, player[pos].ty - player[pos].src.h/2-8);
-            break;
-        case 7:
+        case 5:
             player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 80, player[pos].ty - player[pos].src.h/2+5);
             break;
-        case 8:
+        case 6:
             player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 100, player[pos].ty - player[pos].src.h/2+10);
             break;
-        case 9:
+        case 7:
+            player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 100, player[pos].ty - player[pos].src.h/2+10);
+            break;
+        case 8:
             player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 + 110, player[pos].ty - player[pos].src.h/2+5);
+            break;
+        case 9:
+            player[pos].dst2 = DstRectInit(player[pos].tx - player[pos].src.w/2 +32, player[pos].ty - player[pos].src.h/2 -5);
             break;
         }
     }
@@ -339,7 +364,7 @@ void PlayerBatteryRota(int pos){
     double ang = 0; //動かす目標の角度
     //double rad;
 
-    fprintf(stderr, "%d : rota = %d\n", pos, num);
+    //fprintf(stderr, "%d : rota = %d\n", pos, num);
 
     switch(num){
     case 1:
@@ -440,11 +465,13 @@ void PlayerBulletClean(){
 
 
 void PlayerFree(){
+    SDL_FreeSurface(gPlayer0);
     SDL_FreeSurface(gPlayer1);
     SDL_FreeSurface(gPlayer2);
     SDL_FreeSurface(gPlayer3);
     SDL_FreeSurface(gPlayer4);
-    //SDL_FreeSurface(gPlayer5);
+    SDL_FreeSurface(gPlayer5);
+    SDL_FreeSurface(gPlayer5_2);
     SDL_FreeSurface(gPlayer6);
     SDL_FreeSurface(gPlayer6_2);
     SDL_FreeSurface(gPlayer7);
@@ -453,8 +480,6 @@ void PlayerFree(){
     SDL_FreeSurface(gPlayer8_2);
     SDL_FreeSurface(gPlayer9);
     SDL_FreeSurface(gPlayer9_2);
-    //SDL_FreeSurface(gPlayer10);
-    //SDL_FreeSurface(gPlayer10_2);
 
     SDL_FreeSurface(gPTama0);
     SDL_FreeSurface(gPTama1);

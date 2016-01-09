@@ -15,7 +15,7 @@ static void MarkDraw(int n);
 
 void PlSeLoad() {
 
-    gHaikei = IMG_Load("sozai/main_resource/00_Common/common_bg.png");
+    gHaikei = IMG_Load("sozai/main_resource/00_common/common_bg.png");
 
     gSubTitle = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_frtk_label.png");
 
@@ -32,10 +32,10 @@ void PlSeLoad() {
     gMachine9 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank4.png");
     gMachine10 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank5.png");
 
-    gMark1 = IMG_Load("sozai/main_resource/00_Common/common_frame1.png");
-    gMark2 = IMG_Load("sozai/main_resource/00_Common/common_frame2.png");
-    gMark3 = IMG_Load("sozai/main_resource/00_Common/common_frame3.png");
-    gMark4 = IMG_Load("sozai/main_resource/00_Common/common_frame4.png");
+    gMark1 = IMG_Load("sozai/main_resource/00_common/common_frame1.png");
+    gMark2 = IMG_Load("sozai/main_resource/00_common/common_frame2.png");
+    gMark3 = IMG_Load("sozai/main_resource/00_common/common_frame3.png");
+    gMark4 = IMG_Load("sozai/main_resource/00_common/common_frame4.png");
 
     int i;
     for(i = 0; i < MAX_CLIENTS; i++) {
