@@ -295,8 +295,8 @@ void EventMainFighter(int myid, int sock)
                     data.command = SEPARATE_LERI_COMMAND; //server.cのcontrol_requests関数より
                     data.cid = myid; //送信をしたIDの挿入
                     data.state = GAME_MAIN;
-	            data.tx = player[myid].tx;
-                    data.ty = player[myid].ty;
+	            //data.tx = player[myid].tx;
+                    //data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
                     //printf("%d : 左スティックを離した\n", event.jaxis.axis);
                     break;
@@ -304,8 +304,8 @@ void EventMainFighter(int myid, int sock)
                     data.command = SEPARATE_UPDO_COMMAND; //server.cのcontrol_requests関数より
                     data.cid = myid; //送信をしたIDの挿入
                     data.state = GAME_MAIN;
-	            data.tx = player[myid].tx;
-                    data.ty = player[myid].ty;
+	            //data.tx = player[myid].tx;
+                    //data.ty = player[myid].ty;
                     send_data(&data, sizeof(CONTAINER), sock); //dataの書き込み
                     break;
                 }

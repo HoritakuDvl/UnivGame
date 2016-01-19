@@ -11,9 +11,9 @@
 #define WINDOW_WIDTH 1600
 #define WINDOW_HEIGHT 900
 
-int Total_Score; //合計スコア
 int Score_Plus; //足されるスコア
 int HP, HP_M;
+int stageCount;//ゲーム中の時間
 
 /* client.c */
 extern void setup_client(char *, u_short);
@@ -65,8 +65,8 @@ extern void PlayerShotPattern1(int n);
 extern void EnemyLoad();
 extern void EnemyInit();
 extern void EnemyDraw();
-extern void EnemyDataLoad();
-extern void EnemyEnter();
+//extern void EnemyDataLoad();
+//extern void EnemyEnter();
 extern void EnemyMove(int num, int myid, int sock);
 extern void EnemyBulletMove(int num, int myid, int sock);
 extern void EnemyBulletClean();
@@ -89,7 +89,7 @@ extern void PlayerDamage(CONTAINER data, int myid, int sock);
 extern void PlayerHit2(int myid, int sock);
 extern void PlayerDamage2(CONTAINER data, int myid, int sock);
 extern void EnemyHit(int myid, int m, int n, int ene_num, int sock);
-extern int EnemyDamage(CONTAINER data);
+//extern int EnemyDamage(CONTAINER data);
 extern void StringDraw(int num, int knd);
 
 
