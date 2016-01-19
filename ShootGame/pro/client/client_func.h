@@ -71,6 +71,7 @@ extern void EnemyMove(int num, int myid, int sock);
 extern void EnemyBulletMove(int num, int myid, int sock);
 extern void EnemyBulletClean();
 extern void EnemyFree();
+extern void EnemyShotEnter(int n);
 
 /* client_EnemyPattern.c */
 extern void EnemyPattern0(int n);

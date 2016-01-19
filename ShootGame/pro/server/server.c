@@ -350,7 +350,21 @@ int control_requests() {
                     send_data(BROADCAST, &data, sizeof(data));
 
                     if(data.num > 0){
-                        EnemyEnter(data.num);
+                        switch(data.num){
+                        case 6:
+                        case 12:
+                        case 18:
+                        case 25:
+                        case 32:
+                        case 39:
+                        case 47:
+                        case 56:
+                            EnemyEnter(0);
+                        break;
+                        default:
+                            EnemyEnter(0);
+                            break;
+                        }
                     }
                     result = 1; //メッセージの送信
                     break;
