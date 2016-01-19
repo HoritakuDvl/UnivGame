@@ -26,7 +26,7 @@ static int execute_command(void); //受信（行動実行）
 static int receive_data(void *, int); //データを受け取る
 
 
-static SDL_Surface *haikei1, *haikei2, *haikei3;
+static SDL_Surface *haikei1, *haikei2, *haikei3, *haikei4, *haikei5, *haikei6, *haikei7, *haikei8, *haikei9;
 static SDL_Rect src_rect, dst_rect, src_rect2, dst_rect2;
 
 
@@ -118,12 +118,19 @@ void setup_client(char *server_name, u_short port) {
     haikei1 = IMG_Load("sozai/main_resource/05_main_game/background/bg_1.png");
     haikei2 = IMG_Load("sozai/main_resource/05_main_game/background/bg_2.png");
     haikei3 = IMG_Load("sozai/main_resource/05_main_game/background/bg_3.png");
+    haikei4 = IMG_Load("sozai/main_resource/05_main_game/background/bg_4.png");
+    haikei5 = IMG_Load("sozai/main_resource/05_main_game/background/bg_5.png");
+    haikei6 = IMG_Load("sozai/main_resource/05_main_game/background/bg_6.png");
+    haikei7 = IMG_Load("sozai/main_resource/05_main_game/background/bg_7.png");
+    haikei8 = IMG_Load("sozai/main_resource/05_main_game/background/bg_8.png");
+    haikei9 = IMG_Load("sozai/main_resource/05_main_game/background/bg_9.png");
     PlayerLoad();
     EnemyLoad();
     PlSeLoad();
 
 /*初期化*/
     stageFlag = 1;
+    stageCount = 0;
     //PlayerAllInit(3); //一斉スタートするとき
 }
 
@@ -277,7 +284,9 @@ static int DrawGameMain(){
 
     int result = 1;
     if(stageFlag == 1){
-        //input_main_command(); //送信
+        stageCount++;
+        //fprintf(stderr, "stageCount = %5d\n", stageCount);
+
         switch(player[myid].knd2){
         case 1:
             EventMainFighter(myid, sock);
@@ -285,6 +294,19 @@ static int DrawGameMain(){
         case 2:
             EventMainTank(myid, sock);
             break;
+        }
+
+//１秒に１回プレイヤーのデータ送信
+        if(stageCount%10==1){
+            CONTAINER data;
+            memset(&data, 0, sizeof(CONTAINER));
+            data.command = DATA_PULL;
+            data.cid = myid;
+            data.state = GAME_MAIN;
+            data.num = 4;
+            data.player = player[myid];
+            send_data(&data, sizeof(CONTAINER), sock);
+            //fprintf(stderr, "プレイヤーデータ送信!\n");
         }
       
         if (FD_ISSET(sock, &read_flag)) {
@@ -305,60 +327,60 @@ static int DrawGameMain(){
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 0, 0, 0, 255));
     if(stageFlag != 1){
+
+        src_rect.x += 10;
+        if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
+            src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
+        if(src_rect.w < 0){
+            src_rect.w = 0;
+            src_rect2.x+=10;
+        }
+
+        src_rect2.w += 10;
+        dst_rect2 = DstRectInit(src_rect.w, 0);
+
         switch(stageFlag){
-        case 2 : //ステージ２に移動
-            src_rect.x += 10;
-            if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
-                src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
-            if(src_rect.w < 0){
-                src_rect.w = 0;
-                src_rect2.x+=10;
-            }
-
-            src_rect2.w += 10;
-            /*if(src_rect2.w > WINDOW_WIDTH){
-              src_rect2.w = WINDOW_WIDTH;
-              }*/
-            dst_rect2 = DstRectInit(src_rect.w, 0);
-
+        case 2:
             SDL_BlitSurface(haikei1, &src_rect, window, &dst_rect);
             SDL_BlitSurface(haikei2, &src_rect2, window, &dst_rect2);
-
-            if(src_rect.w <= 0/*src_rect2.x >= 100*/){
-                stageFlag = 1;
-                src_rect = SrcRectInit(/*10*/0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-                dst_rect = DstRectInit(0, 0);
-                src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
-                dst_rect2 = DstRectInit(0, 0);
-            }
             break;
         case 3:
-            src_rect.x += 10;
-            if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
-                src_rect.w = WINDOW_WIDTH + 200 - src_rect.x;
-            if(src_rect.w < 0){
-                src_rect.w = 0;
-                src_rect2.x+=10;
-            }
-
-            src_rect2.w += 10;
-            /*if(src_rect2.w > WINDOW_WIDTH){
-              src_rect2.w = WINDOW_WIDTH;
-              }*/
-            dst_rect2 = DstRectInit(src_rect.w, 0);
-
             SDL_BlitSurface(haikei2, &src_rect, window, &dst_rect);
             SDL_BlitSurface(haikei3, &src_rect2, window, &dst_rect2);
-
-            if(src_rect.w <= 0/*src_rect2.x >= 100*/){
-                stageFlag = 1;
-                src_rect = SrcRectInit(/*10*/0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
-                dst_rect = DstRectInit(0, 0);
-                src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
-                dst_rect2 = DstRectInit(0, 0);
-            }
+            break;
+        case 4:
+            SDL_BlitSurface(haikei3, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei4, &src_rect2, window, &dst_rect2);
+            break;
+        case 5:
+            SDL_BlitSurface(haikei4, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei5, &src_rect2, window, &dst_rect2);
+            break;
+        case 6:
+            SDL_BlitSurface(haikei5, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei6, &src_rect2, window, &dst_rect2);
+            break;
+        case 7:
+            SDL_BlitSurface(haikei6, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei7, &src_rect2, window, &dst_rect2);
+            break;
+        case 8:
+            SDL_BlitSurface(haikei7, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei8, &src_rect2, window, &dst_rect2);
+            break;
+        case 9:
+            SDL_BlitSurface(haikei8, &src_rect, window, &dst_rect);
+            SDL_BlitSurface(haikei9, &src_rect2, window, &dst_rect2);
             break;
         }
+
+        if(src_rect.w <= 0){
+            stageFlag = 1;
+            src_rect = SrcRectInit(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
+            dst_rect = DstRectInit(0, 0);
+            src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
+            dst_rect2 = DstRectInit(0, 0);
+        }   
         result = 1;
     }
     else{ //遊んでいるとき
@@ -371,6 +393,24 @@ static int DrawGameMain(){
             break;
         case 3:
             SDL_BlitSurface(haikei3, &src_rect, window, &dst_rect);
+            break;
+        case 4:
+            SDL_BlitSurface(haikei4, &src_rect, window, &dst_rect);
+            break;
+        case 5:
+            SDL_BlitSurface(haikei5, &src_rect, window, &dst_rect);
+            break;
+        case 6:
+            SDL_BlitSurface(haikei6, &src_rect, window, &dst_rect);
+            break;
+        case 7:
+            SDL_BlitSurface(haikei7, &src_rect, window, &dst_rect);
+            break;
+        case 8:
+            SDL_BlitSurface(haikei8, &src_rect, window, &dst_rect);
+            break;
+        case 9:
+            SDL_BlitSurface(haikei9, &src_rect, window, &dst_rect);
             break;
         }
         result = 1;
@@ -385,7 +425,12 @@ static int DrawGameMain(){
     }
 
 //スコアの設定
-    if(Score_Plus > 0){
+    if(Score_Plus < Total_Score){
+        Score_Plus+=10;
+        if(Total_Score>Score_Plus)
+            Score_Plus = Total_Score;
+    }
+    /*if(Score_Plus > 0){
         if(Score_Plus >= 10){
             Total_Score += 10;
             Score_Plus -= 10;
@@ -394,8 +439,8 @@ static int DrawGameMain(){
             Total_Score += Score_Plus;
             Score_Plus = 0;
         }
-    }
-    StringDraw(Total_Score, 1);
+        }*/
+    StringDraw(Score_Plus, 1);
 
 //攻撃レベル
     int power = 1;
@@ -419,7 +464,7 @@ static int DrawGameMain(){
 
     if(stageFlag == 1){
 //その他の動作
-        EnemyEnter();
+        //EnemyEnter();
 
         EnemyMove(num_clients, myid, sock);
         PlayerShotCalc(myid, sock);
@@ -505,7 +550,7 @@ static void PlayerAllInit(int knd) {
     PlayerInit(num_clients);
     //PlayerDataLoad();
     EnemyInit();
-    EnemyDataLoad();
+    //EnemyDataLoad();
     
     src_rect = SrcRectInit(100, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     dst_rect = DstRectInit(0, 0);
@@ -643,19 +688,19 @@ static int execute_command() {
         case SEPARATE_UPDO_COMMAND:
             player[data.cid].command.up = 0;
             player[data.cid].command.down = 0;
-            if(myid != data.cid){
+            /*if(myid != data.cid){
                 player[data.cid].tx = data.tx;
                 player[data.cid].ty = data.ty;
-            }
+                }*/
             result = 1;
             break;
         case SEPARATE_LERI_COMMAND:
             player[data.cid].command.left = 0;
             player[data.cid].command.right = 0;
-            if(myid != data.cid){
+            /*if(myid != data.cid){
                 player[data.cid].tx = data.tx;
                 player[data.cid].ty = data.ty;
-            }
+                }*/
             result = 1;
             break;
 
@@ -693,8 +738,6 @@ static int execute_command() {
             break;
         case SHOT_FINISH_COMMAND:
             player[data.cid].command.b5 = 0;
-            //player[data.cid].tx = data.tx;
-            //player[data.cid].ty = data.ty;
             result = 1;
             break;
 
@@ -707,17 +750,77 @@ static int execute_command() {
             result = 1;
             break;
         case ENEMY_HIT:
-            k = EnemyDamage(data);
-            if(stage % 3 != 0){ //ザコ面
-                if(k % 10 == 0 + stage/3){
+            enemy[data.ene_num] = data.enemy;
+            k = data.num;//EnemyDamage(data);
+            Total_Score = data.scoreM; //スコアの最大値
+            pla_shot[data.m].bullet[data.n].flag = 0;
+            switch(stage){
+            case 1:
+                if(k == 6){
                     stage++;
                     stageFlag = stage;
                     PlayerBulletClean();
                     EnemyBulletClean();
                 }
-            }
-            else { //ボス面
-                if(k == 21) {//中ボス１を倒したら
+                break;
+            case 2:
+                if(k == 12){
+                    stage++;
+                    stageFlag = stage;
+                    PlayerBulletClean();
+                    EnemyBulletClean();
+                }
+                break;
+            case 3:
+                if(k == 18){
+                    stage++;
+                    stageFlag = stage;
+                    PlayerBulletClean();
+                    EnemyBulletClean();
+                }
+                break;
+            case 4:
+                if(k == 25){
+                    stage++;
+                    stageFlag = stage;
+                    PlayerBulletClean();
+                    EnemyBulletClean();
+                }
+                break;
+            case 5:
+                if(k == 32){
+                    stage++;
+                    stageFlag = stage;
+                    PlayerBulletClean();
+                    EnemyBulletClean();
+                }
+                break;
+            case 6:
+                if(k == 39){
+                    stage++;
+                    stageFlag = stage;
+                    PlayerBulletClean();
+                    EnemyBulletClean();
+                }
+                break;
+            case 7:
+                if(k == 47){
+                    stage++;
+                    stageFlag = stage;
+                    PlayerBulletClean();
+                    EnemyBulletClean();
+                }
+                break;
+            case 8:
+                if(k == 56){
+                    stage++;
+                    stageFlag = stage;
+                    PlayerBulletClean();
+                    EnemyBulletClean();
+                }
+                break;
+            case 9:
+                if(k == 63){
                     memset(&data, 0, sizeof(CONTAINER));
                     data.command = END_COMMAND;
                     fprintf(stderr, "%d\n", data.command);
@@ -729,20 +832,29 @@ static int execute_command() {
                     fprintf(stderr, "//     Clear!     //\n");
                     fprintf(stderr, "////////////////////\n");
                 }
+                break;
             }
             result = 1;
             break;
 
         case DATA_PULL:
             switch(data.flag){
-            case 2:
+            case 2://プレイヤーの読み込み(初期)
                 player[data.cid] = data.player;
-                fprintf(stderr, "%d:in! %d\n", data.cid, player[data.cid].knd);
+                fprintf(stderr, "%d:Pin! %d\n", data.cid, player[data.cid].knd);
                 PlayerShotEnter(data.cid, num_clients);
                 if(data.hp > 0){
                     HP_M = data.hp;
                     HP = HP_M;
                 }
+                break;
+            case 3://敵の読み込み
+                enemy[data.ene_num] = data.enemy;
+                fprintf(stderr, "%d:Ein! knd:%d ene_shot[%d]\n", data.ene_num, enemy[data.ene_num].knd, data.ene_num);
+                break;
+            case 4:
+                player[data.cid] = data.player;
+                HP = data.hp;
                 break;
             }
             break;
@@ -795,23 +907,6 @@ static int execute_command() {
     return result;
 }
 
-/*****************************************
-static void send_data(void *data, int size)
-引数：*data 書きこむデータ
-       size データのサイズ
-機能：データをソケット(sock)に入れる
- ****************************************/
-/*static void send_data(void *data, int size) {
-  if ((data == NULL) || (size <= 0)) {
-        fprintf(stderr, "send_data(): data is illeagal.\n");
-	exit(1);
-  }
-
-  if(write(sock, data, size) == -1) { //sockにdataのsizeバイト分書きこむ
-      handle_error("write()"); //エラー
-  }    
-}*/
-
 /*******************************************
 static int receive_data(void *data, int size)
 引数：*data 読み込みデータ
@@ -854,6 +949,12 @@ void HaikeiFree(){
     SDL_FreeSurface(haikei1);
     SDL_FreeSurface(haikei2);
     SDL_FreeSurface(haikei3);
+    SDL_FreeSurface(haikei4);
+    SDL_FreeSurface(haikei5);
+    SDL_FreeSurface(haikei6);
+    SDL_FreeSurface(haikei7);
+    SDL_FreeSurface(haikei8);
+    SDL_FreeSurface(haikei9);
 }
 
 

@@ -36,8 +36,8 @@ void EnemyLoad(){
     gEnemy14 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_14.png");
     gEnemy15 = IMG_Load("sozai/main_resource/05_main_game/enemy/minions/enemy_15.png");
 
-    gBoss1 = IMG_Load("sozai/main_resource/05_main_game/enemy/mid_boss/mid_boss_2.png");
-    gBoss2 = IMG_Load("sozai/main_resource/05_main_game/enemy/mid_boss/mid_boss_3.png");
+    gBoss1 = IMG_Load("sozai/main_resource/05_main_game/enemy/mid_boss/mid_boss_1.png");
+    gBoss2 = IMG_Load("sozai/main_resource/05_main_game/enemy/mid_boss/mid_boss_2.png");
 
     gLastBoss = IMG_Load("sozai/main_resource/05_main_game/enemy/last_boss/last_boss.png");
 
@@ -93,14 +93,61 @@ void EnemyDraw(){
             int cnt = enemy[i].flag2 % 14;
             if(cnt <= 4 || 11 <= cnt){
                 switch(enemy[i].knd){
-                case 0:
+                case 1:
                     SDL_BlitSurface(gEnemy1, &enemy[i].src, window, &enemy[i].dst);
                     break;
-                case 1:
+                case 2:
                     SDL_BlitSurface(gEnemy2, &enemy[i].src, window, &enemy[i].dst);
                     break;
-                case 2:
+                case 3:
+                    SDL_BlitSurface(gEnemy3, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 4:
+                    SDL_BlitSurface(gEnemy4, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 5:
+                    SDL_BlitSurface(gEnemy5, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 6:
+                    SDL_BlitSurface(gEnemy6, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 7:
+                    SDL_BlitSurface(gEnemy7, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 8:
+                    SDL_BlitSurface(gEnemy8, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 9:
+                    SDL_BlitSurface(gEnemy9, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 10:
+                    SDL_BlitSurface(gEnemy10, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 11:
+                    SDL_BlitSurface(gEnemy11, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 12:
+                    SDL_BlitSurface(gEnemy12, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 13:
+                    SDL_BlitSurface(gEnemy13, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 14:
+                    SDL_BlitSurface(gEnemy14, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 15:
+                    SDL_BlitSurface(gEnemy15, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+
+                case 16:
                     SDL_BlitSurface(gBoss1, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+                case 17:
+                    SDL_BlitSurface(gBoss2, &enemy[i].src, window, &enemy[i].dst);
+                    break;
+
+                case 18:
+                    SDL_BlitSurface(gLastBoss, &enemy[i].src, window, &enemy[i].dst);
                     break;
                 }
             }
@@ -111,7 +158,7 @@ void EnemyDraw(){
 }
 
 
-void EnemyDataLoad(){
+/*void EnemyDataLoad(){
     FILE *fp;//ファイルを読み込む型
     int input[64];
     char inputc[64];
@@ -119,7 +166,7 @@ void EnemyDataLoad(){
 
     if((fp = fopen("EnemyData.csv", "r")) == NULL){//ファイル読み込み
         
-        exit(-1);;
+        exit(-1);
     }
     for (i = 0; i < 2; i++)//   2      
         while (getc(fp) != '\n');
@@ -178,13 +225,13 @@ void EnemyDataLoad(){
     }
 EXFILE:
     fclose(fp);
-}
+    }*/
 
 
-void EnemyEnter(){
+/*void EnemyEnter(){
     int i, t;
     for(t = 0; t < ENEMY_ORDER_MAX; t++){
-        if (enemyOrder[t].flag == 1 && enemyOrder[t].mission == 1 && enemyOrder[t].stage == stage) { //ミッション１のとき
+        if (enemyOrder[t].flag == 1 && enemyOrder[t].mission == 1 && enemyOrder[t].stage == stage){
             //fprintf(stderr, "stage = %d\n", stage);
             for(i = 0; i < ENEMY_MAX; i++){
                 if(enemy[i].flag == 0){
@@ -219,13 +266,13 @@ void EnemyEnter(){
             }
         }
     }
-}
+    }*/
 
 
 void EnemyMove(int num, int myid, int sock){
     int i;
     for(i = 0; i < ENEMY_MAX; i++) {
-        if(enemy[i].flag == 1) {
+        if(enemy[i].flag == 1 && enemy[i].stage == stage) {
             if(enemy[i].wait == 0){
                 EnemyPattern[enemy[i].pattern](i);
                 enemy[i].dst = DstRectInit(enemy[i].tx - enemy[i].src.w / 2, enemy[i].ty - enemy[i].src.h / 2);
@@ -344,6 +391,9 @@ static void EnemyShotCalc(int n, int num, int myid, int sock){
         }
     }
 
+//    fprintf(stderr, "enemy[%d].flag = %d\n", ene_shot[n].num, enemy[ene_shot[n].num].flag);
+//    fprintf(stderr, "ene_shot[%d].flag = %d\n\n", n, ene_shot[n].flag);
+
     //現在表示中の弾が一つでもあるかどうか調べる
     for (j = 0; j < SHOT_BULLET_MAX; j++) {
         if (ene_shot[n].bullet[j].flag > 0)
@@ -353,7 +403,7 @@ static void EnemyShotCalc(int n, int num, int myid, int sock){
     //敵が倒されている、もしくはまだ出現していないとき
     if (enemy[ene_shot[n].num].flag != 1) {
         ene_shot[n].flag = 0;
-        enemy[ene_shot[n].num].flag = 0;
+        enemy[ene_shot[n].num].flag = 1;
     }
 }
 

@@ -29,6 +29,9 @@ static void handle_error(char *);
 
 static void PlayerDataLoad();
 static PlayerData PlayerEnter(int myid, int knd);
+static void EnemyDataLoad();
+static void EnemyEnter(int num);
+static int EnemyDamage();
 static SDL_Rect SrcRectInit(int x, int y, int w, int h);
 static SDL_Rect DstRectInit(int x, int y);
 //static void PlayerShotEnter(int n, int num);
@@ -111,13 +114,16 @@ void setup_server(int num_cl, u_short port) {
   PlayerDataLoad();
 
 //敵データの読み込み
-  //EnemyDataLoad();
+  EnemyDataLoad();
+  for(i = 0; i < ENEMY_MAX; i++)
+      enemy[i].flag = 0;
 
   gstate = GAME_TITLE;
   for(i = 0; i < num_clients; i++) {
       pla_sele[i].kndP = i;
       pla_sele[i].kPflag = 0;
   }
+  Total_Score = 0;
 }
 
 /************************
@@ -245,6 +251,9 @@ int control_requests() {
                                 pla_sele[i].kPflag = 0;
                             }
 
+                            stage = 1;
+                            data.num = 0;
+                            EnemyEnter(data.num);
                             break;
                         }
                     }
@@ -334,8 +343,14 @@ int control_requests() {
                     result = 1; //メッセージの送信
                     break;
                 case ENEMY_HIT:
-
+                    stage = data.stage;
+                    fprintf(stderr, "stage = %d\n", stage);
+                    data.num = EnemyDamage();
                     send_data(BROADCAST, &data, sizeof(data));
+
+                    if(data.num > 0){
+                        EnemyEnter(data.num);
+                    }
                     result = 1; //メッセージの送信
                     break;
                 case DATA_PULL:
@@ -359,6 +374,11 @@ int control_requests() {
                         //Shot ene_shoA;
 
                         //EnemyEnter();
+                        break;
+                    case 4: //毎秒のプレイヤーデータの送信(現在のHPも)
+                        data.hp = HP_Num;
+                        send_data(BROADCAST, &data, sizeof(data));
+                        result = 1;
                         break;
                     }
                     result = 1;
@@ -426,6 +446,7 @@ int control_requests() {
             }
         }
     }
+
     return result;   
 }
 
@@ -641,6 +662,167 @@ static PlayerData PlayerEnter(int myid, int knd){
     }*/
 
     return tmp;
+}
+
+/*****************************************
+static void EnemyDataLoad()
+引数：
+機能：敵データの読み込み
+返値：
+ *****************************************/
+static void EnemyDataLoad() {
+    FILE *fp;//ファイルを読み込む型
+    int input[64];
+    char inputc[64];
+    int i;
+
+    if((fp = fopen("EnemyData.csv", "r")) == NULL){//ファイル読み込み
+        
+        exit(-1);
+    }
+    for (i = 0; i < 2; i++)//   2      
+        while (getc(fp) != '\n');
+
+    int n = 0;//行
+    int num = 0;//列
+
+    while (1) {
+        for (i = 0; i < 64; i++) {
+            input[i] = getc(fp);//1文字取得
+            inputc[i] = input[i];
+            if (inputc[i] == '/') {//スラッシュがあれば
+                while (getc(fp) != '\n');
+                i = -1;//カウンタを最初に戻す
+                continue;
+            }
+            if (input[i] == ',' || input[i] == '\n') {//カンマか改行なら
+                inputc[i] = '\0';
+
+                break;
+            }
+            if (input[i] == EOF) {//ファイルの終わりなら
+                goto EXFILE;
+            }
+        }
+
+        switch (num) {
+        case 0: enemyOrder[n].mission = atoi(inputc); break; //ミッション  //atoi:文字列を数式に変える
+        case 1: enemyOrder[n].stage = atoi(inputc); break; //ステージ
+        case 2: enemyOrder[n].wait = atoi(inputc); break; //待機時間
+        case 3: enemyOrder[n].knd = atoi(inputc); break; //敵の種類
+        case 4: enemyOrder[n].pattern = atoi(inputc); break; //敵の動くパターン
+        case 5: enemyOrder[n].sp = atoi(inputc); break; //敵の動く速度
+        case 6: enemyOrder[n].pattern2 = atoi(inputc); break; //敵の攻撃するパターン
+        case 7: enemyOrder[n].blknd = atoi(inputc); break; //敵が打つ弾の種類
+        case 8: enemyOrder[n].blW = atoi(inputc); break; //弾画像の幅
+        case 9: enemyOrder[n].blH = atoi(inputc); break; //弾画像の高さ
+        case 10: enemyOrder[n].blCnt = atoi(inputc); break; //弾打ちの間隔
+        case 11: enemyOrder[n].bltime = atoi(inputc); break; //敵が出現してから打つまでの時間
+        case 12: enemyOrder[n].tx = atoi(inputc); break; //x座標
+        case 13: enemyOrder[n].ty = atoi(inputc); break; //y座標
+        case 14: enemyOrder[n].w = atoi(inputc); break; //幅
+        case 15: enemyOrder[n].h = atoi(inputc); break; //高さ
+        case 16: enemyOrder[n].hp_max = atoi(inputc); break; //最大HP
+        case 17: enemyOrder[n].item = atoi(inputc); break; //落とすアイテムの種類
+        case 18: enemyOrder[n].item2 = atoi(inputc); break; //item=1のとき、変更するショットの番号
+        case 19: enemyOrder[n].score = atoi(inputc); break; //高さ
+        }
+        num++;
+        if (num == 20) {
+            num = 0;
+            enemyOrder[n].flag = 1;
+            n++;
+        }
+        //fprintf(stderr, "n = %d\n", n);
+    }
+EXFILE:
+    fclose(fp);
+}
+
+static void EnemyEnter(int num) {
+        int i, t;
+    for(t = 0; t < ENEMY_ORDER_MAX; t++){
+        if (enemyOrder[t].flag == 1 && enemyOrder[t].mission == 1 /*&& enemyOrder[t].stage == stage*/){
+            //fprintf(stderr, "stage = %d\n", stage);
+            for(i = 0; i < ENEMY_MAX; i++){
+                if(enemy[i].flag == 0){
+                    if(num == 0)
+                        enemy[i].flag = 1;
+                    else
+                        enemy[i].flag = 2;
+                    enemy[i].stage = enemyOrder[t].stage;
+                    enemy[i].wait = enemyOrder[t].wait;
+                    enemy[i].knd = enemyOrder[t].knd;
+                    enemy[i].pattern = enemyOrder[t].pattern;
+                    enemy[i].sp = enemyOrder[t].sp;
+                    enemy[i].cnt = 0;
+                    enemy[i].pattern2 = enemyOrder[t].pattern2;
+                    enemy[i].blknd = enemyOrder[t].blknd;
+                    enemy[i].blW = enemyOrder[t].blW;
+                    enemy[i].blH = enemyOrder[t].blH;
+                    enemy[i].blCnt = enemyOrder[t].blCnt;
+                    enemy[i].bltime = enemyOrder[t].bltime; //弾打ちまでの時間
+                    enemy[i].tx = enemyOrder[t].tx;
+                    enemy[i].ty = enemyOrder[t].ty;
+                    enemy[i].hp_max = enemyOrder[t].hp_max;
+                    enemy[i].item = enemyOrder[t].item;
+                    enemy[i].item2 = enemyOrder[t].item2;
+                    enemy[i].score = enemyOrder[t].score;
+
+                    enemy[i].src = SrcRectInit(0, 0, enemyOrder[t].w, enemyOrder[t].h);
+                    enemy[i].dst = DstRectInit(enemy[i].tx - enemy[i].src.w / 2, enemy[i].ty - enemy[i].src.h / 2);
+                    enemy[i].hp = enemy[i].hp_max;
+
+                    enemyOrder[t].flag = 0;
+
+//データの送信
+                    memset(&data, 0, sizeof(CONTAINER));
+                    data.command = DATA_PULL;
+                    data.flag = 3;
+                    data.state = GAME_MAIN;
+                    data.enemy = enemy[i];
+                    data.ene_num = i;
+                    send_data(BROADCAST, &data, sizeof(data));
+
+                    fprintf(stderr, "%d : (hp) = (%4d)\n", i, enemy[i].hp);
+                    break;
+                }
+            }
+        }
+    }
+}
+
+int num = 0;
+static int EnemyDamage() {
+    if(enemy[data.ene_num].flag == 1) {
+        enemy[data.ene_num].hp -= 1;//power
+        if(enemy[data.ene_num].hp<=0) {
+            enemy[data.ene_num].flag = 0;//2
+            enemy[data.ene_num].flag2 = 0;
+
+//更新しないもの
+            enemy[data.ene_num].tx = data.enemy.tx;
+            enemy[data.ene_num].ty = data.enemy.ty;
+            enemy[data.ene_num].cnt = data.enemy.cnt;
+            enemy[data.ene_num].wait = data.enemy.wait;
+
+            data.enemy = enemy[data.ene_num];
+            num++;
+
+            Total_Score += enemy[data.ene_num].score;
+            data.scoreM = Total_Score;
+            return num;
+        }
+        enemy[data.ene_num].flag2 = 60;
+//更新しないもの
+        enemy[data.ene_num].tx = data.enemy.tx;
+        enemy[data.ene_num].ty = data.enemy.ty;
+        enemy[data.ene_num].cnt = data.enemy.cnt;
+        enemy[data.ene_num].wait = data.enemy.wait;
+        fprintf(stderr, "[%d](tx, ty) = (%4d, %3d)\n", data.ene_num, enemy[data.ene_num].tx, enemy[data.ene_num].ty);
+        data.enemy = enemy[data.ene_num];
+    }
+    return -1;
 }
 
 

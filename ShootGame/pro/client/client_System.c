@@ -115,24 +115,26 @@ void EnemyHit(int myid, int m, int n, int ene_num, int sock){ //プレイヤー�
     data.command = ENEMY_HIT;
     data.cid = myid;
     data.state = GAME_MAIN;
-    data.m = m;
-    data.n = n;
+    data.m = m; //pla_shot[m]
+    data.n = n; //pla_shot[m].bullet[n]
     data.ene_num = ene_num;
     data.enemy = enemy[ene_num];
+    data.stage = stage;
 
     send_data(&data, sizeof(CONTAINER), sock);
 }
 
-int num = 0; //倒した敵の数
+/*int num = 0; //倒した敵の数
 int EnemyDamage(CONTAINER data){
     enemy[data.ene_num] = data.enemy;
     if(enemy[data.ene_num].flag == 1){
         enemy[data.ene_num].hp-=player[pla_shot[data.m].num].power;
-        enemy[data.ene_num].flag2 = 60;
         if(enemy[data.ene_num].hp <= 0){
             enemy[data.ene_num].flag = 2;
             enemy[data.ene_num].flag2 = 0;
             num++;
+
+            fprintf(stderr, "%2d:Enemy kill.\n", num);
 
             Score_Plus += enemy[data.ene_num].score; //ここをサーバーで行う
 //アイテムを出す
@@ -142,10 +144,11 @@ int EnemyDamage(CONTAINER data){
             pla_shot[data.m].bullet[data.n].flag = 0;
             return num;
         }
+        enemy[data.ene_num].flag2 = 60;
         pla_shot[data.m].bullet[data.n].flag = 0;
     }
     return -1;
-}
+    }*/
 
 
 /******************

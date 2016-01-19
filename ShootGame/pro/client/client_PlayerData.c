@@ -432,7 +432,7 @@ void PlayerShotCalc(int myid, int sock){
                     if(myid == pla_shot[i].num){
                         int k;
                         for(k = 0; k < ENEMY_MAX; k++){
-                            if(enemy[k].flag == 1){
+                            if(enemy[k].flag == 1 && enemy[k].stage == stage){
                                 if(PTamaEnemyHitJudge(pla_shot[i].bullet[j], enemy[k])){
                                     EnemyHit(myid, i, j, k, sock);
                                     break;

@@ -14,7 +14,6 @@ static int shot_search(int n){
 
 void PlayerShotPattern0(int n){
     int k;
-    fprintf(stderr, "shot!\n");
     if ((k = shot_search(n)) != -1) {
         pla_shot[n].bullet[k].flag = 1;
         pla_shot[n].bullet[k].ang = player[pla_shot[n].num].ang; //弾の角度
