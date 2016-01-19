@@ -345,6 +345,7 @@ int control_requests() {
                 case ENEMY_HIT:
                     stage = data.stage;
                     fprintf(stderr, "stage = %d\n", stage);
+                    enemy[data.ene_num].flag = data.enemy.flag;
                     data.num = EnemyDamage();
                     send_data(BROADCAST, &data, sizeof(data));
 
