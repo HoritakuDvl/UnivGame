@@ -7,10 +7,16 @@
 バグ
 ・client_EnemyShotPattern.c  自機狙いができない 解決
 ・client_EnemyData.c  たまに敵が描画されない 解決
-・server.c　スコアの計算をする
-・クライアントで管理しているもの（敵の状態など）を共通させる[描画の違いをなくすため]
-・各クライアントでスコア等の動作が違う（ラグかな？）
+・server.c　スコアの計算をする 解決
+・クライアントで管理しているもの（敵の状態など）を共通させる
+・各クライアントでスコア等の動作が違う（ラグかな？） 解決
 ・PlayerData.csv　本番用に変える　解決
+※1・敵のフラグが1にならずに、描画・移動しない
+※2・↑のため、弾が発射されない
+・バリア
+・同じ機種を選択した時にフリーズする
+・ランキング
+・戦車の砲台の位置
 */
 
 #ifndef _COMMON_H_
@@ -83,7 +89,7 @@
 #define ENEMY_MAX 4
 #define ENEMY_ORDER_MAX 63
 #define ENEMY_PATTERN_MAX 2
-#define ENEMY_SHOT_MAX 5
+#define ENEMY_SHOT_MAX 4
 #define ENEMY_SHOT_PATTERN_MAX 2
 #define SHOT_BULLET_MAX 100
 #define PI 3.1415926535

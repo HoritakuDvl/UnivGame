@@ -380,7 +380,20 @@ static int DrawGameMain(){
             dst_rect = DstRectInit(0, 0);
             src_rect2 = SrcRectInit(0, 0, 0, WINDOW_HEIGHT);
             dst_rect2 = DstRectInit(0, 0);
-        }   
+        }
+
+        for(i = 0; i < ENEMY_MAX; i++){
+            //fprintf(stderr, "[MOVE]enemy[%d].flag = %d\n", i, enemy[i].flag);
+            if(enemy[i].flag != 1){
+                enemy[i].flag = 1;
+                fprintf(stderr, "[MOVE]enemy[%d].flag = %d!\n\n", i, enemy[i].flag);
+            }
+        }
+        for(i = 0; i < ENEMY_SHOT_MAX; i++){
+            if(ene_shot[i].flag == 2)
+                ene_shot[i].flag = 0;
+        }
+   
         result = 1;
     }
     else{ //遊んでいるとき
@@ -464,7 +477,13 @@ static int DrawGameMain(){
 
     if(stageFlag == 1){
 //その他の動作
-        //EnemyEnter();
+        for(i = 0; i < ENEMY_MAX; i++)
+            if(enemy[i].flag == 0)
+                fprintf(stderr, "enemy[%d] = 0\n", i);
+            else if(enemy[i].flag == 1)
+                fprintf(stderr, "enemy[%d] = 1\n", i);
+            else if(enemy[i].flag == 2)
+                fprintf(stderr, "enemy[%d] = 2\n", i);
 
         EnemyMove(num_clients, myid, sock);
         PlayerShotCalc(myid, sock);

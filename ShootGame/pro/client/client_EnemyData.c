@@ -8,7 +8,7 @@ static SDL_Surface *gBoss1, *gBoss2;
 static SDL_Surface *gLastBoss;
 static SDL_Surface *gTama0;
 
-static void EnemyShotEnter(int n);
+//static void EnemyShotEnter(int n);
 static void EnemyShotCalc(int n, int num, int myid, int sock);
 
 void (*EnemyPattern[ENEMY_PATTERN_MAX])(int) = {
@@ -89,7 +89,7 @@ void EnemyDraw(){
 
 //敵
     for(i = 0; i < ENEMY_MAX; i++){
-        if(enemy[i].flag == 1){
+        if(enemy[i].flag == 1 && enemy[i].stage == stage){
             int cnt = enemy[i].flag2 % 14;
             if(cnt <= 4 || 11 <= cnt){
                 switch(enemy[i].knd){
@@ -312,10 +312,16 @@ void EnemyBulletMove(int num, int myid, int sock){
 void EnemyBulletClean(){
     int i, j;
     for(i = 0; i < ENEMY_SHOT_MAX; i++){
+        ene_shot[i].flag = 0;
         for(j = 0; j < SHOT_BULLET_MAX; j++){
             if(ene_shot[i].bullet[j].flag > 0)
                 ene_shot[i].bullet[j].flag = 0;
         }
+    }
+
+    for(i = 0; i < ENEMY_MAX; i++){
+        if(enemy[i].flag != 1)
+            enemy[i].flag = 1;
     }
 }
 
@@ -346,10 +352,7 @@ void EnemyFree(){
 }
 
 
-/**************************
-static
- *************************/
-static void EnemyShotEnter(int n){
+void EnemyShotEnter(int n){
     int i;
     for (i = 0; i < ENEMY_SHOT_MAX; i++) {
         if (ene_shot[i].flag == 0) {
@@ -364,6 +367,9 @@ static void EnemyShotEnter(int n){
 }
 
 
+/**************************
+static
+ *************************/
 static void EnemyShotCalc(int n, int num, int myid, int sock){
     //int max = 0;
     int j;
@@ -390,9 +396,6 @@ static void EnemyShotCalc(int n, int num, int myid, int sock){
             }
         }
     }
-
-//    fprintf(stderr, "enemy[%d].flag = %d\n", ene_shot[n].num, enemy[ene_shot[n].num].flag);
-//    fprintf(stderr, "ene_shot[%d].flag = %d\n\n", n, ene_shot[n].flag);
 
     //現在表示中の弾が一つでもあるかどうか調べる
     for (j = 0; j < SHOT_BULLET_MAX; j++) {
