@@ -224,16 +224,17 @@ static int DrawGameSelect(){
     }
 
     int result = 1;
-    if(stageFlag > 0){
+    if(pla_sele[myid].kPflag == 0){
         EventSelect(myid, sock);
-    }
-    if (FD_ISSET(sock, &read_flag)) {
-        result = execute_command(); //受信
     }
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
 
     PlayerSelect(myid, num_clients);
+
+    if (FD_ISSET(sock, &read_flag)) {
+        result = execute_command(); //受信
+    }
 
     return result;
 }
@@ -651,6 +652,7 @@ static int execute_command() {
             switch(data.flag) {
             case 3:
                 pla_sele[data.cid].kPflag = data.kPflag;
+                pla_sele[data.cid].kndP = data.kndP;
                 result = 1;
                 break;
             case 4:
