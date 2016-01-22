@@ -148,7 +148,7 @@ void EventSelect(int myid, int sock){
             switch(event.jbutton.button){
 //弾を打つ
             case 3:
-                if(stageFlag == 1) {
+                //if(pla_sele[myid].kPflag == 0) {
                     fprintf(stderr, "4 push.\n");
                     data.command = FOUR_COMMAND;
                     data.cid = myid;
@@ -156,7 +156,7 @@ void EventSelect(int myid, int sock){
                     data.kndP = pla_sele[myid].kndP; //決定
                     send_data(&data, sizeof(CONTAINER), sock);
                     stageFlag = 2;
-                }
+                    //}
                 break;
             }
             break;

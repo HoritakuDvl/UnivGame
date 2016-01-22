@@ -231,11 +231,12 @@ int control_requests() {
                     result = 1;
                     break;
                 case FOUR_COMMAND: //決定
-                    numC[data.cid] = 1;
-                    fprintf(stderr, "numC[%d] = 1\n", data.cid);
+                    //numC[data.cid] = 1;
+                    pla_sele[data.cid].kPflag = 1;
+                    fprintf(stderr, "pla_sele[%d].kPflag = %d\n", data.cid, pla_sele[data.cid].kPflag);
 
                     for(i = 0; i < num_clients; i++){
-                        if(numC[i] == 0){ //まだ決定していない人がいるとき
+                        if(pla_sele[i].kPflag == 0){ //まだ決定していない人がいるとき
                             pla_sele[data.cid].kPflag = 1;
                             data.kPflag = pla_sele[data.cid].kPflag;
                             data.flag = 3;

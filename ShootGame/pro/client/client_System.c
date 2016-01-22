@@ -224,6 +224,13 @@ void StringDraw(int num, int knd){
     SDL_Rect stA_src, stA_dst;
     switch(knd){
     case 0://体力
+        sprintf(str, "Player HP");
+        stringA = TTF_RenderUTF8_Blended(font, str, red);
+        stA_src = SrcRectInit(0, 0, 500, 40);
+        stA_dst = DstRectInit(50, 60);
+        SDL_BlitSurface(stringA, &stA_src, window, &stA_dst);
+        SDL_FreeSurface(stringA);
+
         sprintf(str, "%d", num);
         stringA = TTF_RenderUTF8_Blended(font, str, green);
         stA_src = SrcRectInit(0, 0, 500, 40);
