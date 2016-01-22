@@ -37,6 +37,33 @@ int ETamaPlayerHitJudge(Bullet a, PlayerData x) {
 }
 
 
+int PBarriETamaHitJudge(PlayerData a, Bullet x){
+    int ra = 220;
+    int rb = 150;
+    int rx = (a.src.w < a.src.h) ? a.src.w / 2 : a.src.h / 2;
+    int xx = a.tx - x.tx;
+    int yy = a.ty - x.ty;
+
+    if (xx*xx + yy*yy <= (ra+rx) * (ra+rx)){
+        if (xx*xx + yy*yy > (rb+rx) * (rb+rx))
+            return 1;
+    }
+    return 0;
+}
+
+
+int PlayerItemHitJudge(PlayerData a, ItemData b) {
+    int ra = (a.src.w < a.src.h) ? a.src.w / 2 : a.src.h / 2;
+    int rb = 25;
+    int xx = a.tx - b.tx;
+    int yy = a.ty - b.ty;
+
+    if (xx*xx + yy*yy <= (ra+rb) * (ra+rb))
+            return 1;
+    return 0;
+}
+
+
 void PlayerHit(int myid, int m, int n, int sock){ //プレイヤーと弾
     CONTAINER data;
     memset(&data, 0, sizeof(CONTAINER));
@@ -123,6 +150,38 @@ void EnemyHit(int myid, int m, int n, int ene_num, int sock){ //プレイヤー�
 
     send_data(&data, sizeof(CONTAINER), sock);
 }
+
+
+void BarrierHit(int myid, int m, int n, int sock){ //バリアと弾
+    CONTAINER data;
+    memset(&data, 0, sizeof(CONTAINER));
+
+    data.command = BARRIER_HIT;
+    data.cid = myid;
+    data.state = GAME_MAIN;
+    data.m = m; //ene_shot[m]
+    data.n = n; //ene_shot[m].bullet[n]
+    data.stage = stage;
+
+    send_data(&data, sizeof(CONTAINER), sock);
+}
+
+
+void ItemHit(int myid, int m, int sock) {
+    CONTAINER data;
+    memset(&data, 0, sizeof(CONTAINER));
+
+    data.command = DATA_PULL;
+    data.cid = myid;
+    data.state = GAME_MAIN;
+    data.flag = 5;
+    data.m = m; //item[m]
+    data.stage = stage;
+
+    send_data(&data, sizeof(CONTAINER), sock);
+    //fprintf(stderr, "%dアイテムゲット！\n", data.m);
+}
+
 
 /*int num = 0; //倒した敵の数
 int EnemyDamage(CONTAINER data){

@@ -11,12 +11,14 @@
 ・クライアントで管理しているもの（敵の状態など）を共通させる
 ・各クライアントでスコア等の動作が違う（ラグかな？） 解決
 ・PlayerData.csv　本番用に変える　解決
-※1・敵のフラグが1にならずに、描画・移動しない
-※2・↑のため、弾が発射されない
-・バリア
+・敵のフラグが1にならずに、描画・移動しない まぁ解決
+・↑のため、弾が発射されない まぁ解決
+※1・バリア 解決（バリアしている時に、弾を発車しないようにしたほうがいい気がする）
 ・同じ機種を選択した時にフリーズする
 ・ランキング
-・戦車の砲台の位置
+※2・戦車の砲台の位置 画像が初期化される 解決
+・レベルデザイン
+※3・アイテムの発生 解決（バランス調整をするのみ）PowerChange関数[server.c],SpeedChange関数[client.c]
 */
 
 #ifndef _COMMON_H_
@@ -66,8 +68,10 @@
 #define DOWN_COMMAND	'D'				/* 下コマンド */
 #define SEPARATE_UPDO_COMMAND	'Y'				/* 左スティックを離すコマンド */
 #define SEPARATE_LERI_COMMAND	'X'				/* 左スティックを離すコマンド */
-#define SHOT_COMMAND 'S'                    /* 5ボタンを押した時 */
-#define SHOT_FINISH_COMMAND 'F'            /* 5ボタンを離した時 */
+#define SHOT_COMMAND 'S'                    /* 6ボタンを押した時 */
+#define SHOT_FINISH_COMMAND 'F'            /* 6ボタンを離した時 */
+#define BARRIER_COMMAND 'J' /*5ボタンを押した時*/
+#define BARRIER_FINISH_COMMAND 'K' /*5ボタンを離したとき*/
 #define DATA_PULL 'C'
 
 //0:上 1:右 3:左 (右スティック)
@@ -81,6 +85,7 @@
 #define PLAYER_HIT 'P'
 #define PLAYER_HIT2 'A'
 #define ENEMY_HIT 'E'
+#define BARRIER_HIT 'M'
 
 
 #define PLAYER_ORDER_MAX 10
@@ -92,6 +97,7 @@
 #define ENEMY_SHOT_MAX 8
 #define ENEMY_SHOT_PATTERN_MAX 2
 #define SHOT_BULLET_MAX 100
+#define ITEM_MAX 5
 #define PI 3.1415926535
 
 
@@ -116,7 +122,7 @@ typedef struct{
 
 typedef struct{
     int up, down, left, right;
-    int b5;
+    int b5, b4; //弾発射、バリア
     int rotaU, rotaL, rotaR;
 
     int kndP; //機種選択
@@ -175,6 +181,14 @@ typedef struct {
 }Shot;
 
 typedef struct{
+    SDL_Rect src, dst;
+    int tx, ty;
+    int flag;
+    int knd;
+    int num;//サーバーでのitem[num]
+}ItemData;
+
+typedef struct{
     Sint16 x, y, r;
     Command command;
 }En;
@@ -188,16 +202,17 @@ Shot pla_shot[PLAYER_SHOT_MAX];
 EnemyData enemy[ENEMY_MAX];
 EnemyOrder enemyOrder[ENEMY_ORDER_MAX];
 Shot ene_shot[ENEMY_SHOT_MAX];
+ItemData item[ITEM_MAX];
 
 int stage;
 int stageFlag;
 int Total_Score; //合計スコア
+int power, speed;
 
 typedef struct {
     char command;
     int cid; //クライアントのID
     GAME_STATE state;
-    //int tx, ty; //プレイヤーの中心座標を送るときに使用
     int m, n; //敵の打った弾の番号を送るときに使用(ene_shot[m].bullet[n]),(pla_shot[m].bullet[n])
     int ene_num; //敵に弾が当たった時の敵の番号
     PlayerData player;
@@ -210,6 +225,10 @@ typedef struct {
 
     int kndP; //選択時の各クライアントの位置
     int kPflag;
+
+    ItemData item;
+    int power, speed;
+    //int tx, ty; //出現させるアイテムの位置(敵データがすぐに更新してしまうため)
 } CONTAINER;
 
 #endif

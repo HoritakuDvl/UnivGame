@@ -454,6 +454,14 @@ void EventMainTank(int myid, int sock){
                 send_data(&data, sizeof(CONTAINER), sock);
                 break;
 
+//バリア
+            case 4:
+                data.command = BARRIER_COMMAND;
+                data.cid = myid;
+                data.state = GAME_MAIN;
+                send_data(&data, sizeof(CONTAINER), sock);
+                break;
+
 //弾を打つ
             case 5:
                 //SendShotCommand(1);
@@ -488,6 +496,13 @@ void EventMainTank(int myid, int sock){
                 break;
             case 3:
                 data.command = LEFT_SEPA_ROTA;
+                data.cid = myid;
+                data.state = GAME_MAIN;
+                send_data(&data, sizeof(CONTAINER), sock);
+                break;
+
+            case 4:
+                data.command = BARRIER_FINISH_COMMAND;
                 data.cid = myid;
                 data.state = GAME_MAIN;
                 send_data(&data, sizeof(CONTAINER), sock);
