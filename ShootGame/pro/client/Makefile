@@ -8,7 +8,7 @@ all: $(EXE)
 .c.o:	
 	$(CC) -c $< $(CFLAGS)
 $(EXE): $(OBJS)
-	$(CC) -o $(EXE) $(OBJS) -lm -lSDL -lSDL_image -lSDL_gfx -lSDL_ttf
+	$(CC) -o $(EXE) $(OBJS) -lm -lSDL -lSDL_image -lSDL_gfx -lSDL_ttf -lSDL_mixer
 
 clean:
 	rm -f $(EXE) $(OBJS) *~ *.o *.core

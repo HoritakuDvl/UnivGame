@@ -15,6 +15,31 @@ int Score_Plus; //足されるスコア
 int HP, HP_M;
 int stageCount;//ゲーム中の時間
 
+typedef struct{
+	Mix_Music *start;     // スタート画面BGM  
+	Mix_Music *mainGame;  // ゲーム中のBGM 
+	Mix_Music *clear;     // クリアのBGM
+	Mix_Music *gameOver;  // ゲームオーバーのBGM
+}Bgm;
+
+Bgm bgm; // 一時的に共有と言う形で
+
+typedef struct{
+	Mix_Chunk *back;
+	Mix_Chunk *decide;
+	Mix_Chunk *select;
+	
+	Mix_Chunk *fighterShot;
+	Mix_Chunk *tankShot;
+	Mix_Chunk *hitPlayer;
+	Mix_Chunk *hitEnemy;
+	Mix_Chunk *dieMinions;
+	Mix_Chunk *dieBoss;
+	Mix_Chunk *getItem;
+}Se;
+
+Se se; // 一時的に共有と言う形で
+
 /* client.c */
 extern void setup_client(char *, u_short);
 extern int control_requests();
