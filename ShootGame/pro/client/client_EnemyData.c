@@ -384,7 +384,12 @@ static void EnemyShotCalc(int n, int num, int myid, int sock){
 
             //プレイヤーと弾のあたり判定
                 if (player[myid].flag > 0) {
-                    if (player[myid].flag2 == 0 && ETamaPlayerHitJudge(ene_shot[n].bullet[j], player[myid]) == 1) {
+                    //バリアと弾
+                    if(player[myid].command.b4 == 1 && PBarriETamaHitJudge(player[myid], ene_shot[n].bullet[j]) == 1){
+                        BarrierHit(myid, n, j, sock);
+                    }
+                   //プレイヤーと弾
+                    else if (player[myid].flag2 == 0 && ETamaPlayerHitJudge(ene_shot[n].bullet[j], player[myid]) == 1) {
                         PlayerHit(myid, n, j, sock);
                     }
                 }

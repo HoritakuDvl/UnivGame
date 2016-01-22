@@ -11,6 +11,7 @@ static SDL_Surface *gPlayer6, *gPlayer6_2;
 static SDL_Surface *gPlayer7, *gPlayer7_2;
 static SDL_Surface *gPlayer8, *gPlayer8_2;
 static SDL_Surface *gPlayer9, *gPlayer9_2;
+static SDL_Surface *gBarrier;
 
 
 //static void PlayerShotEnter(int n, int num);
@@ -46,6 +47,8 @@ void PlayerLoad(){
 
     gPTama0 = IMG_Load("sozai/main_resource/05_main_game/player/fighters/fighter_shots/fighter_shot_1.png");
     gPTama1 = IMG_Load("sozai/main_resource/05_main_game/player/tanks/tank_shots/tank_shot_1.png");
+
+    gBarrier = IMG_Load("sozai/main_resource/05_main_game/player/tanks/tank_barrier/barrier_circle.png");
 }
 
 
@@ -166,7 +169,12 @@ void PlayerDraw(int pos){
 
                     //本体
                     SDL_BlitSurface(gPlayer5, &player[pos].src, window, &player[pos].dst);
-                    circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
+                    if(player[pos].command.b4 == 1){
+                        pl_src = SrcRectInit(0, 0, 500, 500);
+                        pl_dst = DstRectInit(player[pos].tx-250, player[pos].ty-250);
+                        SDL_BlitSurface(gBarrier, &pl_src, window, &pl_dst);
+                    }
+                    //circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
 
                 case 6: //テスト用１
@@ -183,7 +191,12 @@ void PlayerDraw(int pos){
 
                     //本体
                     SDL_BlitSurface(gPlayer6, &player[pos].src, window, &player[pos].dst);
-                    circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
+                    if(player[pos].command.b4 == 1){
+                        pl_src = SrcRectInit(0, 0, 500, 500);
+                        pl_dst = DstRectInit(player[pos].tx-250, player[pos].ty-250);
+                        SDL_BlitSurface(gBarrier, &pl_src, window, &pl_dst);
+                    }
+                    //circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
 
                 case 7: //テスト用１
@@ -200,7 +213,12 @@ void PlayerDraw(int pos){
 
                     //本体
                     SDL_BlitSurface(gPlayer7, &player[pos].src, window, &player[pos].dst);
-                    circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
+                    if(player[pos].command.b4 == 1){
+                        pl_src = SrcRectInit(0, 0, 500, 500);
+                        pl_dst = DstRectInit(player[pos].tx-250, player[pos].ty-250);
+                        SDL_BlitSurface(gBarrier, &pl_src, window, &pl_dst);
+                    }
+                    //circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
 
                 case 8: //テスト用１
@@ -217,7 +235,12 @@ void PlayerDraw(int pos){
 
                     //本体
                     SDL_BlitSurface(gPlayer8, &player[pos].src, window, &player[pos].dst);
-                    circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
+                    if(player[pos].command.b4 == 1){
+                        pl_src = SrcRectInit(0, 0, 500, 500);
+                        pl_dst = DstRectInit(player[pos].tx-250, player[pos].ty-250);
+                        SDL_BlitSurface(gBarrier, &pl_src, window, &pl_dst);
+                    }
+                    //circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
 
                 case 9: //テスト用１
@@ -234,7 +257,12 @@ void PlayerDraw(int pos){
 
                     //本体
                     SDL_BlitSurface(gPlayer9, &player[pos].src, window, &player[pos].dst);
-                    circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
+                    if(player[pos].command.b4 == 1){
+                        pl_src = SrcRectInit(0, 0, 500, 500);
+                        pl_dst = DstRectInit(player[pos].tx-250, player[pos].ty-250);
+                        SDL_BlitSurface(gBarrier, &pl_src, window, &pl_dst);
+                    }
+                    //circleColor(window, player[pos].tx, player[pos].ty, 75, 0xff0000ff);
                     break;
                 }
                 break;
@@ -265,6 +293,7 @@ void PlayerShotEnter(int n, int num){
 }
 
 
+//バリアは敵の弾の当たり判定に有
 void PlayerAction(int pos){
       if(player[pos].command.up == 1){
           PlayerUpMove(pos);
@@ -483,4 +512,6 @@ void PlayerFree(){
 
     SDL_FreeSurface(gPTama0);
     SDL_FreeSurface(gPTama1);
+
+    SDL_FreeSurface(gBarrier);
 }

@@ -32,6 +32,8 @@ static PlayerData PlayerEnter(int myid, int knd);
 static void EnemyDataLoad();
 static void EnemyEnter(int num);
 static int EnemyDamage();
+static ItemData ItemEnter(EnemyData a);
+static void PowerChange(int pow);
 static SDL_Rect SrcRectInit(int x, int y, int w, int h);
 static SDL_Rect DstRectInit(int x, int y);
 //static void PlayerShotEnter(int n, int num);
@@ -124,6 +126,8 @@ void setup_server(int num_cl, u_short port) {
       pla_sele[i].kPflag = 0;
   }
   Total_Score = 0;
+  power = 1;
+  speed = 1;
 }
 
 /************************
@@ -298,6 +302,14 @@ int control_requests() {
                     exit(1);
                     break;
                 }
+
+//サーバーでも管理データの管理時間を決める
+                for(i = 0; i < ITEM_MAX; i++){
+                    item[i].tx -= 5;
+                    if(item[i].tx < -60)
+                        item[i].flag = 0;
+                }
+
                 switch(data.command) {
                 case LEFT_COMMAND:
                 case RIGHT_COMMAND:
@@ -328,6 +340,11 @@ int control_requests() {
                     send_data(BROADCAST, &data, sizeof(data));
                     result = 1; //メッセージの送信
                     break;
+                case BARRIER_COMMAND:
+                case BARRIER_FINISH_COMMAND:
+                    send_data(BROADCAST, &data, sizeof(data));
+                    result = 1; //メッセージの送信
+                    break;
                 case PLAYER_HIT:
                     HP_Num--;
                     data.hp = HP_Num;
@@ -347,6 +364,8 @@ int control_requests() {
                     fprintf(stderr, "stage = %d\n", stage);
                     enemy[data.ene_num].flag = data.enemy.flag;
                     data.num = EnemyDamage();
+                    if(data.num > 0 && data.enemy.item > 0) //アイテムの出現
+                        data.item = ItemEnter(data.enemy);
                     send_data(BROADCAST, &data, sizeof(data));
 
                     if(data.num > 0){
@@ -366,6 +385,10 @@ int control_requests() {
                             break;
                         }
                     }
+                    result = 1; //メッセージの送信
+                    break;
+                case BARRIER_HIT:
+                    send_data(BROADCAST, &data, sizeof(data));
                     result = 1; //メッセージの送信
                     break;
                 case DATA_PULL:
@@ -392,6 +415,29 @@ int control_requests() {
                         break;
                     case 4: //毎秒のプレイヤーデータの送信(現在のHPも)
                         data.hp = HP_Num;
+                        send_data(BROADCAST, &data, sizeof(data));
+                        result = 1;
+                        break;
+                    case 5: //アイテムの獲得
+                        item[data.m].flag = 0;
+                        data.item.flag = item[data.m].flag;
+                        switch(item[data.m].knd) {
+                        case 1: //攻撃力アップ
+                            power++;
+                            data.power = power;
+                            PowerChange(power); //攻撃力の変化
+                            break;
+                        case 2: //体力回復
+                            HP_Num+=10;
+                            if(HP_Num > HP_Max)
+                                HP_Num = HP_Max;
+                            data.hp = HP_Num;
+                            break;
+                        case 3: //スピードアップ
+                            speed++;
+                            data.speed = speed;
+                            break;
+                        }
                         send_data(BROADCAST, &data, sizeof(data));
                         result = 1;
                         break;
@@ -609,7 +655,8 @@ static PlayerData PlayerEnter(int myid, int knd){
             tmp.flag = 1;
             tmp.knd2 = playerOrder[t].knd2;
             tmp.sp = playerOrder[t].sp;
-            tmp.power = playerOrder[t].power;
+            //tmp.power = playerOrder[t].power;
+            power = 1;
             tmp.pattern2 = playerOrder[t].pattern2;
 
             HP_Max += playerOrder[t].hp_max;
@@ -810,7 +857,7 @@ static void EnemyEnter(int num) {
 int num = 0;
 static int EnemyDamage() {
     if(enemy[data.ene_num].flag == 1) {
-        enemy[data.ene_num].hp -= 1;//power
+        enemy[data.ene_num].hp -= power;//power
         if(enemy[data.ene_num].hp<=0) {
             enemy[data.ene_num].flag = 0;//2
             enemy[data.ene_num].flag2 = 0;
@@ -838,6 +885,28 @@ static int EnemyDamage() {
         data.enemy = enemy[data.ene_num];
     }
     return -1;
+}
+
+
+/*新しいアイテムの出現*/
+static ItemData ItemEnter(EnemyData a){
+    int i;
+    for(i = 0; i < ITEM_MAX; i++){
+        if(item[i].flag == 0) {
+            item[i].tx = a.tx;
+            item[i].ty = a.ty;
+            item[i].flag = 1;
+            item[i].knd = a.item;
+            item[i].num = i;
+            return item[i];
+        }
+    }
+    return item[0];
+}
+
+
+static void PowerChange(int pow) {
+
 }
 
 

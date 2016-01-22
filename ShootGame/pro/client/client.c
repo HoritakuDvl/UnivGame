@@ -25,6 +25,8 @@ static int execute_command(void); //受信（行動実行）
 //static void send_data(void *, int); //データを送る
 static int receive_data(void *, int); //データを受け取る
 
+static void SpeedChange(int sp);
+
 
 static SDL_Surface *haikei1, *haikei2, *haikei3, *haikei4, *haikei5, *haikei6, *haikei7, *haikei8, *haikei9;
 static SDL_Rect src_rect, dst_rect, src_rect2, dst_rect2;
@@ -127,10 +129,14 @@ void setup_client(char *server_name, u_short port) {
     PlayerLoad();
     EnemyLoad();
     PlSeLoad();
+    ItemLoad();
 
 /*初期化*/
     stageFlag = 1;
     stageCount = 0;
+    ItemInit();
+    power = 1;
+    speed = 1;
     //PlayerAllInit(3); //一斉スタートするとき
 }
 
@@ -327,6 +333,7 @@ static int DrawGameMain(){
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 0, 0, 0, 255));
     if(stageFlag != 1){
+        ItemInit(); //アイテムの初期化
 
         src_rect.x += 10;
         if(src_rect.x + src_rect.w > WINDOW_WIDTH+200)
@@ -456,16 +463,17 @@ static int DrawGameMain(){
     StringDraw(Score_Plus, 1);
 
 //攻撃レベル
-    int power = 1;
+    fprintf(stderr, "power = %d\n", power);
     StringDraw(power,2);
 
 //速度レベル
-    int speed = 1;
     StringDraw(speed, 3);
 
     if(stageFlag == 1){
 //敵の描画
         EnemyDraw();
+//アイテムの描画
+        ItemDraw();
     }
 
 //プレイヤーの動作
@@ -477,17 +485,19 @@ static int DrawGameMain(){
 
     if(stageFlag == 1){
 //その他の動作
-        for(i = 0; i < ENEMY_MAX; i++)
+        /*for(i = 0; i < ENEMY_MAX; i++)
             if(enemy[i].flag == 0)
                 fprintf(stderr, "enemy[%d] = 0\n", i);
             else if(enemy[i].flag == 1)
                 fprintf(stderr, "enemy[%d] = 1\n", i);
             else if(enemy[i].flag == 2)
                 fprintf(stderr, "enemy[%d] = 2\n", i);
+        */
 
         EnemyMove(num_clients, myid, sock);
         PlayerShotCalc(myid, sock);
         EnemyBulletMove(num_clients, myid, sock);
+        ItemMove(myid, sock);
     }
     return result;
 }
@@ -760,6 +770,17 @@ static int execute_command() {
             result = 1;
             break;
 
+        case BARRIER_COMMAND:
+            player[data.cid].command.b4 = 1;
+            fprintf(stderr, "%d:バリアON\n", data.cid);
+            result = 1;
+            break;
+        case BARRIER_FINISH_COMMAND:
+            player[data.cid].command.b4 = 0;
+            fprintf(stderr, "%d:バリアOFF\n", data.cid);
+            result = 1;
+            break;
+
         case PLAYER_HIT:
             PlayerDamage(data, myid, sock);
             result = 1;
@@ -773,6 +794,9 @@ static int execute_command() {
             k = data.num;//EnemyDamage(data);
             Total_Score = data.scoreM; //スコアの最大値
             pla_shot[data.m].bullet[data.n].flag = 0;
+            if(k > 0 && data.item.knd > 0){ //アイテムの出現
+                ItemEnter(data.item);
+            }
             switch(stage){
             case 1:
                 if(k == 6){
@@ -856,6 +880,11 @@ static int execute_command() {
             result = 1;
             break;
 
+        case BARRIER_HIT:
+            ene_shot[data.m].bullet[data.n].flag = 0;
+            result = 1;
+            break;
+
         case DATA_PULL:
             switch(data.flag){
             case 2://プレイヤーの読み込み(初期)
@@ -874,6 +903,21 @@ static int execute_command() {
             case 4:
                 player[data.cid] = data.player;
                 HP = data.hp;
+                break;
+            case 5://アイテムゲット・効果
+                item[data.m].flag = data.item.flag;//0
+                switch(item[data.m].knd){
+                case 1:
+                    power = data.power;
+                    break;
+                case 2:
+                    HP = data.hp;
+                    break;
+                case 3:
+                    speed = data.speed;
+                    SpeedChange(speed);
+                    break;
+                }
                 break;
             }
             break;
@@ -974,6 +1018,26 @@ void HaikeiFree(){
     SDL_FreeSurface(haikei7);
     SDL_FreeSurface(haikei8);
     SDL_FreeSurface(haikei9);
+}
+
+
+void SpeedChange(int sp) {
+    int i;
+    switch(sp) {
+    case 1:
+        for(i = 0; i < num_clients; i++){
+            player[i].sp = 8;
+        }
+        break;
+    case 2:
+        for(i = 0; i < num_clients; i++){
+            player[i].sp = 10;
+        }
+        break;
+    case 3:
+
+        break;
+    }
 }
 
 

@@ -81,15 +81,28 @@ extern void EnemyPattern1(int n);
 extern void EnemyShotPattern0(int n, int num);
 extern void EnemyShotPattern1(int n, int num);
 
+/* client_ItemData.c */
+extern void ItemLoad();
+extern void ItemInit();
+extern void ItemDraw();
+extern void ItemMove(int myid, int sock);
+extern void ItemEnter(ItemData a);
+extern void ItemFree();
+
 /* client_System.c */
 extern int PlayerEnemyHitJudge(PlayerData a, EnemyData b);
 extern int PTamaEnemyHitJudge(Bullet a, EnemyData x);
 extern int ETamaPlayerHitJudge(Bullet a, PlayerData x);
+extern int PBarriETamaHitJudge(PlayerData a, Bullet x);
+extern int PlayerItemHitJudge(PlayerData a, ItemData b);
 extern void PlayerHit(int myid, int m, int n, int sock);
 extern void PlayerDamage(CONTAINER data, int myid, int sock);
 extern void PlayerHit2(int myid, int sock);
 extern void PlayerDamage2(CONTAINER data, int myid, int sock);
 extern void EnemyHit(int myid, int m, int n, int ene_num, int sock);
+extern void BarrierHit(int myid, int m, int n, int sock);
+extern void ItemHit(int myid, int m, int sock); 
+
 //extern int EnemyDamage(CONTAINER data);
 extern void StringDraw(int num, int knd);
 
