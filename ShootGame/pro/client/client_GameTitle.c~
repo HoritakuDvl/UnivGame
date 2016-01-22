@@ -11,9 +11,9 @@ static void MarkDraw(int n);
 
 void GameTitleLoad() {
 
-    haikei = IMG_Load("sozai/main_resource/00_common/common_bg.png");
+    haikei = IMG_Load("sozai/main_resource/00_common/common_bg.jpg");
     titleLabel = IMG_Load("sozai/main_resource/01_start/game_title.png");
-    startBtn = IMG_Load("sozai/main_resource/00_common/common_start_btn.png");
+    startBtn = IMG_Load("sozai/main_resource/00_common/common_start_btn.jpg");
     
     gMark1 = IMG_Load("sozai/main_resource/00_common/common_frame1.png");
     gMark2 = IMG_Load("sozai/main_resource/00_common/common_frame2.png");

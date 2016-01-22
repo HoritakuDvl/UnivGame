@@ -15,22 +15,22 @@ static void MarkDraw(int n);
 
 void PlSeLoad() {
 
-    gHaikei = IMG_Load("sozai/main_resource/00_common/common_bg.png");
+    gHaikei = IMG_Load("sozai/main_resource/00_common/common_bg.jpg");
 
     gSubTitle = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_frtk_label.png");
 
-    gSetumei = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_ex_label.png");
+    gSetumei = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_ex_label.jpg");
 
-    gMachine1 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter1.png");
-    gMachine2 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter2.png");
-    gMachine3 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter3.png");
-    gMachine4 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter4.png");
-    gMachine5 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter5.png");
-    gMachine6 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank1.png");
-    gMachine7 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank2.png");
-    gMachine8 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank3.png");
-    gMachine9 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank4.png");
-    gMachine10 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank5.png");
+    gMachine1 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter1.jpg");
+    gMachine2 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter2.jpg");
+    gMachine3 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter3.jpg");
+    gMachine4 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter4.jpg");
+    gMachine5 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_fighter/slt_fighter5.jpg");
+    gMachine6 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank1.jpg");
+    gMachine7 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank2.jpg");
+    gMachine8 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank3.jpg");
+    gMachine9 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank4.jpg");
+    gMachine10 = IMG_Load("sozai/main_resource/02_slt_fighter_tank/slt_tank/slt_tank5.jpg");
 
     gMark1 = IMG_Load("sozai/main_resource/00_common/common_frame1.png");
     gMark2 = IMG_Load("sozai/main_resource/00_common/common_frame2.png");

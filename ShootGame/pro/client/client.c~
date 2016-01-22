@@ -143,15 +143,15 @@ void setup_client(char *server_name, u_short port) {
 	se.dieBoss = Mix_LoadWAV("sozai/main_resource/se/die_boss.wav");
 	se.getItem = Mix_LoadWAV("sozai/main_resource/se/get_item.wav");
 
-    haikei1 = IMG_Load("sozai/main_resource/05_main_game/background/bg_1.png");
-    haikei2 = IMG_Load("sozai/main_resource/05_main_game/background/bg_2.png");
-    haikei3 = IMG_Load("sozai/main_resource/05_main_game/background/bg_3.png");
-    haikei4 = IMG_Load("sozai/main_resource/05_main_game/background/bg_4.png");
-    haikei5 = IMG_Load("sozai/main_resource/05_main_game/background/bg_5.png");
-    haikei6 = IMG_Load("sozai/main_resource/05_main_game/background/bg_6.png");
-    haikei7 = IMG_Load("sozai/main_resource/05_main_game/background/bg_7.png");
-    haikei8 = IMG_Load("sozai/main_resource/05_main_game/background/bg_8.png");
-    haikei9 = IMG_Load("sozai/main_resource/05_main_game/background/bg_9.png");
+    haikei1 = IMG_Load("sozai/main_resource/05_main_game/background/bg_1.jpg");
+    haikei2 = IMG_Load("sozai/main_resource/05_main_game/background/bg_2.jpg");
+    haikei3 = IMG_Load("sozai/main_resource/05_main_game/background/bg_3.jpg");
+    haikei4 = IMG_Load("sozai/main_resource/05_main_game/background/bg_4.jpg");
+    haikei5 = IMG_Load("sozai/main_resource/05_main_game/background/bg_5.jpg");
+    haikei6 = IMG_Load("sozai/main_resource/05_main_game/background/bg_6.jpg");
+    haikei7 = IMG_Load("sozai/main_resource/05_main_game/background/bg_7.jpg");
+    haikei8 = IMG_Load("sozai/main_resource/05_main_game/background/bg_8.jpg");
+    haikei9 = IMG_Load("sozai/main_resource/05_main_game/background/bg_9.jpg");
     
     PlayerLoad();
     EnemyLoad();
