@@ -38,10 +38,9 @@ void PlSeLoad() {
     gMark4 = IMG_Load("sozai/main_resource/00_common/common_frame4.png");
 
     int i;
-    for(i = 0; i < MAX_CLIENTS; i++) {
-        pla_sele[i].kndP = i;
-        pla_sele[i].kPflag = 0;
-    }
+    for(i = 0; i < MAX_CLIENTS; i++)
+        player[i].command.kndP = i;
+    pla_sele.kPflag = 0;
 }
 
 /************************************
@@ -112,7 +111,7 @@ void PlayerSelect(int myid, int num) {
 
 //マーク
     for(i = 0; i < num; i++) {
-        if(i != myid) {
+        if(i != myid && pla_sele.kPflag <= i) {
             MarkDraw(i);
         }
     }
@@ -122,14 +121,15 @@ void PlayerSelect(int myid, int num) {
 
 static void MarkDraw(int n){
 //薄暗くする
-    if(pla_sele[n].kPflag == 1) { 
+    /*if(pla_sele.kPflag <= n) { 
         src_rect = SrcRectInit(0, 0, 200, 60);
-        dst_rect = DstRectInit(300 + 300*(pla_sele[n].kndP/5), 250+100*(pla_sele[n].kndP%5));
-    }
+        dst_rect = DstRectInit(300 + 300*(player[n].command.kndP/5), 250+100*(player[n].command.kndP%5));
+        }*/
+
 
 //マーク
     src_rect = SrcRectInit(0, 0, 215, 75);
-    dst_rect = DstRectInit(292 + 300*(pla_sele[n].kndP/5), 242+100*(pla_sele[n].kndP%5));
+    dst_rect = DstRectInit(292 + 300*(player[n].command.kndP/5), 242+100*(player[n].command.kndP%5));
     switch(n) {
     case 0:
         SDL_BlitSurface(gMark1, &src_rect, window, &dst_rect);

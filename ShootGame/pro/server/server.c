@@ -121,10 +121,8 @@ void setup_server(int num_cl, u_short port) {
       enemy[i].flag = 0;
 
   gstate = GAME_TITLE;
-  for(i = 0; i < num_clients; i++) {
-      pla_sele[i].kndP = i;
-      pla_sele[i].kPflag = 0;
-  }
+  pla_sele.kPflag = 0;
+  
   Total_Score = 0;
   power = 1;
   speed = 1;
@@ -207,64 +205,68 @@ int control_requests() {
                     exit(1);
                     break;
                 }
+                if(pla_sele.kPflag != data.cid) {
+                    fprintf(stderr, "kPflag[%d] : player[%d] not select\n",pla_sele.kPflag, data.cid);
+                    break;
+                }
+
                 switch(data.command) {
                 case LEFT_COMMAND:
                 case RIGHT_COMMAND:
-                    pla_sele[data.cid].kndP = (pla_sele[data.cid].kndP + 5)%10;
-                    data.kndP = pla_sele[data.cid].kndP;
+                    player[data.cid].command.kndP = (player[data.cid].command.kndP + 5)%10;
+                    data.kndP = player[data.cid].command.kndP;
                     send_data(BROADCAST, &data, sizeof(data));
-                    fprintf(stderr, "pla_sele[%d].kndP = %d\n", data.cid, pla_sele[data.cid].kndP);
+                    fprintf(stderr, "player[%d].command.kndP = %d\n", data.cid, player[data.cid].command.kndP);
                     result = 1;
                     break;
                 case UP_COMMAND:
-                    pla_sele[data.cid].kndP = (pla_sele[data.cid].kndP + 9)%10;
-                    data.kndP = pla_sele[data.cid].kndP;
+                    player[data.cid].command.kndP = (player[data.cid].command.kndP + 9)%10;
+                    data.kndP = player[data.cid].command.kndP;
                     send_data(BROADCAST, &data, sizeof(data));
-                    fprintf(stderr, "pla_sele[%d].kndP = %d\n", data.cid, pla_sele[data.cid].kndP);
+                    fprintf(stderr, "player[%d].command.kndP = %d\n", data.cid, player[data.cid].command.kndP);
                     result = 1;
                     break;
                 case DOWN_COMMAND:
-                    pla_sele[data.cid].kndP = (pla_sele[data.cid].kndP + 1)%10;
-                    data.kndP = pla_sele[data.cid].kndP;
+                    player[data.cid].command.kndP = (player[data.cid].command.kndP + 1)%10;
+                    data.kndP = player[data.cid].command.kndP;
                     send_data(BROADCAST, &data, sizeof(data));
-                    fprintf(stderr, "pla_sele[%d].kndP = %d\n", data.cid, pla_sele[data.cid].kndP);
+                    fprintf(stderr, "player[%d].command.kndP = %d\n", data.cid, player[data.cid].command.kndP);
                     result = 1;
                     break;
                 case FOUR_COMMAND: //決定
                     //numC[data.cid] = 1;
-                    pla_sele[data.cid].kPflag = 1;
-                    fprintf(stderr, "pla_sele[%d].kPflag = %d\n", data.cid, pla_sele[data.cid].kPflag);
+                    pla_sele.kPflag = data.cid;
+                    fprintf(stderr, "pla_sele.kPflag = %d\n", pla_sele.kPflag);
 
-                    for(i = 0; i < num_clients; i++){
-                        if(pla_sele[i].kPflag == 0){ //まだ決定していない人がいるとき
-                            pla_sele[data.cid].kPflag = 1;
-                            data.kPflag = pla_sele[data.cid].kPflag;
-                            data.flag = 3;
-                            send_data(BROADCAST, &data, sizeof(data));
-                            fprintf(stderr, "check %d:%d:%d:%d\n", numC[0], numC[1], numC[2], numC[3]);
-                            break;
-                        }
 
-                        if(i == num_clients-1){
-                            fprintf(stderr, "check in!\n");
-                            gstate = GAME_MAIN;
-                            data.state = gstate;
-                            data.flag = 4;
-                            send_data(BROADCAST, &data, sizeof(data));
-                            result = 1;
-
-                            stage = 1;
-                            data.num = 0;
-                            EnemyEnter(data.num);
-
-                            for(i = 0; i < 4; i++){
-                                numC[i] = 0;
-                                pla_sele[i].kndP = i;
-                                pla_sele[i].kPflag = 0;
-                            }
-                        }
-
+                    if(pla_sele.kPflag != num_clients-1){ //まだ決定していない人がいるとき
+                        data.kPflag = data.cid+1;
+                        pla_sele.kPflag = data.kPflag;
+                        data.flag = 3;
+                        send_data(BROADCAST, &data, sizeof(data));
+                        fprintf(stderr, "check %d\n", data.kPflag);
+                        break;
                     }
+
+                    else/*if(i == num_clients-1)*/{
+                        fprintf(stderr, "check in!\n");
+                        gstate = GAME_MAIN;
+                        data.state = gstate;
+                        data.flag = 4;
+                        send_data(BROADCAST, &data, sizeof(data));
+                        result = 1;
+
+                        stage = 1;
+                        data.num = 0;
+                        EnemyEnter(data.num);
+
+                        pla_sele.kPflag = 0;
+
+                        for(i = 0; i < 4; i++){
+                            numC[i] = 0;
+                        }
+                    }
+
                     break;
                 case THREE_COMMAND: //戻る・選び直し
 

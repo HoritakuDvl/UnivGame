@@ -224,10 +224,9 @@ static int DrawGameSelect(){
     }
 
     int result = 1;
-    if(pla_sele[myid].kPflag == 0){
+    if(myid == pla_sele.kPflag){
         EventSelect(myid, sock);
     }
-    fprintf(stderr, "load\n");
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
 
@@ -465,7 +464,7 @@ static int DrawGameMain(){
     StringDraw(Score_Plus, 1);
 
 //攻撃レベル
-    fprintf(stderr, "power = %d\n", power);
+    //fprintf(stderr, "power = %d\n", power);
     StringDraw(power,2);
 
 //速度レベル
@@ -645,27 +644,23 @@ static int execute_command() {
         case RIGHT_COMMAND:
         case UP_COMMAND:
         case DOWN_COMMAND:
-            pla_sele[data.cid].kndP = data.kndP;
-            fprintf(stderr, "pla_sele[%d] = %d\n", data.cid, data.kndP);
+            player[data.cid].command.kndP = data.kndP;
+            fprintf(stderr, "player[%d].command.kndP = %d\n", data.cid, data.kndP);
             result = 1;
             break;
         case FOUR_COMMAND:
             switch(data.flag) {
             case 3:
-                pla_sele[data.cid].kPflag = data.kPflag;
-                pla_sele[data.cid].kndP = data.kndP;
+                pla_sele.kPflag = data.kPflag;
+                player[data.cid].command.kndP = data.kndP;
                 result = 1;
-                fprintf(stderr, "check %d:%d:%d:%d\n", pla_sele[0].kPflag, pla_sele[1].kPflag, pla_sele[2].kPflag, pla_sele[3].kPflag);
+                fprintf(stderr, "check %d\n", pla_sele.kPflag);
                 break;
             case 4:
                 gstate = data.state;
                 stageFlag = 1;
-                PlayerAllInit(pla_sele[myid].kndP);
-                int i;
-                for(i = 0; i < num_clients; i++){
-                    pla_sele[i].kndP = i;
-                    pla_sele[i].kPflag = 0;
-                }
+                PlayerAllInit(player[myid].command.kndP);
+                pla_sele.kPflag = 0;
                 result = 1;
                 break;
             }

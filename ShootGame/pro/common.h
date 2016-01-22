@@ -196,7 +196,7 @@ typedef struct{
 En en[MAX_CLIENTS];
 
 Timer timer;
-Command pla_sele[MAX_CLIENTS]; //選択画面で使用(サーバー側・クライアント側両方で使用)
+Command pla_sele; //選択画面で使用(サーバー側・クライアント側両方で使用)
 PlayerData player[MAX_CLIENTS];
 Shot pla_shot[PLAYER_SHOT_MAX];
 EnemyData enemy[ENEMY_MAX];
