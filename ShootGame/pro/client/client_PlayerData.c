@@ -307,7 +307,7 @@ void PlayerAction(int pos){
       if(player[pos].command.right == 1){
           PlayerRightMove(pos);
       }
-      if(player[pos].command.b5 == 1){
+      if(player[pos].command.b5 == 1 /*&& player[pos].command.b4 == 0*/){
           PlayerBulletEnter(pos);
       }
       if(player[pos].command.rotaU == 1 || player[pos].command.rotaL == 1 || player[pos].command.rotaR == 1){ //旋回

@@ -152,7 +152,7 @@ int control_requests() {
     for (i = 0; i < num_clients; i++) {
         if(FD_ISSET(clients[i].sock, &read_flag)) {//FD_ISSET:[引数１]番目のFDが1かどうかの確認
             receive_data(i, &data, sizeof(data)); //読み込み先から引数２へのデータの読み込み
-            fprintf(stderr, "%d : %c\n", data.cid, data.command);
+            //fprintf(stderr, "%d : %c\n", data.cid, data.command);
 
             switch(gstate) {
 //GAME_TITLE
@@ -240,26 +240,29 @@ int control_requests() {
                             data.kPflag = pla_sele[data.cid].kPflag;
                             data.flag = 3;
                             send_data(BROADCAST, &data, sizeof(data));
+                            fprintf(stderr, "check %d:%d:%d:%d\n", numC[0], numC[1], numC[2], numC[3]);
                             break;
                         }
+
                         if(i == num_clients-1){
+                            fprintf(stderr, "check in!\n");
                             gstate = GAME_MAIN;
                             data.state = gstate;
                             data.flag = 4;
                             send_data(BROADCAST, &data, sizeof(data));
                             result = 1;
 
+                            stage = 1;
+                            data.num = 0;
+                            EnemyEnter(data.num);
+
                             for(i = 0; i < 4; i++){
                                 numC[i] = 0;
                                 pla_sele[i].kndP = i;
                                 pla_sele[i].kPflag = 0;
                             }
-
-                            stage = 1;
-                            data.num = 0;
-                            EnemyEnter(data.num);
-                            break;
                         }
+
                     }
                     break;
                 case THREE_COMMAND: //戻る・選び直し
