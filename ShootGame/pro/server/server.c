@@ -241,7 +241,7 @@ int control_requests() {
                             data.kPflag = pla_sele[data.cid].kPflag;
                             data.flag = 3;
                             send_data(BROADCAST, &data, sizeof(data));
-                            fprintf(stderr, "check %d:%d:%d:%d\n", numC[0], numC[1], numC[2], numC[3]);
+                            fprintf(stderr, "check %d:%d:%d:%d\n", pla_sele[0].kPflag, pla_sele[1].kPflag, pla_sele[2].kPflag, pla_sele[3].kPflag);
                             break;
                         }
 

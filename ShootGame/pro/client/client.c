@@ -227,7 +227,6 @@ static int DrawGameSelect(){
     if(pla_sele[myid].kPflag == 0){
         EventSelect(myid, sock);
     }
-    fprintf(stderr, "load\n");
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
 
@@ -465,7 +464,7 @@ static int DrawGameMain(){
     StringDraw(Score_Plus, 1);
 
 //攻撃レベル
-    fprintf(stderr, "power = %d\n", power);
+    //fprintf(stderr, "power = %d\n", power);
     StringDraw(power,2);
 
 //速度レベル
