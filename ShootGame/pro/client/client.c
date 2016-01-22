@@ -227,6 +227,7 @@ static int DrawGameSelect(){
     if(pla_sele[myid].kPflag == 0){
         EventSelect(myid, sock);
     }
+    fprintf(stderr, "load\n");
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
 
