@@ -2,9 +2,6 @@
 #include "client_func.h"
 
 static int shot_search(int n);
-static double shotatan2(int n);
-static double shotatan2_2(int n, int num);
-
 
 void EnemyShotPattern0(int n, int num) {
     int k;
@@ -58,32 +55,4 @@ static int shot_search(int n) {
         }
     }
     return -1;
-}
-
-
-//自分に発射
-static double shotatan2(int n) {
-    return atan2(player[0].ty - enemy[ene_shot[n].num].ty, player[0].tx - enemy[ene_shot[n].num].tx);
-}
-
-//敵に一番近いプレイヤーに発射
-static double shotatan2_2(int n, int num) {
-    int x1 = player[0].tx - enemy[ene_shot[n].num].tx;
-    int y1 = player[0].ty - enemy[ene_shot[n].num].ty;
-    int r1 = sqrt(x1*x1 + y1*y1);
-
-    int i;
-    for (i = 1; i < num; i++) {
-        int x2 = player[i].tx - enemy[ene_shot[n].num].tx;
-        int y2 = player[i].ty - enemy[ene_shot[n].num].ty;
-        int r2 = sqrt(x2*x2 + y2*y2);
-
-        if (r2 < r1) {
-            x1 = x2;
-            y1 = y2;
-            r1 = r2;
-        }
-    }
-
-    return atan2(y1, x1);
 }

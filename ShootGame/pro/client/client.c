@@ -654,6 +654,7 @@ static int execute_command() {
                 pla_sele[data.cid].kPflag = data.kPflag;
                 pla_sele[data.cid].kndP = data.kndP;
                 result = 1;
+                fprintf(stderr, "check %d:%d:%d:%d\n", pla_sele[0].kPflag, pla_sele[1].kPflag, pla_sele[2].kPflag, pla_sele[3].kPflag);
                 break;
             case 4:
                 gstate = data.state;
