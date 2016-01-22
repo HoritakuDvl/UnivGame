@@ -158,6 +158,7 @@ void setup_client(char *server_name, u_short port) {
     GameTitleLoad();
     PlSeLoad();
     ItemLoad();
+    GameoverLoad();
 
 /*初期化*/
     stageFlag = 1;
@@ -481,16 +482,6 @@ static int DrawGameMain(){
         if(Total_Score>Score_Plus)
             Score_Plus = Total_Score;
     }
-    /*if(Score_Plus > 0){
-        if(Score_Plus >= 10){
-            Total_Score += 10;
-            Score_Plus -= 10;
-        }
-        else{
-            Total_Score += Score_Plus;
-            Score_Plus = 0;
-        }
-        }*/
     StringDraw(Score_Plus, 1);
 
 //攻撃レベル
@@ -540,6 +531,7 @@ static int DrawGameOver()
 返値：result
 *************************************/
 static int DrawGameOver(){
+    stageCount++;
 
     fd_set read_flag = mask;
 
@@ -561,6 +553,8 @@ static int DrawGameOver(){
     }
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
+
+    Gameover(myid, sock);
 
     return result;
 }
@@ -811,19 +805,27 @@ static int execute_command() {
             break;
 
         case PLAYER_HIT:
+            gstate = data.state;
+            if(gstate == GAME_OVER){
+                stageCount = 0;
+            }
             PlayerDamage(data, myid, sock);
             result = 1;
             break;
         case PLAYER_HIT2:
+            gstate = data.state;
+            if(gstate == GAME_OVER){
+                stageCount = 0;
+            }
             PlayerDamage2(data, myid, sock);
             result = 1;
             break;
         case ENEMY_HIT:
             enemy[data.ene_num] = data.enemy;
             k = data.num;//EnemyDamage(data);
-            Total_Score = data.scoreM; //スコアの最大値
             pla_shot[data.m].bullet[data.n].flag = 0;
             if(k > 0 && data.item.knd > 0){ //アイテムの出現
+                Total_Score = data.scoreM; //スコアの最大値
                 ItemEnter(data.item);
             }
             switch(stage){

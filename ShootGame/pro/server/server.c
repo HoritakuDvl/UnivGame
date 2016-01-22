@@ -355,6 +355,10 @@ int control_requests() {
                     HP_Num--;
                     data.hp = HP_Num;
                     data.player.flag2 = 180;
+                    if(HP_Num <= 0) {
+                        gstate = GAME_OVER;
+                        data.state = gstate;
+                    }
                     send_data(BROADCAST, &data, sizeof(data));
                     result = 1; //メッセージの送信
                     break;
@@ -362,18 +366,24 @@ int control_requests() {
                     HP_Num-=5;
                     data.hp = HP_Num;
                     data.player.flag2 = 180;
+                    if(HP_Num <= 0) {
+                        gstate = GAME_OVER;
+                        data.state = gstate;
+                    }
                     send_data(BROADCAST, &data, sizeof(data));
                     result = 1; //メッセージの送信
                     break;
                 case ENEMY_HIT:
                     stage = data.stage;
-                    fprintf(stderr, "stage = %d\n", stage);
+                    //fprintf(stderr, "stage = %d\n", stage);
                     enemy[data.ene_num].flag = data.enemy.flag;
                     data.num = EnemyDamage();
-                    if(data.num > 0 && data.enemy.item > 0) //アイテムの出現
+                    if(data.num > 0 && data.enemy.item > 0){ //アイテムの出現
                         data.item = ItemEnter(data.enemy);
+                    }
                     send_data(BROADCAST, &data, sizeof(data));
 
+                    fprintf(stderr, "data.num = %d\n", data.num);
                     if(data.num > 0){
                         switch(data.num){
                         case 6:
@@ -811,9 +821,9 @@ static void EnemyEnter(int num) {
         int i, t;
     for(t = 0; t < ENEMY_ORDER_MAX; t++){
         if (enemyOrder[t].flag == 1 && enemyOrder[t].mission == 1 /*&& enemyOrder[t].stage == stage*/){
-            //fprintf(stderr, "stage = %d\n", stage);
             for(i = 0; i < ENEMY_MAX; i++){
                 if(enemy[i].flag == 0){
+                    fprintf(stderr, "Order:%d\n", t);
                     if(num == 0)
                         enemy[i].flag = 1;
                     else
@@ -863,8 +873,8 @@ static void EnemyEnter(int num) {
 int num = 0;
 static int EnemyDamage() {
     if(enemy[data.ene_num].flag == 1) {
-        enemy[data.ene_num].hp -= power;//power
-        if(enemy[data.ene_num].hp<=0) {
+        enemy[data.ene_num].hp -= power;
+        if(enemy[data.ene_num].hp<=0) { //倒したとき
             enemy[data.ene_num].flag = 0;//2
             enemy[data.ene_num].flag2 = 0;
 

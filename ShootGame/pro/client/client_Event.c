@@ -571,12 +571,13 @@ void EventOver(int myid, int sock){
             switch(event.jbutton.button){
 //弾を打つ
             case 3:
-                fprintf(stderr, "4 push.\n");
-                data.command = FOUR_COMMAND;
-                data.cid = myid;
-                data.state = GAME_OVER;
-                send_data(&data, sizeof(CONTAINER), sock);
-                stageFlag = 2;
+                if(stageCount >= 200){
+                    fprintf(stderr, "4 push.\n");
+                    data.command = END_COMMAND;
+                    data.cid = myid;
+                    data.state = GAME_OVER;
+                    send_data(&data, sizeof(CONTAINER), sock);
+                }
                 break;
             }
             break;

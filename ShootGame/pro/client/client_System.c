@@ -85,7 +85,7 @@ void PlayerDamage(CONTAINER data, int myid, int sock){
     HP = data.hp;
     player[data.cid] = data.player;
 
-    if(HP <= 0){ //ゲームオーバー
+    /*if(HP <= 0){ //ゲームオーバー
         memset(&data, 0, sizeof(CONTAINER));
         data.command = END_COMMAND;
         fprintf(stderr, "%d\n", data.command);
@@ -96,7 +96,7 @@ void PlayerDamage(CONTAINER data, int myid, int sock){
         fprintf(stderr, "/////////////////////\n");
         fprintf(stderr, "//   GameOver...   //\n");
         fprintf(stderr, "/////////////////////\n");
-    }
+        }*/
 
     ene_shot[data.m].bullet[data.n].flag = 0;
 }
@@ -121,7 +121,7 @@ void PlayerDamage2(CONTAINER data, int myid, int sock){
     HP = data.hp;
     player[data.cid] = data.player;
 
-    if(HP <= 0){ //ゲームオーバー
+    /*if(HP <= 0){ //ゲームオーバー
         memset(&data, 0, sizeof(CONTAINER));
         data.command = END_COMMAND;
         fprintf(stderr, "%d\n", data.command);
@@ -131,7 +131,7 @@ void PlayerDamage2(CONTAINER data, int myid, int sock){
         fprintf(stderr, "/////////////////////\n");
         fprintf(stderr, "//   GameOver...   //\n");
         fprintf(stderr, "/////////////////////\n");
-    }
+        }*/
 }
 
 
@@ -256,6 +256,14 @@ void StringDraw(int num, int knd){
         stringA = TTF_RenderUTF8_Blended(font, str, blue);
         stA_src = SrcRectInit(0, 0, 500, 40);
         stA_dst = DstRectInit(WINDOW_WIDTH - 150, 80);
+        break;
+
+    case 4://結果画面のスコア表示
+        fprintf(stderr, "スコアin\n");
+        sprintf(str, "スコア：%6d点", num);
+        stringA = TTF_RenderUTF8_Blended(font, str, red);
+        stA_src = SrcRectInit(0, 0, 500, 400);
+        stA_dst = DstRectInit(WINDOW_WIDTH/2-100, WINDOW_HEIGHT/2-40);
         break;
     }
 

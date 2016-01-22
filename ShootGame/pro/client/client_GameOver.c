@@ -11,9 +11,9 @@ static void MarkDraw(int n);
 
 void GameoverLoad() {
 
-    haikei = IMG_Load("sozai/main_resource/07_gameover/gameover_clear.png");
+    haikei = IMG_Load("sozai/main_resource/07_gameover/gameover_bg.png");
     gameoverLabel = IMG_Load("sozai/main_resource/07_gameover/gameover_label.png");
-    startBtn = IMG_Load("sozai/main_resource/00_common/common_back_start_btn.png");
+    startBtn = IMG_Load("sozai/main_resource/00_common/common_back_start_btn.jpg");
     
     gMark1 = IMG_Load("sozai/main_resource/00_common/common_frame1.png");
     gMark2 = IMG_Load("sozai/main_resource/00_common/common_frame2.png");
@@ -46,18 +46,25 @@ void Gameover(int myid, int num) {
     SDL_BlitSurface(gameoverLabel, &src_rect, window, &dst_rect);
 
 //スタートボタンへ
-	src_rect = SrcRectInit(0, 0, 200, 60);
+    src_rect = SrcRectInit(0, 0, 200, 60);
     dst_rect = DstRectInit(WINDOW_WIDTH / 2 - 100, 700);
     SDL_BlitSurface(startBtn, &src_rect, window, &dst_rect);
 
 //マーク
+    fprintf(stderr, "stageCount = %4d\n", stageCount);
+    if(stageCount >= 200){
 	int i;
-    for(i = 0; i < num; i++) {
-        if(i != myid) {
-            MarkDraw(i);
+        for(i = 0; i < num; i++) {
+            if(i != myid) {
+                MarkDraw(i);
+            }
         }
+        MarkDraw(myid);
     }
-    MarkDraw(myid);
+
+//スコア表示
+    StringDraw(Total_Score, 4);
+
 }
 
 static void MarkDraw(int n) {
