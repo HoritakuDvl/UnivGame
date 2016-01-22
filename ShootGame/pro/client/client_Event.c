@@ -147,16 +147,15 @@ void EventSelect(int myid, int sock){
             printf("The ID of the pressed button is %d.\n", event.jbutton.button);	// 押されたボタンのIDを表示（0から）
             // ボタンIDに応じた処理
             switch(event.jbutton.button){
-//弾を打つ
+//決定
             case 3:
                 //if(pla_sele[myid].kPflag == 0) {
                 fprintf(stderr, "4 push.\n");
                 data.command = FOUR_COMMAND;
                 data.cid = myid;
                 data.state = GAME_SELECT;
-                data.kndP = pla_sele[myid].kndP; //決定
+                data.kndP = player[myid].command.kndP; //決定
                 send_data(&data, sizeof(CONTAINER), sock);
-                stageFlag = 2;
                 //}
                 break;
             }
