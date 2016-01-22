@@ -34,6 +34,11 @@ extern void EventOver(int myid, int sock);
 extern void EventClear(int myid, int sock);
 extern void send_data(void *, int, int);
 
+/*client_GameTitle.c*/
+extern void GameTitleLoad();
+extern void GameTitle(int myid, int num);
+extern void GameTitleFree();
+
 /*client_PlayerSelect.c*/
 extern void PlSeLoad();
 extern void PlayerSelect(int myid, int num);

@@ -41,6 +41,7 @@ int main(int argc, char *argv[]) {
   HaikeiFree();
   PlayerFree();
   EnemyFree();
+  GameTitleFree();
   PlSeFree();
   terminate_client(); //クライアント
   

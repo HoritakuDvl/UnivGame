@@ -128,6 +128,7 @@ void setup_client(char *server_name, u_short port) {
     haikei9 = IMG_Load("sozai/main_resource/05_main_game/background/bg_9.png");
     PlayerLoad();
     EnemyLoad();
+    GameTitleLoad();
     PlSeLoad();
     ItemLoad();
 
@@ -200,6 +201,8 @@ static int DrawGameTitle(){
     }
 
     SDL_FillRect(window, NULL, SDL_MapRGBA(window->format, 255, 255, 255, 255));
+    
+    GameTitle(myid, num_clients);
 
     return result;
 }
